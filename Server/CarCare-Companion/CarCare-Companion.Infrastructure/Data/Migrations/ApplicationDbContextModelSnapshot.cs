@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System;
 
 namespace CarCare_Companion.Infrastructure.Data.Migrations
 {
@@ -270,5 +268,7 @@ namespace CarCare_Companion.Infrastructure.Data.Migrations
                 });
 #pragma warning restore 612, 618
         }
+
+       
     }
 }
