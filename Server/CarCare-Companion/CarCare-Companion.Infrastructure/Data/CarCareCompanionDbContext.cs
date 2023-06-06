@@ -3,16 +3,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CarCare_Companion.Infrastructure.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class CarCareCompanionDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public CarCareCompanionDbContext(DbContextOptions<CarCareCompanionDbContext> options)
             : base(options)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-
 
             base.OnModelCreating(builder);         
         }

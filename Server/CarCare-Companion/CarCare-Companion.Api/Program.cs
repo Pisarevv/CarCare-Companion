@@ -12,7 +12,7 @@ namespace CarCare_Companion.Api
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            builder.Services.AddDbContext<CarCareCompanionDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -21,7 +21,7 @@ namespace CarCare_Companion.Api
                 options.SignIn.RequireConfirmedAccount = true;            
 
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<CarCareCompanionDbContext>();
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();

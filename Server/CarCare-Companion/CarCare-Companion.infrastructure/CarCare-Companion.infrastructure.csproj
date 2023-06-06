@@ -21,4 +21,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CarCare-Companion.Common\CarCare-Companion.Common.csproj" />
+  </ItemGroup>
+
 </Project>
