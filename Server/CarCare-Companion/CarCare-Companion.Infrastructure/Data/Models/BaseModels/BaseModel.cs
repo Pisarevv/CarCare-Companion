@@ -1,6 +1,8 @@
-﻿namespace CarCare_Companion.Infrastructure.Data.Models.Contracts
+﻿namespace CarCare_Companion.Infrastructure.Data.Models.BaseModels
 {
     using System.ComponentModel.DataAnnotations;
+    using CarCare_Companion.Infrastructure.Data.Models.Contracts;
+
     public abstract class BaseModel<TKey> : IAuditInfo
     {
         [Key]

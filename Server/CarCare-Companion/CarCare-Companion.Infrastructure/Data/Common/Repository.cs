@@ -19,7 +19,7 @@ public class Repository
     }
 
     /// <summary>
-    /// Entity framework DB context holding connection information and properties
+    /// Entity framework DB context holding connection information and properties   
     /// and tracking entity states 
     /// </summary>
     protected DbContext Context { get; set; }
