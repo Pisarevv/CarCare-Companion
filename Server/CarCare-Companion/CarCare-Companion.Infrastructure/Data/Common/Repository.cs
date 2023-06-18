@@ -4,6 +4,13 @@ using System.Linq.Expressions;
 
 namespace CarCare_Companion.Infrastructure.Data.Common;
 
+// <summary>
+/// Implementation of repository access methods
+/// for Relational Database Engine
+/// </summary>
+/// <typeparam name="T">Type of the data table to which 
+/// current reposity is attached</typeparam>
+
 public class Repository
 {
     public Repository(CarCareCompanionDbContext context)

@@ -1,6 +1,8 @@
-﻿namespace CarCare_Companion.Infrastructure.Data.Models.Contracts
+﻿namespace CarCare_Companion.Infrastructure.Data.Models.BaseModels
 {
+    using CarCare_Companion.Infrastructure.Data.Models.Contracts;
     using System.ComponentModel.DataAnnotations;
+
     public abstract class BaseDeletableModel<TKey> : IAuditInfo, IDeletableEntity
     {
         [Key]

@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-
-namespace CarCare_Companion.Infrastructure.Data
+﻿namespace CarCare_Companion.Infrastructure.Data
 {
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;
+
     public class CarCareCompanionDbContext : IdentityDbContext
     {
         public CarCareCompanionDbContext(DbContextOptions<CarCareCompanionDbContext> options)
