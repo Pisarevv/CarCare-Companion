@@ -1,4 +1,5 @@
 using CarCare_Companion.Infrastructure.Data;
+using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,11 +17,12 @@ namespace CarCare_Companion.Api
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => 
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => 
             {
                 options.SignIn.RequireConfirmedAccount = true;            
 
             })
+                .AddRoles<IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<CarCareCompanionDbContext>();
             builder.Services.AddControllersWithViews();
 
