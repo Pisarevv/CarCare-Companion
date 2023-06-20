@@ -6,6 +6,7 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
+    using System.Reflection;
 
     public class CarCareCompanionDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
@@ -22,6 +23,7 @@
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(CarCareCompanionDbContext)) ??  Assembly.GetExecutingAssembly());
 
             base.OnModelCreating(builder);         
         }
