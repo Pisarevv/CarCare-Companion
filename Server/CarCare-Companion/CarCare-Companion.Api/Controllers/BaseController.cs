@@ -5,6 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 [Authorize]
 [ApiController]
-public class BaseController : Controller
+public class BaseController : ControllerBase
 {
 }

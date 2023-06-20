@@ -10,50 +10,54 @@ namespace CarCare_Companion.Api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            ConfigureServices(builder.Services, builder.Configuration);
+            var app = builder.Build();
+            Configure(app);
+            app.Run();     
 
-            // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<CarCareCompanionDbContext>(options =>
+        }
+
+        private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            services.AddDbContext<CarCareCompanionDbContext>(options =>
                 options.UseSqlServer(connectionString));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<ApplicationUser>(options => 
+            services.AddDefaultIdentity<ApplicationUser>(options =>
             {
-                options.SignIn.RequireConfirmedAccount = true;            
+                options.SignIn.RequireConfirmedAccount = true;
 
             })
                 .AddRoles<IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<CarCareCompanionDbContext>();
-            builder.Services.AddControllersWithViews();
+            services.AddControllersWithViews();
 
-            var app = builder.Build();
+            services.AddControllers();
 
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+        }
+
+        private static void Configure(WebApplication app)
+        {
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseMigrationsEndPoint();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
-            app.MapRazorPages();
-
-            app.Run();
+            app.MapControllers();
+ 
         }
     }
 }

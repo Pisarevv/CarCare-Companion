@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace CarCare_Companion.Api.Controllers
 {
-   
+    [Route("[controller]")]
     public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
@@ -13,11 +14,12 @@ namespace CarCare_Companion.Api.Controllers
             _logger = logger;
         }
 
-
-        public IActionResult Index()
+        [AllowAnonymous]
+        [HttpGet(Name = "Index")]
+        public async Task<IActionResult> Index()
         {
 
-            return View();
+            return Ok("asd");
         }
 
     }
