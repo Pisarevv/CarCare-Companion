@@ -18,8 +18,8 @@ namespace CarCare_Companion.Api.Controllers
         [HttpGet(Name = "Index")]
         public async Task<IActionResult> Index()
         {
-
-            return Ok("asd");
+            var data = new { message = " Test " };
+            return Ok(data);
         }
 
     }

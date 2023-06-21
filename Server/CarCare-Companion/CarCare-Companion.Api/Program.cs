@@ -31,7 +31,16 @@ namespace CarCare_Companion.Api
             })
                 .AddRoles<IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<CarCareCompanionDbContext>();
-            services.AddControllersWithViews();
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:5173");
+                    });
+            });
+
 
             services.AddControllers();
 
@@ -48,10 +57,10 @@ namespace CarCare_Companion.Api
                 app.UseSwaggerUI();
             }
 
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();
