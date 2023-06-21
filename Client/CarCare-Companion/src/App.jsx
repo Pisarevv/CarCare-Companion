@@ -1,21 +1,19 @@
-import { useEffect, useState } from 'react'
+import { Routes, Route } from 'react-router-dom';
+
+import { AuthProvider } from './contexts/AuthContext';
+import Navigation  from './components/Navigation/Navigation';
+
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState("")
+  return(
+    <AuthProvider>
+      <div className='App'>
+        <Navigation/>
 
-  useEffect(() => {
-    (async () => {
-    var result = await fetch("https://localhost:7152/Home");
-    var result2 = await result.json();
-    setCount(count => result2.message);
-    })()
-  },[])
-
-  return (
-    <>
-     <h1>{count}</h1>
-    </>
+        
+      </div>
+    </AuthProvider>
   )
 }
 
