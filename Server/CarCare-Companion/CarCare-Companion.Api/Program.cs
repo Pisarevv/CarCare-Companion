@@ -2,6 +2,7 @@ using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Services;
 using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
+using CarCare_Companion.Infrastructure.Data.Seeding;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,7 @@ namespace CarCare_Companion.Api
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<ApplicationUser>()
-                .AddRoles<IdentityRole<Guid>>()
+                .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<CarCareCompanionDbContext>();
 
             services.Configure<IdentityOptions>(options =>
@@ -78,6 +79,15 @@ namespace CarCare_Companion.Api
 
         private static void Configure(WebApplication app)
         {
+
+            // Seed data on application startup
+            using (var serviceScope = app.Services.CreateScope())
+            {
+                var dbContext = serviceScope.ServiceProvider.GetRequiredService<CarCareCompanionDbContext>();
+                dbContext.Database.Migrate();
+                new CarCareCompanionDbContextSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+            }
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

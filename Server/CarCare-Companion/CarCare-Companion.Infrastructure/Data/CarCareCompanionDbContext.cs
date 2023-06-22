@@ -8,7 +8,7 @@
     using Microsoft.EntityFrameworkCore;
     using System.Reflection;
 
-    public class CarCareCompanionDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+    public class CarCareCompanionDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public CarCareCompanionDbContext(DbContextOptions<CarCareCompanionDbContext> options)
             : base(options)
