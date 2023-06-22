@@ -12,10 +12,4 @@
     <ProjectReference Include="..\CarCare-Companion.Infrastructure\CarCare-Companion.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Contracts\" />
-    <Folder Include="Models\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

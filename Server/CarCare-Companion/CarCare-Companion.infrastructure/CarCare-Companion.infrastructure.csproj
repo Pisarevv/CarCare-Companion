@@ -25,4 +25,8 @@
     <ProjectReference Include="..\CarCare-Companion.Common\CarCare-Companion.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
