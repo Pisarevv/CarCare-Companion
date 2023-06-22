@@ -41,7 +41,7 @@ namespace CarCare_Companion.Api
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 6;
             });
-
+                
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -66,7 +66,10 @@ namespace CarCare_Companion.Api
                 options.AddDefaultPolicy(
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:5173");
+                        policy.AllowAnyHeader();
+                        policy.AllowAnyMethod();
+                        policy.AllowAnyOrigin();
+                        
                     });
             });
 
