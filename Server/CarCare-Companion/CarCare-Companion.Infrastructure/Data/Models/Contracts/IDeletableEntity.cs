@@ -2,7 +2,7 @@
 {
     public interface IDeletableEntity
     {
-        bool isDeleted { get; set; }
+        bool IsDeleted { get; set; }
 
         DateTime? DeletedOn { get; set; }
     }

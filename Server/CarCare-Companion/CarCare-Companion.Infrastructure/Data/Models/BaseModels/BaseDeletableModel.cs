@@ -18,7 +18,7 @@
         public DateTime? ModifiedOn { get; set; }
 
         [Comment("Deleted status")]
-        public bool isDeleted { get; set; }
+        public bool IsDeleted { get; set; }
 
         [Comment("Date of deleting")]
         public DateTime? DeletedOn { get; set; }
