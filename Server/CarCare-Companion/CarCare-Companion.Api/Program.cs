@@ -1,7 +1,12 @@
+using CarCare_Companion.Core.Contracts;
+using CarCare_Companion.Core.Services;
 using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace CarCare_Companion.Api
 {
@@ -24,14 +29,37 @@ namespace CarCare_Companion.Api
                 options.UseSqlServer(connectionString));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<ApplicationUser>(options =>
-            {
-                options.SignIn.RequireConfirmedAccount = true;
-
-            })
+            services.AddDefaultIdentity<ApplicationUser>()
                 .AddRoles<IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<CarCareCompanionDbContext>();
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 6;
+            });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = configuration["Jwt:Issuer"],
+                        ValidAudience = configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+
+                    };
+                });
+
+            services.AddScoped<IIdentityService, IdentityService>();
+
+            services.AddMvc();
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
@@ -57,15 +85,20 @@ namespace CarCare_Companion.Api
                 app.UseSwaggerUI();
             }
 
+            app.UseRouting();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseCors();
 
-            app.UseAuthentication();
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
-            app.MapControllers();
+            app.UseEndpoints(endpoints => 
+            { 
+                endpoints.MapControllers(); 
+            });
  
         }
     }
