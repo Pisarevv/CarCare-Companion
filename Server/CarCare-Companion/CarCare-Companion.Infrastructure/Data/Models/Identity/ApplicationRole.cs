@@ -16,6 +16,7 @@ public class ApplicationRole : IdentityRole<Guid>, IAuditInfo, IDeletableEntity
         : base(name)
     {
         this.Id = Guid.NewGuid();
+        this.CreatedOn = DateTime.UtcNow;
     }
 
     public DateTime CreatedOn { get; set; }
