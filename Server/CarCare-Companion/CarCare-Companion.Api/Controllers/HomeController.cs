@@ -14,7 +14,6 @@ public class HomeController : BaseController
         _logger = logger;
     }
 
-    [AllowAnonymous]
     [HttpGet(Name = "Index")]
     public async Task<IActionResult> Index()
     {
