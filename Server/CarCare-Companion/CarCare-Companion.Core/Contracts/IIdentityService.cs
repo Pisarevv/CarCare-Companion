@@ -6,7 +6,7 @@ public interface IIdentityService
 {
     public Task<bool> DoesUserExistAsync(string username);
 
-    public Task<bool> RegisterAsync(RegisterRequestModel model);
+    public Task<AuthDataModel> RegisterAsync(RegisterRequestModel model);
 
-    public Task<LoginRequestStatus> LoginAsync(LoginRequestModel model);
+    public Task<AuthDataModel> LoginAsync(LoginRequestModel model);
 }

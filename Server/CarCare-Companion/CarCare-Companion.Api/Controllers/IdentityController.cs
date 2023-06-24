@@ -24,25 +24,20 @@ public class IdentityController : BaseController
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Missing or invalid fields");
+                return StatusCode(422,"Missing or invalid fields");
             }
 
             bool userExist = await identityService.DoesUserExistAsync(model.Email);
 
             if (userExist)
             {
-                return BadRequest("User with the same email already exists");
+                return StatusCode(409,"User with the same email address already exists");
 
             }
 
-            bool createdSuccessful = await identityService.RegisterAsync(model);
+            AuthDataModel userData = await identityService.RegisterAsync(model);
 
-            if (!createdSuccessful)
-            {
-                return BadRequest("Something went bad");
-            }
-
-            return Ok("Successfully created account"); ;
+            return StatusCode(201,userData);
         }
         catch (Exception)
         {
@@ -62,29 +57,15 @@ public class IdentityController : BaseController
                 return BadRequest("Missing or invalid fields");
             }
 
+            AuthDataModel userData = await identityService.LoginAsync(model);
 
-            LoginRequestStatus loginStatus = await identityService.LoginAsync(model);
-
-            if (loginStatus.LoginSuccessful)
-            {
-                return Ok(new JwtTokenTransferModel
-                {
-                    Token = loginStatus.Token,
-                    Expiration = loginStatus.Expiration
-                });
-            }
-
-            else
-            {
-                return BadRequest(loginStatus.StatusMassage);
-            }
-
+            return StatusCode(200, userData);
+           
             
         }
         catch (Exception ex)
         {
-            return StatusCode(403, "Exception");
-
+            return StatusCode(401, "Invalid credentials");
         }
     }
 

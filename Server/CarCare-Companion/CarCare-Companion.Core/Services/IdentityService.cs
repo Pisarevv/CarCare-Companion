@@ -39,43 +39,37 @@ public class IdentityService : IIdentityService
         return true;
     }
 
-    public async Task<LoginRequestStatus> LoginAsync(LoginRequestModel model)
+    public async Task<AuthDataModel> LoginAsync(LoginRequestModel model)
     {
         var user = await userManager.FindByNameAsync(model.Email);
-        if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
+
+        if (user == null)
         {
-            var userRoles = await userManager.GetRolesAsync(user);
-
-            var authClaims = new List<Claim>
-                {
-                    new Claim(JwtRegisteredClaimNames.Name, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                };
-
-            foreach (var userRole in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            }
-
-            var token = GenerateToken(authClaims);
-
-            return new LoginRequestStatus
-            {
-                LoginSuccessful = true,
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
-                Expiration = token.ValidTo,
-                StatusMassage = "Successful login."
-            };
+            throw new Exception("User does not exist");
         }
 
-        return new LoginRequestStatus
+        bool isPasswordValid = await userManager.CheckPasswordAsync(user, model.Password);
+
+        if (!isPasswordValid)
         {
-            LoginSuccessful = false,
-            StatusMassage = "Invalid email or password."
+            throw new Exception("Invalid password");
+        }
+        var userRoles = await userManager.GetRolesAsync(user);
+
+        var authClaims = GenerateUserAuthClaims(user,userRoles);
+
+        var token = GenerateToken(authClaims);
+
+        return new AuthDataModel
+        {
+            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            Email = user.Email,
+            Id = user.Id.ToString()
         };
+       
     }
 
-    public async Task<bool> RegisterAsync(RegisterRequestModel model)
+    public async Task<AuthDataModel> RegisterAsync(RegisterRequestModel model)
     {
         
         ApplicationUser user = new ApplicationUser()
@@ -92,10 +86,39 @@ public class IdentityService : IIdentityService
 
         if (!result.Succeeded)
         {
-            return false;
+            throw new Exception(result.Errors.First().ToString());
         }
 
-        return true;
+        var userRoles = await userManager.GetRolesAsync(user);
+
+        var authClaims = GenerateUserAuthClaims(user, userRoles);
+
+        var token = GenerateToken(authClaims);
+
+        return new AuthDataModel
+        {
+            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            Email = user.Email,
+            Id = user.Id.ToString()
+        };
+
+    }
+
+    private List<Claim> GenerateUserAuthClaims(ApplicationUser user, IList<string> userRoles)
+    {
+     
+        var authClaims = new List<Claim>
+                {
+                    new Claim(JwtRegisteredClaimNames.Name, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                };
+
+        foreach (var userRole in userRoles)
+        {
+            authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+        }
+
+        return authClaims;
     }
 
     private JwtSecurityToken GenerateToken(List<Claim> authClaims)
