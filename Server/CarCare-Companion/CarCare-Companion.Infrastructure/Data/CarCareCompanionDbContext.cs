@@ -25,6 +25,15 @@
         {
             builder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(CarCareCompanionDbContext)) ??  Assembly.GetExecutingAssembly());
 
+            var entityTypes = builder.Model.GetEntityTypes().ToList();
+
+            var foreignKeys = entityTypes
+                .SelectMany(e => e.GetForeignKeys().Where(f => f.DeleteBehavior == DeleteBehavior.Cascade));
+            foreach (var foreignKey in foreignKeys)
+            {
+                foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
             base.OnModelCreating(builder);         
         }
     }
