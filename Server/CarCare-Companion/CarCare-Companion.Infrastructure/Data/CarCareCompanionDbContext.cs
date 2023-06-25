@@ -5,7 +5,8 @@
     using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
-    using System.Reflection;
+    using System.Reflection;  
+
 
     public class CarCareCompanionDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
