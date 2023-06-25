@@ -1,9 +1,8 @@
-﻿  namespace CarCare_Companion.Infrastructure.Data
+﻿namespace CarCare_Companion.Infrastructure.Data
 {
     using CarCare_Companion.Infrastructure.Data.Models.Identity;
     using CarCare_Companion.Infrastructure.Data.Models.Records;
     using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     using System.Reflection;
