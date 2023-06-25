@@ -14,6 +14,9 @@ using CarCare_Companion.Core.Models.Identity;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using CarCare_Companion.Common;
 
+/// <summary>
+/// The IdentityService is responsible for all the operations regarding the user-related actions
+/// </summary>
 public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> userManager;
@@ -27,6 +30,11 @@ public class IdentityService : IIdentityService
         this.roleManager = roleManager;
     }
 
+    /// <summary>
+    /// Checks if an user exists.
+    /// </summary>
+    /// <param name="username">The user username used for the searching.</param>
+    /// <returns>A boolean if the user exists.</returns>
     public async Task<bool> DoesUserExistAsync(string username)
     {
         var userExists = await userManager.FindByNameAsync(username);
@@ -39,20 +47,28 @@ public class IdentityService : IIdentityService
         return true;
     }
 
-    public async Task<AuthDataModel> LoginAsync(LoginRequestModel model)
+
+    /// <summary>
+    /// Logs in the user.
+    /// </summary>
+    /// <param name="inputModel">The input data containg the user email and password.</param>
+    /// <returns>An object containing the user email,id and generated JWT token.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the user with the specified Email is not found.</exception>
+    /// <exception cref="ArgumentException">Thrown when the user password is invalid.</exception>
+    public async Task<AuthDataModel> LoginAsync(LoginRequestModel inputModel)
     {
-        var user = await userManager.FindByNameAsync(model.Email);
+        var user = await userManager.FindByNameAsync(inputModel.Email);
 
         if (user == null)
         {
-            throw new Exception("User does not exist");
+            throw new ArgumentNullException("User does not exist");
         }
 
-        bool isPasswordValid = await userManager.CheckPasswordAsync(user, model.Password);
+        bool isPasswordValid = await userManager.CheckPasswordAsync(user, inputModel.Password);
 
         if (!isPasswordValid)
         {
-            throw new Exception("Invalid password");
+            throw new ArgumentException("Invalid password");
         }
         var userRoles = await userManager.GetRolesAsync(user);
 
@@ -69,19 +85,26 @@ public class IdentityService : IIdentityService
        
     }
 
-    public async Task<AuthDataModel> RegisterAsync(RegisterRequestModel model)
+    /// <summary>
+    /// Creates a new user.
+    /// </summary>
+    /// <param name="inputModel">The input model containing the user first name, 
+    /// last name, email, password and confirm password</param>
+    /// <returns>The created users data - email, id and JWT token</returns>
+    /// <exception cref="Exception">Thrown when the user creating is not successful</exception>
+    public async Task<AuthDataModel> RegisterAsync(RegisterRequestModel inputModel)
     {
         ApplicationUser user = new ApplicationUser()
         {
-            FirstName = model.FirstName,
-            LastName = model.LastName,
-            UserName = model.Email,
-            Email = model.Email,
+            FirstName = inputModel.FirstName,
+            LastName = inputModel.LastName,
+            UserName = inputModel.Email,
+            Email = inputModel.Email,
             SecurityStamp = Guid.NewGuid().ToString(),
             CreatedOn = DateTime.UtcNow,
         };
 
-        var result = await userManager.CreateAsync(user, model.Password);
+        var result = await userManager.CreateAsync(user, inputModel.Password);
 
         if (!result.Succeeded)
         {
@@ -103,6 +126,12 @@ public class IdentityService : IIdentityService
 
     }
 
+    /// <summary>
+    /// Generates the authentication claims of the user for the JWT token
+    /// </summary>
+    /// <param name="user">The target user</param>
+    /// <param name="userRoles">The user roles</param>
+    /// <returns>Collection of Claims to be used in the JWT token generator</returns>
     private List<Claim> GenerateUserAuthClaims(ApplicationUser user, IList<string> userRoles)
     {
      
@@ -120,6 +149,11 @@ public class IdentityService : IIdentityService
         return authClaims;
     }
 
+    /// <summary>
+    /// Generates a JWT token.
+    /// </summary>
+    /// <param name="authClaims">The user authorization claims</param>
+    /// <returns>A JWT token containing an issuer, audience, expiration date and user claims</returns>
     private JwtSecurityToken GenerateToken(List<Claim> authClaims)
     {
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]));
