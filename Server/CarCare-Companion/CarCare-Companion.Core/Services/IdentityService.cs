@@ -71,7 +71,6 @@ public class IdentityService : IIdentityService
 
     public async Task<AuthDataModel> RegisterAsync(RegisterRequestModel model)
     {
-        
         ApplicationUser user = new ApplicationUser()
         {
             FirstName = model.FirstName,
