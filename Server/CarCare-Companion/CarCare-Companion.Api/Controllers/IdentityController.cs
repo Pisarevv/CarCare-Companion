@@ -2,6 +2,7 @@
 
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Identity;
+using CarCare_Companion.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +11,12 @@ using Microsoft.AspNetCore.Mvc;
 public class IdentityController : BaseController
 {
     private readonly IIdentityService identityService;
+    private readonly ILogger<IdentityService> logger;
 
-    public IdentityController(IIdentityService identityService)
+    public IdentityController(IIdentityService identityService, ILogger<IdentityService> logger)
     {
         this.identityService = identityService;
+        this.logger = logger;
     }
 
     [AllowAnonymous]
@@ -39,9 +42,10 @@ public class IdentityController : BaseController
 
             return StatusCode(201,userData);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(403,"Exception");
+            logger.LogInformation(ex.Message);
+            return StatusCode(403,"Invalid data");
 
         }
     }
@@ -65,6 +69,7 @@ public class IdentityController : BaseController
         }
         catch (Exception ex)
         {
+            logger.LogInformation(ex.Message);
             return StatusCode(401, "Invalid credentials");
         }
     }

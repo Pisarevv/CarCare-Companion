@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Serilog.Core;
 using System.Text;
 
 namespace CarCare_Companion.Api
@@ -15,11 +17,33 @@ namespace CarCare_Companion.Api
     {
         public static void Main(string[] args)
         {
+
             var builder = WebApplication.CreateBuilder(args);
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .CreateLogger();
+
+            builder.Host.UseSerilog();
             ConfigureServices(builder.Services, builder.Configuration);
-            var app = builder.Build();
-            Configure(app);
-            app.Run();     
+
+            try
+            {
+                var app = builder.Build();
+                Log.Information("Application starting up.");
+                Configure(app);
+                app.Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "The application failed to start correctly.");
+                throw;
+            }
+            finally 
+            {
+                Log.CloseAndFlushAsync();
+            }
+             
 
         }
 
@@ -61,6 +85,7 @@ namespace CarCare_Companion.Api
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddMvc();
+
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
@@ -103,6 +128,8 @@ namespace CarCare_Companion.Api
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseSerilogRequestLogging();
+
             app.UseCors();
 
             app.UseAuthentication(); 
@@ -112,7 +139,11 @@ namespace CarCare_Companion.Api
             { 
                 endpoints.MapControllers(); 
             });
- 
+
+           
+
         }
+
+       
     }
 }

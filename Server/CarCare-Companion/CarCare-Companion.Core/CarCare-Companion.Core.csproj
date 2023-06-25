@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CarCare-Companion.Common\CarCare-Companion.Common.csproj" />
     <ProjectReference Include="..\CarCare-Companion.Infrastructure\CarCare-Companion.Infrastructure.csproj" />
   </ItemGroup>
