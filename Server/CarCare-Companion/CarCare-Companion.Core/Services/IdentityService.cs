@@ -100,6 +100,7 @@ public class IdentityService : IIdentityService
     /// <exception cref="Exception">Thrown when the user creating is not successful</exception>
     public async Task<AuthDataModel> RegisterAsync(RegisterRequestModel inputModel)
     {
+     
         ApplicationUser user = new ApplicationUser()
         {
             FirstName = inputModel.FirstName,
