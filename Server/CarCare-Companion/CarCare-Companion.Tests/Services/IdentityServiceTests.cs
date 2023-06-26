@@ -19,23 +19,23 @@ public class Tests
     public class IdentityServiceTests
     {
         private IIdentityService identityService;
-        private CarCareCompanionDbContext carCareCompanionDbContext;
         private IConfiguration configuration;
         private UserManager <ApplicationUser> userManager;
         private RoleManager<ApplicationRole> roleManager;
+        RegisterRequestModel registerRequestModel;
 
 
         [SetUp]
         public void Setup()
         {
-            var contextOptions = new DbContextOptionsBuilder<CarCareCompanionDbContext>()
-                .UseInMemoryDatabase("CarCareCompanionDb")
-                .Options;
-
-            carCareCompanionDbContext = new CarCareCompanionDbContext(contextOptions);
-
-            carCareCompanionDbContext.Database.EnsureCreated();
-            carCareCompanionDbContext.Database.EnsureDeleted();
+            registerRequestModel = new RegisterRequestModel
+            {
+                Email = "test@test.com",
+                FirstName = "Test",
+                LastName = "Test",
+                Password = "123456a",
+                ConfirmPassword = "123456a"
+            };
         }
 
         /// <summary>
@@ -82,17 +82,10 @@ public class Tests
             identityService = new IdentityService(userManager, roleManager, configuration);
 
             //Act
-            var result = await identityService.RegisterAsync(new RegisterRequestModel
-            {
-                Email = "test@test.com",
-                FirstName = "Test",
-                LastName = "Test",
-                Password = "123456a",
-                ConfirmPassword = "123456a"
-            });
+            var result = await identityService.RegisterAsync(registerRequestModel);
 
             //Assert
-            Assert.That(result.Email, Is.EqualTo("test@test.com"));
+            Assert.That(result.Email, Is.EqualTo(registerRequestModel.Email));
             Assert.That(result.Id, Is.Not.Null);
             Assert.That(result.Role, Is.Not.Null.Or.Empty);
             Assert.That(result.Role, Is.EqualTo("User"));
@@ -100,7 +93,7 @@ public class Tests
         }
 
         /// <summary>
-        /// The test should register an user successfully with correct input data
+        /// The test should throw an exception on unsuccessful registration 
         /// </summary>
         [Test]
         public async Task UserRegistrationShouldThrowExceptionOnNotSuccessfullRegister()
@@ -143,18 +136,10 @@ public class Tests
             identityService = new IdentityService(userManager, roleManager, configuration);
 
             //Act && Assert
-            Task Act() => identityService.RegisterAsync(new RegisterRequestModel
-            {
-                Email = "test@test.com",
-                FirstName = "Test",
-                LastName = "Test",
-                Password = "123456a",
-                ConfirmPassword = "123456a"
-            });
+            Task Act() => identityService.RegisterAsync(registerRequestModel);
 
             Assert.That(Act, Throws.Exception);
 
-           
         }
 
 
