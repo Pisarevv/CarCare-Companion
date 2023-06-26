@@ -3,12 +3,9 @@ namespace CarCare_Companion.Tests.Services;
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Identity;
 using CarCare_Companion.Core.Services;
-using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -36,6 +33,8 @@ public class Tests
                 Password = "123456a",
                 ConfirmPassword = "123456a"
             };
+
+            configuration = GetTestConfiguration();
         }
 
         /// <summary>
@@ -45,16 +44,7 @@ public class Tests
         public async Task UserRegistrationWithCorrectData()
         {
             //Arange
-            var userManagerMock = new Mock<UserManager<ApplicationUser>>(
-                new Mock<IUserStore<ApplicationUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<IPasswordHasher<ApplicationUser>>().Object,
-                new IUserValidator<ApplicationUser>[0],
-                new IPasswordValidator<ApplicationUser>[0],
-                new Mock<ILookupNormalizer>().Object,
-                new Mock<IdentityErrorDescriber>().Object,
-                new Mock<IServiceProvider>().Object,
-                new Mock<ILogger<UserManager<ApplicationUser>>>().Object);
+            var userManagerMock = GenerateUserManagerMock();
 
             IList<string> emptyList = new List<string>();
 
@@ -66,18 +56,11 @@ public class Tests
             .Setup(userManager => userManager.GetRolesAsync(It.IsAny<ApplicationUser>()))
             .ReturnsAsync(emptyList);
 
-            userManager = userManagerMock.Object;   
+            userManager = userManagerMock.Object;
 
-            var roleManagerMock = new Mock<RoleManager<ApplicationRole>>(
-                 new Mock<IRoleStore<ApplicationRole>>().Object,
-                 new IRoleValidator<ApplicationRole>[0],
-                 new Mock<ILookupNormalizer>().Object,
-                 new Mock<IdentityErrorDescriber>().Object,
-                 new Mock<ILogger<RoleManager<ApplicationRole>>>().Object);
+            var roleManagerMock = GenerateRoleManagerMock();
 
             roleManager = roleManagerMock.Object;
-
-            var configuration = GetTestConfiguration();
 
             identityService = new IdentityService(userManager, roleManager, configuration);
 
@@ -99,16 +82,7 @@ public class Tests
         public async Task UserRegistrationShouldThrowExceptionOnNotSuccessfullRegister()
         {
             //Arange
-            var userManagerMock = new Mock<UserManager<ApplicationUser>>(
-                new Mock<IUserStore<ApplicationUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<IPasswordHasher<ApplicationUser>>().Object,
-                new IUserValidator<ApplicationUser>[0],
-                new IPasswordValidator<ApplicationUser>[0],
-                new Mock<ILookupNormalizer>().Object,
-                new Mock<IdentityErrorDescriber>().Object,
-                new Mock<IServiceProvider>().Object,
-                new Mock<ILogger<UserManager<ApplicationUser>>>().Object);
+            var userManagerMock = GenerateUserManagerMock();
 
             IList<string> emptyList = new List<string>();
 
@@ -122,28 +96,42 @@ public class Tests
 
             userManager = userManagerMock.Object;
 
-            var roleManagerMock = new Mock<RoleManager<ApplicationRole>>(
-                 new Mock<IRoleStore<ApplicationRole>>().Object,
-                 new IRoleValidator<ApplicationRole>[0],
-                 new Mock<ILookupNormalizer>().Object,
-                 new Mock<IdentityErrorDescriber>().Object,
-                 new Mock<ILogger<RoleManager<ApplicationRole>>>().Object);
+            var roleManagerMock = GenerateRoleManagerMock();
 
             roleManager = roleManagerMock.Object;
-
-            var configuration = GetTestConfiguration();
 
             identityService = new IdentityService(userManager, roleManager, configuration);
 
             //Act && Assert
             Task Act() => identityService.RegisterAsync(registerRequestModel);
-
             Assert.That(Act, Throws.Exception);
 
         }
 
 
+        private Mock<UserManager<ApplicationUser>> GenerateUserManagerMock()
+        {
+            return new Mock<UserManager<ApplicationUser>>(
+                new Mock<IUserStore<ApplicationUser>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<IPasswordHasher<ApplicationUser>>().Object,
+                new IUserValidator<ApplicationUser>[0],
+                new IPasswordValidator<ApplicationUser>[0],
+                new Mock<ILookupNormalizer>().Object,
+                new Mock<IdentityErrorDescriber>().Object,
+                new Mock<IServiceProvider>().Object,
+                new Mock<ILogger<UserManager<ApplicationUser>>>().Object);
+        }
 
+        private Mock<RoleManager<ApplicationRole>> GenerateRoleManagerMock()
+        {
+           return new Mock<RoleManager<ApplicationRole>>(
+                 new Mock<IRoleStore<ApplicationRole>>().Object,
+                 new IRoleValidator<ApplicationRole>[0],
+                 new Mock<ILookupNormalizer>().Object,
+                 new Mock<IdentityErrorDescriber>().Object,
+                 new Mock<ILogger<RoleManager<ApplicationRole>>>().Object);
+        }
 
         private IConfiguration GetTestConfiguration()
         {
