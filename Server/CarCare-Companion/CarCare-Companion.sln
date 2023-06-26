@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarCare-Companion.Api", "Ca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarCare-Companion.Common", "CarCare-Companion.Common\CarCare-Companion.Common.csproj", "{458F121D-51CF-42F3-87F1-4F46232A1524}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarCare-Companion.Tests", "CarCare-Companion.Tests\CarCare-Companion.Tests.csproj", "{B9917D2F-9DB4-4896-8A6E-525C7966D4E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{458F121D-51CF-42F3-87F1-4F46232A1524}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{458F121D-51CF-42F3-87F1-4F46232A1524}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{458F121D-51CF-42F3-87F1-4F46232A1524}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9917D2F-9DB4-4896-8A6E-525C7966D4E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9917D2F-9DB4-4896-8A6E-525C7966D4E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9917D2F-9DB4-4896-8A6E-525C7966D4E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9917D2F-9DB4-4896-8A6E-525C7966D4E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
