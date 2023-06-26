@@ -72,6 +72,11 @@ public class IdentityService : IIdentityService
         }
         var userRoles = await userManager.GetRolesAsync(user);
 
+        if (userRoles.Count == 0)
+        {
+            userRoles.Add("User");
+        }
+
         var authClaims = GenerateUserAuthClaims(user,userRoles);
 
         var token = GenerateToken(authClaims);
@@ -80,7 +85,8 @@ public class IdentityService : IIdentityService
         {
             Token = new JwtSecurityTokenHandler().WriteToken(token),
             Email = user.Email,
-            Id = user.Id.ToString()
+            Id = user.Id.ToString(),
+            Role = userRoles.First().ToString()
         };
        
     }
@@ -121,10 +127,13 @@ public class IdentityService : IIdentityService
         {
             Token = new JwtSecurityTokenHandler().WriteToken(token),
             Email = user.Email,
-            Id = user.Id.ToString()
+            Id = user.Id.ToString(),
+            Role = "User"
         };
 
     }
+
+    
 
     /// <summary>
     /// Generates the authentication claims of the user for the JWT token

@@ -8,4 +8,6 @@ public class AuthDataModel
 
     public string Id { init; get; } = null!;
 
+    public string Role { init; get; } = null!;
+
 }

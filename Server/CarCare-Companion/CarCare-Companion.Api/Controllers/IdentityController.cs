@@ -35,6 +35,7 @@ public class IdentityController : BaseController
     /// <returns>Logs in the user and returns him with his email,id and JWT token</returns>
     [AllowAnonymous]
     [HttpPost("/Register")]
+    [Produces("application/json")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestModel registerData)
     {
         try
@@ -75,6 +76,7 @@ public class IdentityController : BaseController
     /// <returns>The logged in user with his email,id and JWT token</returns>
     [AllowAnonymous]
     [HttpPost("/Login")]
+    [Produces("application/json")]
     public async Task<IActionResult> Login([FromBody] LoginRequestModel loginData)
     {
         try
