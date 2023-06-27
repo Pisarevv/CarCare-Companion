@@ -2,7 +2,7 @@
 
 public class AuthDataModel
 {
-    public string Token { init; get; } = null!;
+    public string AccessToken { init; get; } = null!;
 
     public string Email { init; get; } = null!;
 

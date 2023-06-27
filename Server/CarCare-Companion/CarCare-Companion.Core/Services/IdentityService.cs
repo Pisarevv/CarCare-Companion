@@ -83,7 +83,7 @@ public class IdentityService : IIdentityService
 
         return new AuthDataModel
         {
-            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
             Email = user.Email,
             Id = user.Id.ToString(),
             Role = userRoles.First().ToString()
@@ -126,7 +126,7 @@ public class IdentityService : IIdentityService
 
         return new AuthDataModel
         {
-            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
             Email = user.Email,
             Id = user.Id.ToString(),
             Role = "User"

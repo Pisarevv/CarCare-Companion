@@ -80,7 +80,7 @@ public class Tests
             Assert.That(result.Id, Is.Not.Null);
             Assert.That(result.Role, Is.Not.Null.Or.Empty);
             Assert.That(result.Role, Is.EqualTo("User"));
-            Assert.That(result.Token, Is.Not.Null.Or.Empty);
+            Assert.That(result.AccessToken, Is.Not.Null.Or.Empty);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ public class Tests
             Assert.That(result.Id, Is.Not.Null);
             Assert.That(result.Role, Is.Not.Null.Or.Empty);
             Assert.That(result.Role, Is.EqualTo("User"));
-            Assert.That(result.Token, Is.Not.Null.Or.Empty);
+            Assert.That(result.AccessToken, Is.Not.Null.Or.Empty);
 
         }
 
@@ -281,7 +281,7 @@ public class Tests
             Assert.That(result.Id, Is.Not.Null);
             Assert.That(result.Role, Is.Not.Null.Or.Empty);
             Assert.That(result.Role, Is.EqualTo("Administrator"));
-            Assert.That(result.Token, Is.Not.Null.Or.Empty);
+            Assert.That(result.AccessToken, Is.Not.Null.Or.Empty);
 
         }
 

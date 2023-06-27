@@ -89,13 +89,12 @@ namespace CarCare_Companion.Api
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
-                    policy =>
-                    {
-                        policy.AllowAnyHeader();
-                        policy.AllowAnyMethod();
-                        policy.AllowAnyOrigin();
-                        
-                    });
+                                   policy =>
+                                  {
+                                      policy.AllowAnyOrigin()
+                                      .AllowAnyMethod()
+                                      .AllowAnyHeader();
+                                  });
             });
 
 
@@ -125,12 +124,14 @@ namespace CarCare_Companion.Api
 
             app.UseRouting();
 
+            app.UseCors();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseSerilogRequestLogging();
 
-            app.UseCors();
+          
 
             app.UseAuthentication(); 
             app.UseAuthorization();
