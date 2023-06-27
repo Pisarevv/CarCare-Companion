@@ -26,11 +26,8 @@
 
 import { NavLink } from 'react-router-dom'
 
-// import { useCartContext } from "../../contexts/CartContext";
 import { useAuthContext } from '../../contexts/AuthContext';
 
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// import { faCartShopping } from '@fortawesome/free-solid-svg-icons'
 
 import './Navigation.css'
 
@@ -45,7 +42,7 @@ const Navigation = () => {
                 <ul className="nav_links">
                     <li><NavLink to="/">Home</NavLink></li>
                     <li><NavLink to="/products/page/1">Forum</NavLink></li>
-                    <li><NavLink to="/recycle/page/1">My details</NavLink></li>
+                    <li><NavLink to="/recycle/page/1">My vehicles</NavLink></li>
                 </ul>
             </nav>
             <ul className="nav_links">
@@ -53,16 +50,11 @@ const Navigation = () => {
                         isAuthenticated
                         ?
                         <><li><NavLink to="/logout">Logout</NavLink></li>
-                           <li><NavLink to="/myListings">My Listings</NavLink></li>
-                            <span className="fa-layers fa-fw fa-2x" >
-                                <NavLink className="fas fa-envelope fa-sm" to="/cart"><FontAwesomeIcon icon={faCartShopping} /></NavLink>
-                                {cart.length > 0 && <span className="fa-layers-counter" >{cart.length}</span>}
-                            </span>
-                            
+                           <li><NavLink to="/myListings">Profile</NavLink></li>                         
                         </>
                         :
                         <><li><NavLink to="/register">Register</NavLink></li>
-                            <li><NavLink to="/login">Login</NavLink></li></>
+                          <li><NavLink to="/login">Login</NavLink></li></>
                 }
 
             </ul>
