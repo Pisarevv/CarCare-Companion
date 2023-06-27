@@ -10,7 +10,7 @@ import { Store } from 'react-notifications-component';
 const errors = {
     "Invalid access token" : {
         title : "Invalid access token",
-        message : "Your session has expired Please log in again.",
+        message : "Your session has expired. Please log in again.",
         type : "warning"
     },
     "Login or password don't match" : {
