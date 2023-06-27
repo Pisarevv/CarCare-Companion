@@ -166,7 +166,7 @@ public class IdentityService : IIdentityService
     /// <returns>A JWT token containing an issuer, audience, expiration date and user claims</returns>
     private JwtSecurityToken GenerateToken(List<Claim> authClaims)
     {
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]));
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]!));
 
         var token = new JwtSecurityToken(
             issuer: configuration["JWT:Issuer"],
