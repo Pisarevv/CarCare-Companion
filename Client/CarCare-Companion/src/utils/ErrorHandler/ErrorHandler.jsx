@@ -46,7 +46,7 @@ export const ErrorHandler = (inputError) => {
             message: message,
             type: type,
             insert: "top",
-            container: "top-right",
+            container: "top-center",
             animationIn: ["animate__animated", "animate__fadeIn"],
             animationOut: ["animate__animated", "animate__fadeOut"],
             dismiss: {
