@@ -15,11 +15,13 @@ public class Tests
     [TestFixture]
     public class IdentityServiceTests
     {
-        private IIdentityService identityService;
+        private IIdentityService identityService = null!;
         private IConfiguration configuration;
-        private UserManager <ApplicationUser> userManager;
-        private RoleManager<ApplicationRole> roleManager;
+        private UserManager<ApplicationUser> userManager = null!;
+        private RoleManager<ApplicationRole> roleManager = null!;
+
         RegisterRequestModel registerRequestModel;
+        LoginRequestModel loginRequestModel;
 
 
         [SetUp]
@@ -34,11 +36,17 @@ public class Tests
                 ConfirmPassword = "123456a"
             };
 
+            loginRequestModel = new LoginRequestModel
+            {
+                Email = "test@test.com",
+                Password = "123456a"
+            };
+
             configuration = GetTestConfiguration();
         }
 
         /// <summary>
-        /// The test should register an user successfully with correct input data
+        /// Tests the registration functionality with correct data
         /// </summary>
         [Test]
         public async Task UserRegistrationWithCorrectData()
@@ -76,10 +84,10 @@ public class Tests
         }
 
         /// <summary>
-        /// The test should throw an exception on unsuccessful registration 
+        /// Test the registration functionality with not successful registration process
         /// </summary>
         [Test]
-        public async Task UserRegistrationShouldThrowExceptionOnNotSuccessfullRegister()
+        public void UserRegistrationShouldThrowExceptionOnUnsuccessfulRegister()
         {
             //Arange
             var userManagerMock = GenerateUserManagerMock();
@@ -103,10 +111,185 @@ public class Tests
             identityService = new IdentityService(userManager, roleManager, configuration);
 
             //Act && Assert
-            Task Act() => identityService.RegisterAsync(registerRequestModel);
+            Task Act() =>  identityService.RegisterAsync(registerRequestModel);
             Assert.That(Act, Throws.Exception);
 
         }
+
+        /// <summary>
+        /// Test the login functionality with correct input data
+        /// </summary>
+        [Test]
+        public async Task UserLoginShouldReturnCorrectData()
+        {
+            //Arange
+            var userManagerMock = GenerateUserManagerMock();
+
+            IList<string> emptyList = new List<string>();
+
+            var user = new ApplicationUser { Id = Guid.NewGuid(), UserName = "exampleUser", Email = loginRequestModel.Email };
+
+            userManagerMock
+            .Setup(userManager => userManager.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+
+            userManagerMock
+            .Setup(userManager => userManager.CheckPasswordAsync(It.IsAny<ApplicationUser>(),It.IsAny<string>()))
+            .ReturnsAsync(true);
+
+            userManagerMock
+            .Setup(userManager => userManager.GetRolesAsync(It.IsAny<ApplicationUser>()))
+            .ReturnsAsync(emptyList);
+
+            userManager = userManagerMock.Object;
+
+            var roleManagerMock = GenerateRoleManagerMock();
+
+            roleManager = roleManagerMock.Object;
+
+            identityService = new IdentityService(userManager, roleManager, configuration);
+
+            //Act
+            var result = await identityService.LoginAsync(loginRequestModel);
+
+            //Assert
+            Assert.That(result.Email, Is.EqualTo(loginRequestModel.Email));
+            Assert.That(result.Id, Is.Not.Null);
+            Assert.That(result.Role, Is.Not.Null.Or.Empty);
+            Assert.That(result.Role, Is.EqualTo("User"));
+            Assert.That(result.Token, Is.Not.Null.Or.Empty);
+
+        }
+
+        /// <summary>
+        /// Tests if an exception is thrown when the user doesn't exist
+        /// </summary>
+        [Test]
+        public void UserLoginShouldThrowErrorIfUserIsNotFound()
+        {
+            //Arange
+            var userManagerMock = GenerateUserManagerMock();
+
+            IList<string> emptyList = new List<string>();
+
+#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+            userManagerMock
+            .Setup(userManager => userManager.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync((ApplicationUser?)null);
+#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
+
+            userManagerMock
+            .Setup(userManager => userManager.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
+
+            userManagerMock
+            .Setup(userManager => userManager.GetRolesAsync(It.IsAny<ApplicationUser>()))
+            .ReturnsAsync(emptyList);
+
+            userManager = userManagerMock.Object;
+
+            var roleManagerMock = GenerateRoleManagerMock();
+
+            roleManager = roleManagerMock.Object;
+
+            identityService = new IdentityService(userManager, roleManager, configuration);
+
+            //Act && Assert
+            Task Act() => identityService.LoginAsync(loginRequestModel);
+            Assert.That(Act, Throws.ArgumentNullException);
+
+        }
+
+        /// <summary>
+        /// Tests if an exception is thrown when the user password is invalid
+        /// </summary>
+        [Test]
+        public async Task UserLoginShouldThrowExceptionOnInvalidPassword()
+        {
+            //Arange
+            var userManagerMock = GenerateUserManagerMock();
+
+            IList<string> emptyList = new List<string>();
+
+            var user = new ApplicationUser { Id = Guid.NewGuid(), UserName = "exampleUser", Email = loginRequestModel.Email };
+
+            userManagerMock
+            .Setup(userManager => userManager.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+
+            userManagerMock
+            .Setup(userManager => userManager.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
+            .ReturnsAsync(false);
+
+            userManagerMock
+            .Setup(userManager => userManager.GetRolesAsync(It.IsAny<ApplicationUser>()))
+            .ReturnsAsync(emptyList);
+
+            userManager = userManagerMock.Object;
+
+            var roleManagerMock = GenerateRoleManagerMock();
+
+            roleManager = roleManagerMock.Object;
+
+            identityService = new IdentityService(userManager, roleManager, configuration);
+
+            //Act && Assert
+            Task Act() => identityService.LoginAsync(loginRequestModel);
+            Assert.That(Act, Throws.ArgumentException);
+
+        }
+
+        /// <summary>
+        /// Test the login functionality with correct input data
+        /// </summary>
+        [Test]
+        public async Task UserLoginShouldReturnCorrectDataWithAdministratorClaim()
+        {
+            //Arange
+            var userManagerMock = GenerateUserManagerMock();
+
+            IList<string> claims = new List<string>();
+            claims.Add("Administrator");
+
+            var user = new ApplicationUser { Id = Guid.NewGuid(), UserName = "exampleUser", Email = loginRequestModel.Email };
+
+            userManagerMock
+            .Setup(userManager => userManager.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+
+            userManagerMock
+            .Setup(userManager => userManager.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
+
+            userManagerMock
+            .Setup(userManager => userManager.GetRolesAsync(It.IsAny<ApplicationUser>()))
+            .ReturnsAsync(claims);
+
+            userManager = userManagerMock.Object;
+
+            var roleManagerMock = GenerateRoleManagerMock();
+
+            roleManager = roleManagerMock.Object;
+
+            identityService = new IdentityService(userManager, roleManager, configuration);
+
+            //Act
+            var result = await identityService.LoginAsync(loginRequestModel);
+
+            //Assert
+            Assert.That(result.Email, Is.EqualTo(loginRequestModel.Email));
+            Assert.That(result.Id, Is.Not.Null);
+            Assert.That(result.Role, Is.Not.Null.Or.Empty);
+            Assert.That(result.Role, Is.EqualTo("Administrator"));
+            Assert.That(result.Token, Is.Not.Null.Or.Empty);
+
+        }
+
+
+
+
+
+
 
 
         private Mock<UserManager<ApplicationUser>> GenerateUserManagerMock()
