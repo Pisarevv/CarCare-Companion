@@ -8,10 +8,10 @@
 import * as api from "./api"
 
 export const login = (email,password) => 
-     api.post("/users/login", {email,password}) 
+     api.post("/Login", {email,password}) 
 
-export const register =(email,password) => 
-     api.post("/users/register", {email,password})
+export const register = (email,firstName,lastName,password,confirmPassword) => 
+     api.post("/Register", {email,firstName,lastName,password,confirmPassword})
 
 export const logout = () => 
-     api.post("/users/logout");
+     api.post("/Logout");

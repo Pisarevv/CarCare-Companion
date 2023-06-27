@@ -7,6 +7,8 @@ import { AuthContext } from '../../contexts/AuthContext';
 
 import { register } from '../../services/authService';  
 
+import { ErrorHandler } from '../../utils/ErrorHandler/ErrorHandler';
+
 const ValidationRegexes = {
     //The current regex validates that the input email address 
     //begins with a string, contains a "@" symbol and "." after the domain
@@ -123,7 +125,8 @@ const Register = () => {
             let isRePasswordValid = validateRePasswordInput(rePassword);
 
             if(isEmailValid && isPasswordValid && isRePasswordValid && isFirstNameValid && isLastNameValid){
-                await register(email,password);
+                let returnedUserData = await register(email,firstName,lastName,password,rePassword);
+                userLogin(returnedUserData);
                 navigate('/');
             }
             else{

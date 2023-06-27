@@ -16,7 +16,7 @@ async function request(method, url, data) {
 
 
     if (auth.accessToken) {
-        options.headers['X-Authorization'] = auth.accessToken;
+        options.headers['Bearer'] = auth.accessToken;
     }
 
     try {
@@ -43,19 +43,19 @@ async function request(method, url, data) {
 
 
 function post(url, data) {
-    return request("post", url, data)
+    return request("POST", url, data)
 }
 
 function get(url) {
-    return request("get", url);
+    return request("GET", url);
 }
 
 function put(url, data) {
-    return request("put", url, data)
+    return request("PUT", url, data)
 }
 
 function patch(url, data) {
-    return request("patch", url, data)
+    return request("PATCH", url, data)
 }
 
 function del(url) {
