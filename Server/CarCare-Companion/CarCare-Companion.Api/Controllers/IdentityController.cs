@@ -42,7 +42,7 @@ public class IdentityController : BaseController
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(422,, new
+                return StatusCode(422, new
                 {
                     message = MissingOrInvalidFields,
                 });

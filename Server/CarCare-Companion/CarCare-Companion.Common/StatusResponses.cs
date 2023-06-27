@@ -5,9 +5,9 @@ public static class StatusResponses
     public const string InvalidPassword = "Invalid password";
     public const string InvalidUser = "User does not exist";
     public const string InvalidData = "Invalid data";
-    public const string InvalidCredentials = "Invalid credentials";
-    public const string MissingOrInvalidFields = "Missing or invalid fields";
-    public const string UserEmailAlreadyExists = "User with the same email address already exists";
+    public const string InvalidCredentials = "Login or password don't match";
+    public const string MissingOrInvalidFields = "Invalid input fields";
+    public const string UserEmailAlreadyExists = "A user with the same email already exists";
 
 
 }
