@@ -9,6 +9,7 @@ using CarCare_Companion.Core.Models.Identity;
 using CarCare_Companion.Core.Services;
 
 using static CarCare_Companion.Common.StatusResponses;
+using CarCare_Companion.Core.Models.Status;
 
 
 
@@ -44,7 +45,7 @@ public class IdentityController : BaseController
             {
                 return StatusCode(422, new
                 {
-                    message = MissingOrInvalidFields,
+                    title = MissingOrInvalidFields,
                 });
             }
 
@@ -52,10 +53,7 @@ public class IdentityController : BaseController
 
             if (userExist)
             {
-                return StatusCode(409, new
-                {
-                    message = UserEmailAlreadyExists,
-                });
+                return StatusCode(409, new StatusErrorInformation(UserEmailAlreadyExists));
 
             }
 
@@ -66,18 +64,12 @@ public class IdentityController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new
-            {
-                message = GenericError,
-            });
+            return StatusCode(400, new StatusErrorInformation(GenericError));
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new
-            {
-                message = InvalidData,
-            });
+            return StatusCode(403, new StatusErrorInformation(InvalidData));
         }
     }
 
@@ -95,10 +87,7 @@ public class IdentityController : BaseController
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, new
-                {
-                    message = MissingOrInvalidFields,
-                });
+                return StatusCode(400, new StatusErrorInformation(MissingOrInvalidFields));
             }
 
             AuthDataModel userData = await identityService.LoginAsync(loginData);
@@ -110,34 +99,22 @@ public class IdentityController : BaseController
         catch(ArgumentNullException ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(401, new
-            {
-                message = InvalidCredentials,
-            });
+            return StatusCode(401, new StatusErrorInformation(InvalidCredentials));
         }
         catch (ArgumentException ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(401, new
-            {
-                message = InvalidCredentials,
-            });
+            return StatusCode(401, new StatusErrorInformation(InvalidCredentials));
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new
-            {
-                message = GenericError,
-            });
+            return StatusCode(400, new StatusErrorInformation(GenericError));
         }
         catch (Exception ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new
-            {
-                message = GenericError,
-            });
+            return StatusCode(400, new StatusErrorInformation(GenericError));
         }
     }
 
