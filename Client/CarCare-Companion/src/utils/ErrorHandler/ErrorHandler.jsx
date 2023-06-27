@@ -18,6 +18,11 @@ const errors = {
         message : "Login or password don't match",
         type : "warning"
     },
+    "One or more validation errors occurred." : {
+        title : "Invalid input fields",
+        message : "Please make sure all inputs are filled with valid information before submiting",
+        type : "warning"
+    },
     "Invalid input fields" : {
         title : "Invalid input fields",
         message : "Please make sure all inputs are valid before submiting",

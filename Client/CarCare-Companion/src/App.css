@@ -11,3 +11,7 @@
   scroll-behavior: smooth !important;
   /* background-color: #FEFEE2; */
 }
+
+a{
+  text-decoration: none;
+}
