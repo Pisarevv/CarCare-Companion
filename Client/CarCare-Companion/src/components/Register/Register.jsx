@@ -30,6 +30,12 @@ const ValidationErrors = {
 
 const Register = () => {
 
+
+    const {userLogin} = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    //States
+
     const [email,setEmail] = useState("");
     const [emailError, setEmailError] = useState("");
 
@@ -45,10 +51,8 @@ const Register = () => {
     const [rePassword,setRepassword] = useState("");
     const [rePasswordError, setRePasswordError] = useState("");
 
-    const {userLogin} = useContext(AuthContext);
-
-    const navigate = useNavigate();
-
+ 
+    //Event handlers
     const onEmailChange = (e) => {
         setEmail(email => e.target.value);
     }
