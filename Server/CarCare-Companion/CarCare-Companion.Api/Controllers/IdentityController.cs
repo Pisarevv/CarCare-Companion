@@ -42,14 +42,20 @@ public class IdentityController : BaseController
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(422,MissingOrInvalidFields);
+                return StatusCode(422,, new
+                {
+                    message = MissingOrInvalidFields,
+                });
             }
 
             bool userExist = await identityService.DoesUserExistAsync(registerData.Email);
 
             if (userExist)
             {
-                return StatusCode(409,UserEmailAlreadyExists);
+                return StatusCode(409, new
+                {
+                    message = UserEmailAlreadyExists,
+                });
 
             }
 
@@ -60,12 +66,18 @@ public class IdentityController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, GenericError);
+            return StatusCode(400, new
+            {
+                message = GenericError,
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, InvalidData);
+            return StatusCode(403, new
+            {
+                message = InvalidData,
+            });
         }
     }
 
@@ -83,7 +95,10 @@ public class IdentityController : BaseController
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(400,MissingOrInvalidFields);
+                return StatusCode(400, new
+                {
+                    message = MissingOrInvalidFields,
+                });
             }
 
             AuthDataModel userData = await identityService.LoginAsync(loginData);
@@ -95,22 +110,34 @@ public class IdentityController : BaseController
         catch(ArgumentNullException ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(401, InvalidCredentials);
+            return StatusCode(401, new
+            {
+                message = InvalidCredentials,
+            });
         }
         catch (ArgumentException ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(401, InvalidCredentials);
+            return StatusCode(401, new
+            {
+                message = InvalidCredentials,
+            });
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, GenericError);
+            return StatusCode(400, new
+            {
+                message = GenericError,
+            });
         }
         catch (Exception ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, GenericError);
+            return StatusCode(400, new
+            {
+                message = GenericError,
+            });
         }
     }
 
