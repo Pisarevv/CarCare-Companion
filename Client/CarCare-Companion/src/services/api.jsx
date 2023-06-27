@@ -29,7 +29,7 @@ async function request(method, url, data) {
         let result = await response.json();
 
         if (response.ok !== true) {
-            throw (result.message);
+            throw (result.title);
         }
 
         return result;
