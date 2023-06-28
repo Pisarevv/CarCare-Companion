@@ -16,7 +16,7 @@ namespace CarCare_Companion.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
 
             var builder = WebApplication.CreateBuilder(args);
@@ -33,7 +33,7 @@ namespace CarCare_Companion.Api
                 var app = builder.Build();
                 Log.Information("Application starting up.");
                 Configure(app);
-                app.Run();
+                await app.RunAsync();
             }
             catch (Exception ex)
             {
