@@ -26,7 +26,8 @@ section {
     opacity: 60%;
     padding: 60px;
     border-radius: 50px;
-    transform: translate3d(0, 100px, 0);
+    opacity: 0;
+    transform: translate3d(0, 500px, 0);
     animation: arrive 500ms ease-in-out 0.7s forwards;
 }
 
@@ -44,7 +45,8 @@ section {
     overflow: hidden;
     -webkit-transform: translateZ(0);
     box-shadow: 0 19px 51px 0 rgba(0,0,0,0.16), 0 14px 19px 0 rgba(0,0,0,0.07);
-    transform: translate3d(0, 300px, 0);
+    opacity: 0;
+    transform: translate3d(0, 500px, 0);
     animation: arrive 500ms ease-in-out 0.9s forwards;
 }
 
@@ -66,6 +68,7 @@ section {
     align-items: baseline;
     justify-content: space-evenly;
     gap: 0.5em;
+    opacity: 0;
     transform: translate3d(0, 500px, 0);
     animation: arrive 500ms ease-in-out 1.2s forwards;
 
