@@ -1,6 +1,7 @@
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Services;
 using CarCare_Companion.Infrastructure.Data;
+using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using CarCare_Companion.Infrastructure.Data.Seeding;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -82,7 +83,9 @@ namespace CarCare_Companion.Api
                     };
                 });
 
+            services.AddScoped<IRepository, Repository>();
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IAdService, AdService>();
 
             services.AddMvc();
 

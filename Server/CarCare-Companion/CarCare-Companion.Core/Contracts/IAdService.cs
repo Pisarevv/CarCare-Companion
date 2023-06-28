@@ -1,0 +1,8 @@
+﻿namespace CarCare_Companion.Core.Contracts;
+
+using CarCare_Companion.Core.Models.Ads;
+
+public interface IAdService
+{
+    public Task<ICollection<CarouselAdRequestModel>> GetAllAsync();
+}

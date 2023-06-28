@@ -7,7 +7,7 @@ using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
 
 using static Seeding.EntityGenerator;
 
-public class FuelTypeEntityConfiguration : IEntityTypeConfiguration<FuelType>
+internal class FuelTypeEntityConfiguration : IEntityTypeConfiguration<FuelType>
 {
     public void Configure(EntityTypeBuilder<FuelType> builder)
     {

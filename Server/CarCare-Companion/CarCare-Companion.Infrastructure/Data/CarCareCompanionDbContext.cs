@@ -1,12 +1,15 @@
 ﻿namespace CarCare_Companion.Infrastructure.Data
 {
+    using System.Reflection;
+
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;
+
+    using CarCare_Companion.Infrastructure.Data.Models.Ads;
     using CarCare_Companion.Infrastructure.Data.Models.Identity;
     using CarCare_Companion.Infrastructure.Data.Models.Records;
     using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
-    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore;
-    using System.Reflection;  
-
+ 
 
     public class CarCareCompanionDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
@@ -20,6 +23,7 @@
         public DbSet<FuelType> FuelTypes { get; set; } = null!;
         public DbSet<ServiceRecord> ServiceRecords { get; set; } = null!;
         public DbSet<TripRecord> TripRecords { get; set; } = null!;
+        public DbSet<CarouselAdModel> CarouselAdModels { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

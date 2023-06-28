@@ -16,6 +16,7 @@ public interface IRepository : IDisposable
     /// <returns>Queryable expression tree</returns>
     IQueryable<T> All<T>(Expression<Func<T, bool>> search) where T : class;
 
+
     /// <summary>
     /// The result collection won't be tracked by the context
     /// </summary>

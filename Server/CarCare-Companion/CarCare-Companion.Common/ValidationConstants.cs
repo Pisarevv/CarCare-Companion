@@ -49,5 +49,15 @@
             public const double MinMileage = 0;
             public const double MaxMileage = 999999999;
         }
+
+        public static class CarouselAdModel
+        {
+            public const int MinNameLength = 2;
+            public const int MaxNameLength = 50;
+            public const int MinDescriptionLength = 10;
+            public const int MaxDescriptionLength = 500;
+            public const int MinStarsRating = 0;
+            public const int MaxStarsRating = 5;
+        }
     }
 }

@@ -4,6 +4,7 @@ using CarCare_Companion.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarCare_Companion.Infrastructure.Migrations
 {
     [DbContext(typeof(CarCareCompanionDbContext))]
-    partial class CarCareCompanionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230628083547_AddCarouselAdModels")]
+    partial class AddCarouselAdModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,6 +45,11 @@ namespace CarCare_Companion.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasComment("Deleted status");
@@ -53,11 +61,6 @@ namespace CarCare_Companion.Infrastructure.Migrations
                     b.Property<int>("StarsRating")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserFirstName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.HasKey("Id");
 
                     b.ToTable("CarouselAdModels");
@@ -65,48 +68,48 @@ namespace CarCare_Companion.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("692f6a72-5859-40b1-a68b-433a9e07420d"),
+                            Id = new Guid("4a874ecf-305e-4189-9e3c-4ed73213e30c"),
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "The car maintenance and service management website is user-friendly, offers a wide service network, effective communication, and robust record-keeping capabilities for a seamless experience.",
+                            FirstName = "David",
                             IsDeleted = false,
-                            StarsRating = 5,
-                            UserFirstName = "David"
+                            StarsRating = 5
                         },
                         new
                         {
-                            Id = new Guid("1a56734e-17b2-43e7-82a1-34af1b9a6aa3"),
+                            Id = new Guid("97175dbe-5652-49a5-aa63-4734a6530ec3"),
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "With its intuitive interface, extensive service network, detailed record-keeping the car maintenance and service management website ensures a top-notch experience for all users.",
+                            FirstName = "Peter",
                             IsDeleted = false,
-                            StarsRating = 5,
-                            UserFirstName = "Peter"
+                            StarsRating = 5
                         },
                         new
                         {
-                            Id = new Guid("dff1ec7a-4398-4b24-a499-6f1dabe23622"),
+                            Id = new Guid("6c8b274a-4a9f-49b0-b6a2-4ba672aa18dd"),
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Experience exceptional car maintenance and service management with a user-friendly website interface, comprehensive service network, efficient communication, thorough record-keeping, and prompt notifications for a hassle-free experience.",
+                            FirstName = "Michael",
                             IsDeleted = false,
-                            StarsRating = 5,
-                            UserFirstName = "Michael"
+                            StarsRating = 5
                         },
                         new
                         {
-                            Id = new Guid("0a2790c8-9c8d-4587-bc54-4aead2aa4fea"),
+                            Id = new Guid("c62c157f-2e8c-4086-84a3-df07e74ad867"),
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "The forum within the website fosters a vibrant community, enabling car owners to communicate, share valuable information, and seek advice for a collaborative and informative experience.",
+                            FirstName = "Bob",
                             IsDeleted = false,
-                            StarsRating = 5,
-                            UserFirstName = "Bob"
+                            StarsRating = 5
                         },
                         new
                         {
-                            Id = new Guid("c8efd743-e839-4372-b261-ccbf2fad48bb"),
+                            Id = new Guid("27f62e44-700b-4be6-9da4-4b59b4627a23"),
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "The website's interactive forum creates a dynamic space where car enthusiasts can connect, exchange valuable insights, and foster a supportive community for engaging discussions and information sharing.",
+                            FirstName = "Paul",
                             IsDeleted = false,
-                            StarsRating = 5,
-                            UserFirstName = "Paul"
+                            StarsRating = 5
                         });
                 });
 

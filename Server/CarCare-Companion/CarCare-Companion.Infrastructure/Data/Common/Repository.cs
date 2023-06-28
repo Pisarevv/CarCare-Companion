@@ -11,7 +11,7 @@ namespace CarCare_Companion.Infrastructure.Data.Common;
 /// <typeparam name="T">Type of the data table to which 
 /// current reposity is attached</typeparam>
 
-public class Repository
+public class Repository : IRepository
 {
     public Repository(CarCareCompanionDbContext context)
     {
@@ -209,4 +209,5 @@ public class Repository
     {
         this.Context.ChangeTracker.Clear();
     }
+
 }
