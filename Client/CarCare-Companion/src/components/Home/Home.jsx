@@ -1,7 +1,44 @@
 import { NavLink } from "react-router-dom";
+
+import { useContext, useEffect, useState } from "react";
+
+
+import IsLoadingHOC from '../Common/IsLoadingHoc';
+
 import "./Home.css"
 
-const Home = () => {
+import { getAllCarouselAds } from "../../services/adService"; 
+import { AuthContext } from "../../contexts/AuthContext";
+
+
+const Home = (props) => {
+
+    const  [carouselAds,setCarouselAds] = useState([]);
+
+    const {userLogout} = useContext(AuthContext);
+
+    const { setLoading } = props;
+
+    useEffect(() => {
+        (async () => {
+            try {
+                window.scrollTo(0, 0);
+                const result = await getAllCarouselAds();
+                setCarouselAds(carouselAds => result);
+                console.log(result);
+                setLoading(false);
+            }
+            catch (error) {
+                if (error === "Invalid access token") {
+                    ErrorHandler(error);
+                    userLogout();
+                    setLoading(false);
+                    
+                };
+            }
+        }
+        )()
+    }, [])
 
     return (
         <section className="home">
@@ -30,4 +67,4 @@ const Home = () => {
     )
 }
 
-export default Home; 
+export default IsLoadingHOC(Home); 
