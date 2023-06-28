@@ -9,13 +9,14 @@ import "./Home.css"
 
 import { getAllCarouselAds } from "../../services/adService"; 
 import { AuthContext } from "../../contexts/AuthContext";
+import ReviewCard from "./ReviewCard";
 
 
 const Home = (props) => {
 
     const  [carouselAds,setCarouselAds] = useState([]);
 
-    const {userLogout} = useContext(AuthContext);
+    const { userLogout } = useContext(AuthContext);
 
     const { setLoading } = props;
 
@@ -38,7 +39,7 @@ const Home = (props) => {
             }
         }
         )()
-    }, [])
+    },[])
 
     return (
         <section className="home">
@@ -59,6 +60,22 @@ const Home = (props) => {
                     <p>Become a part of our dynamic community of car enthusiasts, mechanics, and DIYers.</p>
                     <p> By joining us, you'll gain access to a wealth of knowledge, valuable tips, and engaging discussions on car repairs and service management.</p>
                     <NavLink to="/register">Sign up.</NavLink>
+                </div>
+
+                
+                <div className="review-container">
+                    <div className="cards">
+                        <div className="cards-inner">
+                             <div className="cards-border"></div>
+                             <div className="cards-row">
+                                {carouselAds.map(x => (
+                                    <div className="card-col" key={x.id}>
+                                     <ReviewCard  reviewInfo = {x}/>
+                                    </div>
+                                ))}
+                             </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
