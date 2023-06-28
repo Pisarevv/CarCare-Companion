@@ -9,9 +9,13 @@
   margin: 0;
   padding: 0;
   scroll-behavior: smooth !important;
-  /* background-color: #FEFEE2; */
 }
 
 a{
   text-decoration: none;
+}
+
+a:visited 
+{ 
+  text-decoration: none; 
 }
