@@ -32,5 +32,8 @@ public class ApplicationUser : IdentityUser<Guid>, IAuditInfo
     [Comment("Last date of user modification")]
     public DateTime? ModifiedOn { get; set ; }
 
+    [Comment("Image key for user profile picture")]
+    public Guid? ProfileImageKey { get; set; }
+
     public ICollection<Vehicle> Vehicles { get; set; }
 }

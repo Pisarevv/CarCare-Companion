@@ -51,6 +51,9 @@ public class Vehicle : BaseDeletableModel<Vehicle>
     [Required]
     public ApplicationUser Owner { get; set; } = null!;
 
+    [Comment("Image key for vehicle picture")]
+    public Guid? VehicleImageKey { get; set; }
+
     [Comment("Vehicle service records")]
     public ICollection<ServiceRecord> ServiceRecords { get; set; }
 
