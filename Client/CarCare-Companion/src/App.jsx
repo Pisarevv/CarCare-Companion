@@ -9,6 +9,7 @@ import Login from './components/Login/Login';
 import Logout from './components/Logout/Logout';
 
 import './App.css'
+import Vehicles from './components/Vehicles/Vehicles';
 
 function App() {
   return(
@@ -21,6 +22,7 @@ function App() {
           <Route path='/register' element={<Register/>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/logout' element={<Logout/>}/>
+          <Route path='/vehicles' element={<Vehicles/>}/>
           </Routes>
         </main> 
       </div>

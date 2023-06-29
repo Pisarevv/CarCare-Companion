@@ -1,0 +1,65 @@
+section {
+    padding: 50px 10%;
+}
+
+.vehicle-container {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+}
+
+.vehicle-container div {
+    /* background-color: rgb(45, 51, 68);
+    opacity: 60%;
+    padding: 60px;
+    border-radius: 50px;
+    opacity: 0;
+    transform: translate3d(0, 500px, 0);
+    animation: arrive 500ms ease-in-out 0.7s forwards; */
+}
+
+.vehicle-container .create-button {
+    grid-area: 1 / 1 / 2 / 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5em;
+    opacity: 0;
+    transform: translate3d(0, 500px, 0);
+    animation: arrive 500ms ease-in-out 0.1s forwards;
+}
+
+.vehicle-container a{
+    transition: all 0.3s ease 0s;
+    background-color: rgb(45, 51, 68);
+    opacity: 60%;
+    padding: 20px;
+    border-radius: 50px;
+}
+
+
+
+.div2 {
+    grid-area: 3 / 1 / 6 / 2;
+}
+
+.div3 {
+    grid-area: 7 / 1 / 10 / 2;
+}
+
+.div4 {
+    grid-area: 2 / 8 / 8 / 9;
+}
+
+.div5 {
+    grid-area: 1 / 3 / 9 / 7;
+}
+
+
+.a:hover {
+    color: #0088a9;
+    background-color: rgb(64, 62, 62);
+}
+
