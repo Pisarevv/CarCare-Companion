@@ -31,7 +31,7 @@ public class HomeController : BaseController
     {
         try
         {
-            ICollection<CarouselAdRequestModel> ads = await adService.GetAllAsync();
+            ICollection<CarouselAdRequestModel> ads = await adService.GetFiveAsync();
             return StatusCode(200, ads);
         }
         catch (SqlException ex)

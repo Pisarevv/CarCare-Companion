@@ -5,11 +5,10 @@ using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using CarCare_Companion.Infrastructure.Data.Seeding;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;  
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using Serilog.Core;
 using System.Text;
 
 namespace CarCare_Companion.Api
@@ -42,7 +41,7 @@ namespace CarCare_Companion.Api
             }
             finally 
             {
-                Log.CloseAndFlushAsync();
+                await Log.CloseAndFlushAsync();
             }
              
 

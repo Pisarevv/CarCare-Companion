@@ -1,15 +1,16 @@
 ﻿namespace CarCare_Companion.Core.Services;
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using Microsoft.EntityFrameworkCore;
+
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Ads;
-using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Ads;
-using Microsoft.EntityFrameworkCore;
+
+
 
 public class AdService : IAdService
 {
@@ -20,7 +21,7 @@ public class AdService : IAdService
         this.repository = repository;
     }
 
-    public async Task<ICollection<CarouselAdRequestModel>> GetAllAsync()
+    public async Task<ICollection<CarouselAdRequestModel>> GetFiveAsync()
     {
         return await repository.AllReadonly<CarouselAdModel>()
                                .Select(c => new CarouselAdRequestModel
@@ -30,6 +31,7 @@ public class AdService : IAdService
                                    Description = c.Description,
                                    ReviewStars = c.StarsRating,
                                })
+                               .Take(5)
                                .ToListAsync();
 
 
