@@ -1,3 +1,4 @@
+using Amazon.S3;
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Services;
 using CarCare_Companion.Infrastructure.Data;
@@ -65,6 +66,10 @@ namespace CarCare_Companion.Api
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 6;
             });
+
+            //Adding AWS services
+            services.AddDefaultAWSOptions(configuration.GetAWSOptions());
+            services.AddAWSService<IAmazonS3>();
                 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -85,6 +90,7 @@ namespace CarCare_Companion.Api
             services.AddScoped<IRepository, Repository>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IAdService, AdService>();
+            services.AddScoped<IFileService, FileService>();
 
             services.AddMvc();
 
