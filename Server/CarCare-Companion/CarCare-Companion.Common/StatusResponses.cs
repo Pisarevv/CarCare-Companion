@@ -8,6 +8,7 @@ public static class StatusResponses
     public const string InvalidCredentials = "Login or password don't match";
     public const string MissingOrInvalidFields = "Invalid input fields";
     public const string UserEmailAlreadyExists = "A user with the same email already exists";
+    public const string BadRequest = "Bad request";
 
 
 }
