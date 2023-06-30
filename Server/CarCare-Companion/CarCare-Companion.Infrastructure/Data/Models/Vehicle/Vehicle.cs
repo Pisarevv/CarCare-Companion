@@ -56,6 +56,15 @@ public class Vehicle : BaseDeletableModel<Vehicle>
     [Required]
     public ApplicationUser Owner { get; set; } = null!;
 
+    [Comment("Vehicle type identifier")]
+    [Required]
+    [ForeignKey(nameof(VehicleType))]
+    public int VehicleTypeId { get; set; }
+
+    [Comment("Type of vehicle")]
+    [Required]
+    public VehicleType VehicleType { get; set; }
+
     [Comment("Image key for vehicle picture")]
     public Guid? VehicleImageKey { get; set; }
 
