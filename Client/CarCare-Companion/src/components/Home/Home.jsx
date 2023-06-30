@@ -59,7 +59,7 @@ const Home = (props) => {
                     <h2>Join Us Today!</h2>
                     <p>Become a part of our dynamic community of car enthusiasts, mechanics, and DIYers.</p>
                     <p> By joining us, you'll gain access to a wealth of knowledge, valuable tips, and engaging discussions on car repairs and service management.</p>
-                    <NavLink to="/register">Sign up.</NavLink>
+                    <NavLink to="/Register">Sign up.</NavLink>
                 </div>
 
                 

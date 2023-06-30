@@ -7,9 +7,11 @@ import Home from './components/Home/Home';
 import Register from './components/Register/Register';
 import Login from './components/Login/Login';
 import Logout from './components/Logout/Logout';
+import Vehicles from './components/Vehicles/Vehicles';
+import AddVehicle from './components/AddVehicle/AddVehicle';
 
 import './App.css'
-import Vehicles from './components/Vehicles/Vehicles';
+
 
 function App() {
   return(
@@ -19,10 +21,11 @@ function App() {
         <main>
           <Routes>
           <Route path='/' element={<Home/>}/>
-          <Route path='/register' element={<Register/>}/>
-          <Route path='/login' element={<Login/>}/>
-          <Route path='/logout' element={<Logout/>}/>
-          <Route path='/vehicles' element={<Vehicles/>}/>
+          <Route path='/Register' element={<Register/>}/>
+          <Route path='/Login' element={<Login/>}/>
+          <Route path='/Logout' element={<Logout/>}/>
+          <Route path='/Vehicles' element={<Vehicles/>}/>
+          <Route path='/Vehicle/Create' element={<AddVehicle/>}/>
           </Routes>
         </main> 
       </div>
