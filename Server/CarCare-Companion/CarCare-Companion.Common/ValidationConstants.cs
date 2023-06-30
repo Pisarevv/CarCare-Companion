@@ -48,6 +48,8 @@
             public const int MaxModelNameLength = 50;
             public const double MinMileage = 0;
             public const double MaxMileage = 999999999;
+            public const int MinProductionYear = 1900;
+            public const int MaxProductionYear = 2023;
         }
 
         public static class CarouselAdModel

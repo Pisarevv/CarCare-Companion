@@ -35,6 +35,11 @@ public class Vehicle : BaseDeletableModel<Vehicle>
     [Range(MinMileage,MaxMileage)]
     public double Mileage { get; set; }
 
+    [Comment("Production year of the vehicle")]
+    [Required]
+    [Range(MinProductionYear,MaxProductionYear)]
+    public int Year { get; set; }
+
     [Comment("Used fuel type identifier")]
     [Required]
     [ForeignKey(nameof(FuelType))]
