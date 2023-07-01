@@ -8,7 +8,7 @@ const userVehicleReducer = (state, action) => {
         case "SET_TYPE":
             return { ...state, type: action.payload, typeError: "" };
         case "SET_MILEAGE":
-            return { ...state, milage: action.payload, milageError: "" };
+            return { ...state, mileage: action.payload, mileageError: "" };
         case "SET_FUELTYPE":
             return { ...state, fuelType: action.payload, fuelTypeError: "" };
         case "SET_YEAR":
@@ -18,14 +18,14 @@ const userVehicleReducer = (state, action) => {
         case "SET_MODEL_ERROR":
             return { ...state, modelError: action.payload };
         case "SET_TYPE_ERROR":
-            return { ...state, type: action.payload, typeError: "" };
+            return { ...state, typeError: action.payload};
         case "SET_MILEAGE_ERROR":
-            return { ...state, milageError: action.payload };
+            return { ...state, mileageError: action.payload };
         case "SET_FUELTYPE_ERROR":
             return { ...state, fuelTypeError: action.payload };
         case "SET_YEAR_ERROR":
             return { ...state, yearError: action.payload };
-        default:
+        default:    
             return state;
         }
 }
