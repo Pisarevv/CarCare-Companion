@@ -18,13 +18,13 @@ public class FileService : IFileService
         this.repository = repository;
     }
 
-    public async Task<bool> UploadFileAsync(IFormFile file, string bucketName)
+    public async Task<string> UploadFileAsync(IFormFile file, string bucketName)
     {
-        //bool bucketExists = await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName);
-        //if (!bucketExists)
-        //{
-        //    throw new ArgumentNullException("Bucket does not exist");
-        //}
+        bool bucketExists = await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName);
+        if (!bucketExists)
+        {
+            throw new ArgumentNullException("Bucket does not exist");
+        }
 
         var request = new PutObjectRequest()
         {
@@ -38,11 +38,11 @@ public class FileService : IFileService
         var response = await s3Client.PutObjectAsync(request);
 
         if(response.HttpStatusCode == System.Net.HttpStatusCode.OK) 
-        { 
-            return true;
+        {
+            return request.Key;
         }
 
-        return false;
+        return "invalidKey";
     }
 
     private string GenerateKey()
