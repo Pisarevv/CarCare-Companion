@@ -38,6 +38,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 import { ErrorHandler } from "../../utils/ErrorHandler/ErrorHandler";
 
+import { uploadImage } from "../../services/fileService";
+
 
 import userVehicleReducer from "../../reducers/userVehicleReducer";
 
@@ -82,9 +84,10 @@ const AddVehicle = () => {
     const file = e.target.files[0];
     const reader = new FileReader();
 
-    reader.onloadend = () => {
-      setVehicleImage(reader.result);
-    }
+    reader.onload = () => {
+      const imageDataUrl = reader.result;
+      setVehicleImage(imageDataUrl);
+    };
 
     if (file) {
       reader.readAsDataURL(file);
@@ -136,6 +139,13 @@ const AddVehicle = () => {
         isTypeValid && isYearValid
       ) {
         let { make, mileage, fuelType, model, type, year } = userVehicle;
+        const formData = new FormData();
+        formData.append('file', dataURLtoFile(vehicleImage, "test"));
+        for (const value of formData.keys()) {
+          console.log(value);
+        }
+
+        await uploadImage(formData, "multipart/form-data");
         // await createuserVehicle({ make, mileage, fuelType, model, price, type, year });
         // navigate("/recycle/page/1");
 
@@ -148,7 +158,22 @@ const AddVehicle = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       ErrorHandler(error)
     }
+
+
+    function dataURLtoFile(dataURL, filename){
+      const arr = dataURL.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, { type: mime });
+    };
   }
+
+
 
   return (
     <section className="add-vehicle">
@@ -173,6 +198,11 @@ const AddVehicle = () => {
                 <label>Model:</label>
                 <input className="form-control" type="text" placeholder="Model" name="model" value={userVehicle.model} onChange={onInputChange} />
                 {userVehicle.modelError && <p className="invalid-field">{userVehicle.modelError}</p>}
+              </div>
+              <div className="input-group input-group-lg">
+                <label>Fuel type:</label>
+                <input className="form-control" type="text" placeholder="Fuel" name="fueltype" value={userVehicle.fuelType} onChange={onInputChange} />
+                {userVehicle.fuelType && <p className="invalid-field" >{userVehicle.fuelTypeError}</p>}
               </div>
               <div className="input-group input-group-lg">
                 <label>Mileage:</label>
