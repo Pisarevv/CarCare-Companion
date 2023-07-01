@@ -52,6 +52,8 @@ import { ErrorHandler } from "../../utils/ErrorHandler/ErrorHandler";
 
 import { AuthContext } from "../../contexts/AuthContext";
 
+import './Login.css';
+
 
 
 const Login = () => {
@@ -94,7 +96,7 @@ const Login = () => {
     return (
         <div className="user">
             <header className="user__header">
-                <img src="https://cdn3.iconfinder.com/data/icons/car-icons-front-views/480/Sports_Car_Front_View-512.png" alt="" />
+                <img className="login-img" src="https://cdn3.iconfinder.com/data/icons/car-icons-front-views/480/Sports_Car_Front_View-512.png" alt="" />
                 <h1 className="user__title">Welcome back.</h1>
             </header>
 

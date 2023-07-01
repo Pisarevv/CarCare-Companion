@@ -15,12 +15,13 @@ body {
     height: 100vh;
 }
 
-img{
+.login-img {
     height: auto; 
     width: auto; 
     max-width: 70px; 
     max-height: 70px;
 }
+
 
 .sign-up {
     text-decoration: none;

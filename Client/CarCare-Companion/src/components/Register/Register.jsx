@@ -146,7 +146,7 @@ const Register = () => {
     return (
         <div className="user">
             <header className="user__header">
-                <img src="https://cdn4.iconfinder.com/data/icons/photo-camera-ui/512/car-auto-drive-automobile-form-7-512.png" alt="" />
+                <img className='register-img' src="https://cdn4.iconfinder.com/data/icons/photo-camera-ui/512/car-auto-drive-automobile-form-7-512.png" alt="" />
                 <h1 className="user__title">Join the journey today.</h1>
             </header>
 
