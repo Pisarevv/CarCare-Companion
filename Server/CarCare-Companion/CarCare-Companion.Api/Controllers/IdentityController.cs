@@ -20,9 +20,9 @@ using CarCare_Companion.Core.Models.Status;
 public class IdentityController : BaseController
 {
     private readonly IIdentityService identityService;
-    private readonly ILogger<IdentityService> logger;
+    private readonly ILogger<IdentityController> logger;
 
-    public IdentityController(IIdentityService identityService, ILogger<IdentityService> logger)
+    public IdentityController(IIdentityService identityService, ILogger<IdentityController> logger)
     {
         this.identityService = identityService;
         this.logger = logger;
