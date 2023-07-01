@@ -8,11 +8,11 @@ const Vehicles = () => {
     return (
         <section className="vehicles">
             <div className="vehicle-container">
-                <div class="create-button"> <NavLink to="/Vehicle/Create">Add vehicle</NavLink></div>
-                <div class="div2"> test2</div>
-                <div class="div3"> test3</div>
-                <div class="div4"> test4</div>
-                <div class="div5"> test5</div>
+                <div className="create-button"> <NavLink to="/Vehicle/Create">Add vehicle</NavLink></div>
+                <div className="div2"> test2</div>
+                <div className="div3"> test3</div>
+                <div className="div4"> test4</div>
+                <div className="div5"> test5</div>
             </div>
         </section>
     );

@@ -1,16 +1,20 @@
 let target = "https://localhost:7152"
 
-async function request(method, url, data) {
+async function request(method, url, data, contentType = "application/json") {
     let options = {
         method,
         headers: {}
     }
 
-    if (data) {
-        options.headers["Content-type"] = "application/json";
+    if (data && contentType == "application/json") {
+        options.headers["Content-type"] = contentType;
         options.body = JSON.stringify(data);
     }
 
+    if (data && contentType == "multipart/form-data") {
+        options.body = data;
+    }
+    
     const user = localStorage.getItem('user');
     const auth = JSON.parse(user || '{}');
 
@@ -34,7 +38,7 @@ async function request(method, url, data) {
 
         return result;
     }
-    catch (error) {  
+    catch (error) {
         throw (error);
     }
 
@@ -42,20 +46,20 @@ async function request(method, url, data) {
 
 
 
-function post(url, data) {
-    return request("POST", url, data)
+function post(url, data, contentType) {
+    return request("POST", url, data, contentType)
 }
 
 function get(url) {
     return request("GET", url);
 }
 
-function put(url, data) {
-    return request("PUT", url, data)
+function put(url, data, contentType) {
+    return request("PUT", url, data, contentType)
 }
 
-function patch(url, data) {
-    return request("PATCH", url, data)
+function patch(url, data, contentType) {
+    return request("PATCH", url, data, contentType)
 }
 
 function del(url) {
