@@ -20,7 +20,7 @@ async function request(method, url, data, contentType = "application/json") {
 
 
     if (auth.accessToken) {
-        options.headers['Bearer'] = auth.accessToken;
+        options.headers['Authorization'] = "Bearer " + auth.accessToken;
     }
 
     try {
