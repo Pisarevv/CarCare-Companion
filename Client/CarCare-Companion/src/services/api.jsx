@@ -1,18 +1,14 @@
 let target = "https://localhost:7152"
 
-async function request(method, url, data, contentType = "application/json") {
+async function request(method, url, data) {
     let options = {
         method,
         headers: {}
     }
 
-    if (data && contentType == "application/json") {
-        options.headers["Content-type"] = contentType;
+    if (data){
+        options.headers["Content-type"] = "application/json";
         options.body = JSON.stringify(data);
-    }
-
-    if (data && contentType == "multipart/form-data") {
-        options.body = data;
     }
     
     const user = localStorage.getItem('user');
