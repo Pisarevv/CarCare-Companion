@@ -36,9 +36,9 @@
 import { useEffect, useReducer, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
-import { ErrorHandler } from "../../utils/ErrorHandler/ErrorHandler";
+import { useAuthContext } from '../../contexts/AuthContext';
 
-import { uploadImage } from "../../services/fileService";
+import { ErrorHandler } from "../../utils/ErrorHandler/ErrorHandler";
 
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
@@ -46,28 +46,37 @@ import userVehicleReducer from "../../reducers/userVehicleReducer";
 import dataURLtoFile from "../../utils/ErrorHandler/URLtoFileConverter";
 
 import './AddVehicle.css'
-import { getFuelTypes, getVehicleTypes } from "../../services/vehicleService";
+
+import { createVehicle, getFuelTypes, getVehicleTypes, uploadVehicleImage } from "../../services/vehicleService";
 
 
 
 const ValidationErrors = {
   emptyInput: "This field cannot be empty",
-  inputNotNumber: "This field accepts only valid numbers"
+  inputNotNumber: "This field accepts only valid numbers",
+  yearNotValid: `The start year has to be past 1900 and before ${new Date().getFullYear()}`,
+  invalidFileFormat : "The file format is not supported"
 }
 
 const ValidationRegexes = {
   //Validates that the year is an integer 
-  yearRegex: new RegExp(/^[0-9]*$/)
+  yearRegex: new RegExp(/^[0-9]*$/),
+  mileageRegex : new RegExp(/^[0-9]*$/)
 }
 
 
 const AddVehicle = (props) => {
+
+  const { user } = useAuthContext();
 
   const navigate = useNavigate();
 
   const { setLoading } = props;
 
   const [vehicleImage, setVehicleImage] = useState(null);
+  const [vehicleImageError,setVehicleImageError] = useState("");
+  const [isImageValid,setIsImageValid] = useState("false");
+
   const [vehicleId, setVehicleId] = useState("");
 
   const [fuelTypes, setFuelTypes] = useState([]);
@@ -97,7 +106,8 @@ const AddVehicle = (props) => {
         var vehicleTypesResult = await getVehicleTypes();
         setFuelTypes(fuelTypes => fuelTypesResult);
         setVehicleTypes(vehicleTypes => vehicleTypesResult);
-
+        dispatch({ type: `SET_FUELTYPE`, payload: fuelTypesResult[0].id})
+        dispatch({ type: `SET_TYPE`, payload: vehicleTypesResult[0].id})
         setLoading(false);
       }
       catch (error) {
@@ -114,12 +124,15 @@ const AddVehicle = (props) => {
     const file = e.target.files[0];
     const reader = new FileReader();
 
-    reader.onload = () => {
-      const imageDataUrl = reader.result;
-      setVehicleImage(imageDataUrl);
+    reader.onloadend = () => {
+      const vehicleImageInput = reader.result;
+      setVehicleImage(vehicleImage => vehicleImageInput);
     };
 
     if (file) {
+      if(!validateImageFile(file)){
+        setVehicleImage(vehicleImage => null);
+      }
       reader.readAsDataURL(file);
     }
 
@@ -138,20 +151,49 @@ const AddVehicle = (props) => {
     return true;
   }
 
+  const validateSelectFields = (target, value) => {
+    if (!value) {
+      dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput });
+      return false;
+    }
+    return true;
+  }
+
   const validateNumberFields = (target, value) => {
-    if (target === "price") {
-      if (!ValidationRegexes.priceRegex.test(value) || value.trim() === "") {
-        dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.inputNotNumber });
+    if (target === "mileage") {
+      if (!ValidationRegexes.yearRegex.test(value) || value.trim() === "") {
+        dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput});
+        return false;
+      }
+      if (!ValidationRegexes.mileageRegex.test(value) || value.trim() === "") {
+        dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.inputNotNumber});
         return false;
       }
       return true;
     }
     if (target === "year") {
       if (!ValidationRegexes.yearRegex.test(value) || value.trim() === "") {
-        dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.inputNotNumber });
+        dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput});
+        return false;
+      }
+      if (Number(value) < 1900 || Number(value) > Number(new Date().getFullYear())) {
+        dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.yearNotValid});
         return false;
       }
       return true;
+    }
+  }
+
+  const validateImageFile = (file) => {
+    const fileType = file.type;
+    if (fileType.startsWith('image/')) {
+      setVehicleImageError("");
+      setIsImageValid(true);
+      return true;
+    } else {
+      setVehicleImageError(ValidationErrors.invalidFileFormat);
+      setIsImageValid(false);
+      return false;   
     }
   }
 
@@ -159,26 +201,22 @@ const AddVehicle = (props) => {
     e.preventDefault();
     try {
       let isMakeValid = validateTextFields("make", userVehicle.make);
-      let isMileageValid = validateTextFields("mileage", userVehicle.mileage);
-      let isFuelTypeValid = validateTextFields("fuelType", userVehicle.fuelType);
       let isModelValid = validateTextFields("model", userVehicle.model);
-      let isTypeValid = validateTextFields("type", userVehicle.type);
+      let isFuelTypeValid = validateSelectFields("fuelType", userVehicle.fuelType); 
+      let isMileageValid = validateNumberFields("mileage", userVehicle.mileage);
+      let isTypeValid = validateSelectFields("type", userVehicle.type);
       let isYearValid = validateNumberFields("year", userVehicle.year);
 
       if (isMakeValid && isMileageValid &&
         isFuelTypeValid && isModelValid &&
         isTypeValid && isYearValid
       ) {
-        let { make, mileage, fuelType, model, type, year } = userVehicle;
-        // const formData = new FormData();
-        // formData.append('file', dataURLtoFile(vehicleImage, "test"));
+        const { make, model, mileage, year, fuelType, type } = userVehicle;
+        const userId = user.id;
 
-        // await uploadImage(formData, "multipart/form-data");
-        var response = await createUserVehicle({ make, mileage, fuelType, model, price, type, year });
-        setVehicleId(vehicleId => response);
+        var vehicleIdResponse = await createVehicle(make, model, mileage, year, fuelType, type, userId);
+        setVehicleId(vehicleId => vehicleIdResponse);
         setStepOneFinished(true);
-        // navigate("/recycle/page/1");
-
       }
       else {
         throw "Invalid input fields"
@@ -191,14 +229,16 @@ const AddVehicle = (props) => {
 
   const onImageAdd = async (e) => {
     e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append('file', dataURLtoFile(vehicleImage, "test"));
-      await uploadImage(formData, "multipart/form-data");
+    if (vehicleImage) {
+      try {
+        const formData = new FormData();
+        formData.append("file", dataURLtoFile(vehicleImage, "inputImage"));
+        await uploadVehicleImage(formData, vehicleId);
 
-    } catch (error) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      ErrorHandler(error)
+      } catch (error) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        ErrorHandler(error)
+      }
     }
   }
 
@@ -242,7 +282,7 @@ const AddVehicle = (props) => {
                       <label>Vehicle type:</label>
                       <div className="form-control select">
                         <select className="select-group" name="type" onChange={onInputChange}>
-                          {vehicleTypes.map(ft => <option key={ft.id} value={ft.id}>{ft.name}</option>)}
+                          {vehicleTypes.map(vt => <option key={vt.id} value={vt.id}>{vt.name}</option>)}
                         </select>
                       </div>
                       {userVehicle.typeError && <p className="invalid-field">{userVehicle.typeError}</p>}
@@ -265,9 +305,12 @@ const AddVehicle = (props) => {
                       {vehicleImage && <img className="vehicle-image" src={vehicleImage} alt="Selected" />}
                       <label className="select-img-button" htmlFor="file" >Select Image</label>
                       <input className="form-control" type="file" accept="image/*" id="file" onChange={handleImageUpload} />
+                      {vehicleImageError && <p className="invalid-field">{vehicleImageError}</p>}
                     </div>
-                    <NavLink className="float" to={`/recycle/page/1`}>Cancel</NavLink>
-                    <button type="submit" className="float">Add vehicle</button>
+                    <div className="action-controls">
+                    <NavLink className="float" to={`/MyVehicles`}>Cancel</NavLink>
+                    <button type="submit" className="float">{vehicleImage ? "Finish" : "Skip and finish"}</button>
+                    </div>
                   </form>
                 </>
             }
