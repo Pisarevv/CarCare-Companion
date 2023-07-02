@@ -33,17 +33,21 @@
  * -----------------
 **/
 
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import { ErrorHandler } from "../../utils/ErrorHandler/ErrorHandler";
 
 import { uploadImage } from "../../services/fileService";
 
+import IsLoadingHOC from '../Common/IsLoadingHoc';
 
 import userVehicleReducer from "../../reducers/userVehicleReducer";
+import dataURLtoFile from "../../utils/ErrorHandler/URLtoFileConverter";
 
 import './AddVehicle.css'
+import { getFuelTypes, getVehicleTypes } from "../../services/vehicleService";
+
 
 
 const ValidationErrors = {
@@ -57,11 +61,18 @@ const ValidationRegexes = {
 }
 
 
-const AddVehicle = () => {
+const AddVehicle = (props) => {
 
   const navigate = useNavigate();
 
+  const { setLoading } = props;
+
   const [vehicleImage, setVehicleImage] = useState(null);
+  const [vehicleId, setVehicleId] = useState("");
+
+  const [fuelTypes, setFuelTypes] = useState([]);
+  const [vehicleTypes, setVehicleTypes] = useState([]);
+  const [stepOneFinished, setStepOneFinished] = useState(false);
 
   const [userVehicle, dispatch] = useReducer(userVehicleReducer, {
     make: "",
@@ -78,6 +89,25 @@ const AddVehicle = () => {
     typeError: "",
     yearError: ""
   })
+
+  useEffect(() => {
+    (async () => {
+      try {
+        var fuelTypesResult = await getFuelTypes();
+        var vehicleTypesResult = await getVehicleTypes();
+        setFuelTypes(fuelTypes => fuelTypesResult);
+        setVehicleTypes(vehicleTypes => vehicleTypesResult);
+
+        setLoading(false);
+      }
+      catch (error) {
+        ErrorHandler(error);
+        setLoading(false);
+      }
+
+    })()
+  }, []);
+
 
   //Event handlers
   const handleImageUpload = (e) => {
@@ -98,6 +128,7 @@ const AddVehicle = () => {
   const onInputChange = (e) => {
     dispatch({ type: `SET_${(e.target.name).toUpperCase()}`, payload: e.target.value })
   }
+
 
   const validateTextFields = (target, value) => {
     if (value.trim() === "") {
@@ -139,40 +170,37 @@ const AddVehicle = () => {
         isTypeValid && isYearValid
       ) {
         let { make, mileage, fuelType, model, type, year } = userVehicle;
-        const formData = new FormData();
-        formData.append('file', dataURLtoFile(vehicleImage, "test"));
-        for (const value of formData.keys()) {
-          console.log(value);
-        }
+        // const formData = new FormData();
+        // formData.append('file', dataURLtoFile(vehicleImage, "test"));
 
-        await uploadImage(formData, "multipart/form-data");
-        // await createuserVehicle({ make, mileage, fuelType, model, price, type, year });
+        // await uploadImage(formData, "multipart/form-data");
+        var response = await createUserVehicle({ make, mileage, fuelType, model, price, type, year });
+        setVehicleId(vehicleId => response);
+        setStepOneFinished(true);
         // navigate("/recycle/page/1");
 
       }
       else {
         throw "Invalid input fields"
       }
+    } catch (error) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      ErrorHandler(error)
+    }
+  }
+
+  const onImageAdd = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append('file', dataURLtoFile(vehicleImage, "test"));
+      await uploadImage(formData, "multipart/form-data");
 
     } catch (error) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       ErrorHandler(error)
     }
-
-
-    function dataURLtoFile(dataURL, filename){
-      const arr = dataURL.split(',');
-      const mime = arr[0].match(/:(.*?);/)[1];
-      const bstr = atob(arr[1]);
-      let n = bstr.length;
-      const u8arr = new Uint8Array(n);
-      while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-      }
-      return new File([u8arr], filename, { type: mime });
-    };
   }
-
 
 
   return (
@@ -180,56 +208,79 @@ const AddVehicle = () => {
       <div className="add-container">
         <div className="add-vehicle-body">
           <div className="add-vehicle-heading">
-            <h2>Add vehicle</h2>
-            <form onSubmit={onVehicleAdd}>
-              <div className="input-group input-group-lg img-group">
-                <label>Image: (Optional)</label>
-                {vehicleImage && <img className="vehicle-image" src={vehicleImage} alt="Selected" />}
-                <label className="select-img-button" htmlFor="file" >Select Image</label> 
-                <input className="form-control" type="file" accept="image/*" id="file" onChange={handleImageUpload} />     
-                                
-              </div>
-              <div className="input-group input-group-lg">
-                <label>Make:</label>
-                <input className="form-control" type="text" placeholder="Vehicle make" name="make" value={userVehicle.make} onChange={onInputChange} />
-                {userVehicle.makeError && <p className="invalid-field" >{userVehicle.makeError}</p>}
-              </div>
-              <div className="input-group input-group-lg">
-                <label>Model:</label>
-                <input className="form-control" type="text" placeholder="Model" name="model" value={userVehicle.model} onChange={onInputChange} />
-                {userVehicle.modelError && <p className="invalid-field">{userVehicle.modelError}</p>}
-              </div>
-              <div className="input-group input-group-lg">
-                <label>Fuel type:</label>
-                <input className="form-control" type="text" placeholder="Fuel" name="fueltype" value={userVehicle.fuelType} onChange={onInputChange} />
-                {userVehicle.fuelType && <p className="invalid-field" >{userVehicle.fuelTypeError}</p>}
-              </div>
-              <div className="input-group input-group-lg">
-                <label>Mileage:</label>
-                <input className="form-control" type="text" placeholder="Mileage" name="mileage" value={userVehicle.mileage} onChange={onInputChange} />
-                {userVehicle.mileageError && <p className="invalid-field" >{userVehicle.mileageError}</p>}
-              </div>
-              <div className="input-group input-group-lg">
-                <label>Vehicle type:</label>
-                <input className="form-control" type="text" placeholder="Vehicle type" name="type" value={userVehicle.type} onChange={onInputChange} />
-                {userVehicle.typeError && <p className="invalid-field">{userVehicle.typeError}</p>}
-              </div>
-              <div className="input-group input-group-lg">
-                <label>Year:</label>
-                <input className="form-control" type="text" placeholder="Year" name="year" value={userVehicle.year} onChange={onInputChange} />
-                {userVehicle.yearError && <p className="invalid-field">{userVehicle.yearError}</p>}
-              </div>
-              <button type="submit" className="float">Add vehicle</button>
-              <NavLink className="float" to={`/recycle/page/1`}>Cancel</NavLink>
-            </form>
+            {
+              stepOneFinished == false
+                ?
+                <>
+                  <h2>Vehicle details</h2>
+                  <form onSubmit={onVehicleAdd}>
+                    <div className="input-group input-group-lg">
+                      <label>Make:</label>
+                      <input className="form-control" type="text" placeholder="Vehicle make" name="make" value={userVehicle.make} onChange={onInputChange} />
+                      {userVehicle.makeError && <p className="invalid-field" >{userVehicle.makeError}</p>}
+                    </div>
+                    <div className="input-group input-group-lg">
+                      <label>Model:</label>
+                      <input className="form-control" type="text" placeholder="Model" name="model" value={userVehicle.model} onChange={onInputChange} />
+                      {userVehicle.modelError && <p className="invalid-field">{userVehicle.modelError}</p>}
+                    </div>
+                    <div className="input-group input-group-lg">
+                      <label>Fuel type:</label>
+                      <div className="form-control select">
+                        <select className="select-group" name="fueltype" onChange={onInputChange}>
+                          {fuelTypes.map(ft => <option key={ft.id} value={ft.id}>{ft.name}</option>)}
+                        </select>
+                      </div>
+                      {userVehicle.fuelType && <p className="invalid-field" >{userVehicle.fuelTypeError}</p>}
+                    </div>
+                    <div className="input-group input-group-lg">
+                      <label>Mileage:</label>
+                      <input className="form-control" type="text" placeholder="Mileage" name="mileage" value={userVehicle.mileage} onChange={onInputChange} />
+                      {userVehicle.mileageError && <p className="invalid-field" >{userVehicle.mileageError}</p>}
+                    </div>
+                    <div className="input-group input-group-lg">
+                      <label>Vehicle type:</label>
+                      <div className="form-control select">
+                        <select className="select-group" name="type" onChange={onInputChange}>
+                          {vehicleTypes.map(ft => <option key={ft.id} value={ft.id}>{ft.name}</option>)}
+                        </select>
+                      </div>
+                      {userVehicle.typeError && <p className="invalid-field">{userVehicle.typeError}</p>}
+                    </div>
+                    <div className="input-group input-group-lg">
+                      <label>Year:</label>
+                      <input className="form-control" type="text" placeholder="Year" name="year" value={userVehicle.year} onChange={onInputChange} />
+                      {userVehicle.yearError && <p className="invalid-field">{userVehicle.yearError}</p>}
+                    </div>
+                    <NavLink className="float" to={`/`}>Cancel</NavLink>
+                    <button type="submit" className="float">Next step</button>
+                  </form>
+                </>
+                :
+                <>
+                  <h2>Vehicle image</h2>
+                  <form onSubmit={onImageAdd}>
+                    <div className="input-group input-group-lg img-group">
+                      <label>Image: (Optional)</label>
+                      {vehicleImage && <img className="vehicle-image" src={vehicleImage} alt="Selected" />}
+                      <label className="select-img-button" htmlFor="file" >Select Image</label>
+                      <input className="form-control" type="file" accept="image/*" id="file" onChange={handleImageUpload} />
+                    </div>
+                    <NavLink className="float" to={`/recycle/page/1`}>Cancel</NavLink>
+                    <button type="submit" className="float">Add vehicle</button>
+                  </form>
+                </>
+            }
           </div>
         </div>
-
       </div>
     </section>
   );
+
+
+
 }
 
 
-export default AddVehicle;
+export default IsLoadingHOC(AddVehicle);
 

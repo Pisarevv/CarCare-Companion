@@ -91,6 +91,7 @@ namespace CarCare_Companion.Api
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IAdService, AdService>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IVehicleService, VehicleService>();
 
             services.AddMvc();
 
