@@ -1,7 +1,7 @@
 ﻿namespace CarCare_Companion.Core.Models.Vehicle;
 
 
-public class FuelTypeRequestModel
+public class FuelTypeResponseModel
 {
     public int Id { get; set; }
 

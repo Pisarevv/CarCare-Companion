@@ -1,6 +1,6 @@
 ﻿namespace CarCare_Companion.Core.Models.Vehicle;
 
-public class VehicleTypeRequestModel
+public class VehicleTypeResponseModel
 {
     public int Id { get; set; }
 

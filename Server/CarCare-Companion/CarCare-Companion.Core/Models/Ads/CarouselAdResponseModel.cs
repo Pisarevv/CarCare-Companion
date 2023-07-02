@@ -1,6 +1,6 @@
 ﻿namespace CarCare_Companion.Core.Models.Ads;
 
-public class CarouselAdRequestModel
+public class CarouselAdResponseModel
 {
     public string Id { get; set; } = null!;
 
