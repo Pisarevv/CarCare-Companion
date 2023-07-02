@@ -7,29 +7,31 @@ using CarCare_Companion.Infrastructure.Data.Common;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
-public class FileService : IFileService
+using static Common.GlobalConstants;
+
+public class ImageService : IImageService
 {
     private readonly IAmazonS3 s3Client;
-    private readonly IRepository repository;
 
-    public FileService(IAmazonS3 s3Client, IRepository repository)
+    public ImageService(IAmazonS3 s3Client, IRepository repository)
     {
         this.s3Client = s3Client;
-        this.repository = repository;
     }
 
-    public async Task<string> UploadFileAsync(IFormFile file, string bucketName)
+    public async Task<string> UploadVehicleImage(IFormFile file)
     {
-        bool bucketExists = await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName);
+        bool bucketExists = await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(s3Client, AWSBucket);
         if (!bucketExists)
         {
             throw new ArgumentNullException("Bucket does not exist");
         }
 
+        var imageKey = Guid.NewGuid().ToString();
+
         var request = new PutObjectRequest()
         {
-            BucketName = bucketName,
-            Key = GenerateKey(),
+            BucketName = AWSBucket,
+            Key = $"UserImages/{imageKey}",
             InputStream = file.OpenReadStream()
         };
 
@@ -39,14 +41,9 @@ public class FileService : IFileService
 
         if(response.HttpStatusCode == System.Net.HttpStatusCode.OK) 
         {
-            return request.Key;
+            return imageKey;
         }
 
         return "invalidKey";
-    }
-
-    private string GenerateKey()
-    {
-        return $"UserImages/{Guid.NewGuid().ToString()}";
     }
 }
