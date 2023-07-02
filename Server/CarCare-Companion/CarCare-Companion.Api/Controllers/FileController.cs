@@ -12,37 +12,37 @@ using Microsoft.AspNetCore.Mvc;
 [AllowAnonymous]
 public class FileController : BaseController
 {
-	private readonly IFileService fileService;
+	private readonly IImageService fileService;
 	private readonly ILogger<FileController> logger;
 
-    public FileController(IFileService fileService, ILogger<FileController> logger)
+    public FileController(IImageService fileService, ILogger<FileController> logger)
     {
         this.fileService = fileService;
 		this.logger = logger;
     }
 
 
-    [HttpPost]
-    [Route("/File")]
-    [Produces("application/json")]
-    public async Task<IActionResult> UploadVehiclePicture([FromForm] IFormFile file)
-    {
-		try
-		{
-			if (file == null || file.Length == 0)
-			{
-				return StatusCode(400, new StatusErrorInformation(StatusResponses.BadRequest));
-			}
+  //  [HttpPost]
+  //  [Route("/File")]
+  //  [Produces("application/json")]
+  //  public async Task<IActionResult> UploadVehiclePicture([FromForm] IFormFile file)
+  //  {
+		//try
+		//{
+		//	if (file == null || file.Length == 0)
+		//	{
+		//		return StatusCode(400, new StatusErrorInformation(StatusResponses.BadRequest));
+		//	}
 
-			 var result = await fileService.UploadFileAsync(file, "car-care-companion-bucket");
+		//	 var result = await fileService.UploadFileAsync(file, "car-care-companion-bucket");
 
-			return Ok();
+		//	return Ok();
 
-		}
-		catch (Exception)
-		{
+		//}
+		//catch (Exception)
+		//{
 
-			throw;
-		}
-    }
+		//	throw;
+		//}
+  //  }
 }

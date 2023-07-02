@@ -4,5 +4,5 @@ using CarCare_Companion.Core.Models.Ads;
 
 public interface IAdService
 {
-    public Task<ICollection<CarouselAdRequestModel>> GetFiveAsync();
+    public Task<ICollection<CarouselAdResponseModel>> GetFiveAsync();
 }

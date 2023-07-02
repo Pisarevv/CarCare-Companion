@@ -21,10 +21,10 @@ public class AdService : IAdService
         this.repository = repository;
     }
 
-    public async Task<ICollection<CarouselAdRequestModel>> GetFiveAsync()
+    public async Task<ICollection<CarouselAdResponseModel>> GetFiveAsync()
     {
         return await repository.AllReadonly<CarouselAdModel>()
-                               .Select(c => new CarouselAdRequestModel
+                               .Select(c => new CarouselAdResponseModel
                                {
                                    Id = c.Id.ToString(),
                                    UserFirstName = c.UserFirstName,

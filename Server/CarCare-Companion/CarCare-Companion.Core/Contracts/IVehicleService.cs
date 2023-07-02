@@ -4,7 +4,15 @@ using CarCare_Companion.Core.Models.Vehicle;
 
 public interface IVehicleService
 {
-    public Task<ICollection<FuelTypeRequestModel>> GetAllFuelTypesAsync();
+    public Task<ICollection<FuelTypeResponseModel>> GetAllFuelTypesAsync();
 
-    public Task<ICollection<VehicleTypeRequestModel>> GetAllVehicleTypesAsync();
+    public Task<ICollection<VehicleTypeResponseModel>> GetAllVehicleTypesAsync();
+
+    public Task<bool> DoesFuelTypeExistAsync(int id);
+
+    public Task<bool> DoesVehicleTypeExistAsync(int id);
+
+    public Task<string> CreateVehicleAsync(VehicleCreateRequestModel model);
+
+    public Task AddImageToVehicle(string vehicleId, string imageId);
 }
