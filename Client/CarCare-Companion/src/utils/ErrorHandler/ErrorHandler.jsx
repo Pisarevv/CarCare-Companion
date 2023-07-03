@@ -44,6 +44,25 @@ const errors = {
 
 
 export const ErrorHandler = (inputError) => {
+
+    if(!errors.hasOwnProperty(inputError)){
+        return (
+            Store.addNotification({
+                title: "Unexpected error",
+                message: "Something unexpected happend. Please refresh the page.",
+                type: "danger",
+                insert: "top",
+                container: "top-center",
+                animationIn: ["animate__animated", "animate__fadeIn"],
+                animationOut: ["animate__animated", "animate__fadeOut"],
+                dismiss: {
+                    duration: 3000,
+                    onScreen: true
+                }
+            })
+        )
+    }
+    
     const {title,message,type} = errors[inputError];
     return (
         Store.addNotification({
