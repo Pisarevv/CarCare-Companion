@@ -49,7 +49,7 @@ public class IdentityController : BaseController
                 });
             }
 
-            bool userExist = await identityService.DoesUserExistAsync(registerData.Email);
+            bool userExist = await identityService.DoesUserExistByUsernameAsync(registerData.Email);
 
             if (userExist)
             {

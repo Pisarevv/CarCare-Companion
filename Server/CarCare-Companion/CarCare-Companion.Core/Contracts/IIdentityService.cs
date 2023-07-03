@@ -4,7 +4,7 @@ namespace CarCare_Companion.Core.Contracts;
 
 public interface IIdentityService
 {
-    public Task<bool> DoesUserExistAsync(string username);
+    public Task<bool> DoesUserExistByUsernameAsync(string username);
 
     public Task<AuthDataModel> RegisterAsync(RegisterRequestModel model);
 
