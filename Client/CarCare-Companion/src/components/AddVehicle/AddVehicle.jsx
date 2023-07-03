@@ -206,7 +206,7 @@ const AddVehicle = (props) => {
   const validateImageFileSize = (file) => {
     const fileSizeInMb = Math.round((file.size/1024));
     if(fileSizeInMb < 2048){
-      setVehicleImageError(ValidationErrors.fileSizeTooBig);
+      setVehicleImageError("");
       setIsImageValid(true);
       return true;
     }
