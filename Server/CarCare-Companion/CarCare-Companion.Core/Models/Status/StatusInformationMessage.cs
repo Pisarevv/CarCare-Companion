@@ -1,8 +1,8 @@
 ﻿namespace CarCare_Companion.Core.Models.Status;
 
-public class StatusErrorInformation
+public class StatusInformationMessage
 {
-    public StatusErrorInformation(string input)
+    public StatusInformationMessage(string input)
     {
         this.Title = input;
     }

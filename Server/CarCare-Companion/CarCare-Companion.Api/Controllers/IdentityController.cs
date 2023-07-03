@@ -53,7 +53,7 @@ public class IdentityController : BaseController
 
             if (userExist)
             {
-                return StatusCode(409, new StatusErrorInformation(UserEmailAlreadyExists));
+                return StatusCode(409, new StatusInformationMessage(UserEmailAlreadyExists));
 
             }
 
@@ -64,12 +64,12 @@ public class IdentityController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusErrorInformation(GenericError));
+            return StatusCode(400, new StatusInformationMessage(GenericError));
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusErrorInformation(InvalidData));
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
         }
     }
 
@@ -87,7 +87,7 @@ public class IdentityController : BaseController
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, new StatusErrorInformation(MissingOrInvalidFields));
+                return StatusCode(400, new StatusInformationMessage(MissingOrInvalidFields));
             }
 
             AuthDataModel userData = await identityService.LoginAsync(loginData);
@@ -99,22 +99,22 @@ public class IdentityController : BaseController
         catch(ArgumentNullException ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(401, new StatusErrorInformation(InvalidCredentials));
+            return StatusCode(401, new StatusInformationMessage(InvalidCredentials));
         }
         catch (ArgumentException ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(401, new StatusErrorInformation(InvalidCredentials));
+            return StatusCode(401, new StatusInformationMessage(InvalidCredentials));
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusErrorInformation(GenericError));
+            return StatusCode(400, new StatusInformationMessage(GenericError));
         }
         catch (Exception ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusErrorInformation(GenericError));
+            return StatusCode(400, new StatusInformationMessage(GenericError));
         }
     }
 

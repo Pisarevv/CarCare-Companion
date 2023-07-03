@@ -10,6 +10,7 @@ public static class StatusResponses
     public const string UserEmailAlreadyExists = "A user with the same email already exists";
     public const string BadRequest = "Bad request";
     public const string FileSizeTooBig = "The size of the file is too big";
+    public const string Success = "Success";
 
 
 }

@@ -44,12 +44,12 @@ public class VehicleController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusErrorInformation(GenericError));
+            return StatusCode(400, new StatusInformationMessage(GenericError));
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusErrorInformation(InvalidData));
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
         }
     }
 
@@ -71,12 +71,12 @@ public class VehicleController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusErrorInformation(GenericError));
+            return StatusCode(400, new StatusInformationMessage(GenericError));
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusErrorInformation(InvalidData));
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
         }
     }
 
@@ -107,12 +107,12 @@ public class VehicleController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusErrorInformation(GenericError));
+            return StatusCode(400, new StatusInformationMessage(GenericError));
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusErrorInformation(InvalidData));
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
         }
     }
 
@@ -131,33 +131,33 @@ public class VehicleController : BaseController
         {
             if (file.Length == 0 || file == null)
             {
-                return StatusCode(400, new StatusErrorInformation(InvalidData));
+                return StatusCode(400, new StatusInformationMessage(InvalidData));
             }
 
             if(file.ContentType != "image/jpeg")
             {
-                return StatusCode(415, new StatusErrorInformation(InvalidData));
+                return StatusCode(415, new StatusInformationMessage(InvalidData));
             }
 
             if(file.Length/1024 > 2048)
             {
-                return StatusCode(413, new StatusErrorInformation(FileSizeTooBig));
+                return StatusCode(413, new StatusInformationMessage(FileSizeTooBig));
             }
 
             string imageId = await imageService.UploadVehicleImage(file);
 
             await vehicleService.AddImageToVehicle(vehicleId, imageId);
-            return StatusCode(200);
+            return StatusCode(200, new StatusInformationMessage(Success));
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusErrorInformation(GenericError));
+            return StatusCode(400, new StatusInformationMessage(GenericError));
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusErrorInformation(GenericError));
+            return StatusCode(403, new StatusInformationMessage(GenericError));
         }
 
     }
