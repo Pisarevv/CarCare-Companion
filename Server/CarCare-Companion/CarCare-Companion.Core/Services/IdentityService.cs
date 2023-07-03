@@ -31,13 +31,30 @@ public class IdentityService : IIdentityService
     }
 
     /// <summary>
-    /// Checks if an user exists.
+    /// Checks if an user exists by his username.
     /// </summary>
     /// <param name="username">The user username used for the searching.</param>
     /// <returns>A boolean if the user exists.</returns>
-    public async Task<bool> DoesUserExistAsync(string username)
+    public async Task<bool> DoesUserExistByUsernameAsync(string username)
     {
         var userExists = await userManager.FindByNameAsync(username);
+
+        if (userExists == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Checks if an user exists by his Id.
+    /// </summary>
+    /// <param name="username">The user username used for the searching.</param>
+    /// <returns>A boolean if the user exists.</returns>
+    public async Task<bool> DoesUserExistByIdAsync(string id)
+    {
+        var userExists = await userManager.FindByIdAsync(id);
 
         if (userExists == null)
         {
