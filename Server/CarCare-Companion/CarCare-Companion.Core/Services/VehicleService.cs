@@ -20,14 +20,17 @@ public class VehicleService : IVehicleService
         this.repository = repository;
     }
 
-    public async Task AddImageToVehicle(string vehicleId, string imageId)
+    public async Task<bool> AddImageToVehicle(string vehicleId, string imageId)
     {
         Vehicle vehicle = await repository.GetByIdAsync<Vehicle>(Guid.Parse(vehicleId));
         if (vehicle != null)
         {
            vehicle.VehicleImageKey = Guid.Parse(imageId);
            await  repository.SaveChangesAsync();  
+           return true;
         }
+
+        return false;
     }
 
     public async Task<string> CreateVehicleAsync(VehicleCreateRequestModel model)
@@ -49,6 +52,8 @@ public class VehicleService : IVehicleService
 
         return newVehicle.Id.ToString();
     }
+
+
 
     public async Task<bool> DoesFuelTypeExistAsync(int id)
     {
