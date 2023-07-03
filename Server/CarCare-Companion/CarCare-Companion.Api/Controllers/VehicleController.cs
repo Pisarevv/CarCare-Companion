@@ -10,7 +10,9 @@ using CarCare_Companion.Core.Models.Vehicle;
 using static CarCare_Companion.Common.StatusResponses;
 
 
-
+/// <summary>
+/// The vehicle controller handles vehicle related operations
+/// </summary>
 [Route("[/Vehicle]")]
 public class VehicleController : BaseController
 {
@@ -25,6 +27,10 @@ public class VehicleController : BaseController
         this.logger = logger;
     }
 
+    /// <summary>
+    /// Returns the available fuel types
+    /// </summary>
+    /// <returns>Collection of fuel types</returns>
     [HttpGet]
     [Route("/FuelTypes")]
     [Produces("application/json")]
@@ -47,6 +53,10 @@ public class VehicleController : BaseController
         }
     }
 
+    /// <summary>
+    /// Returns the available vehicle types
+    /// </summary>
+    /// <returns>Collection of vehicle types</returns>
     [HttpGet]
     [Route("/VehicleTypes")]
     [Produces("application/json")]
@@ -70,6 +80,11 @@ public class VehicleController : BaseController
         }
     }
 
+    /// <summary>
+    /// Creates a new vehicle and adds it to the user vehicle collection
+    /// </summary>
+    /// <param name="model">The input data containing the vehicle information</param>
+    /// <returns>The Id of the created vehicle</returns>
     [HttpPost]
     [Route("/VehicleCreate")]
     [Produces("application/json")]
@@ -101,20 +116,49 @@ public class VehicleController : BaseController
         }
     }
 
+    /// <summary>
+    /// Uploads the vehicle image to Amazon S3 and adds a relation to the vehicle
+    /// </summary>
+    /// <param name="vehicleId">The vehicle Id</param>
+    /// <param name="file">The image file for the vehicle</param>
+    /// <returns></returns>
     [HttpPost]
     [Route("/VehicleImageUpload")]
     [Produces("application/json")]
     public async Task<IActionResult> UploadVehicleImage([FromHeader] string vehicleId,[FromForm] IFormFile file)
     {
-        if(file.Length == 0 || file == null)
+        try
         {
+            if (file.Length == 0 || file == null)
+            {
+                return StatusCode(400, new StatusErrorInformation(InvalidData));
+            }
+
+            if(file.ContentType != "image/jpeg")
+            {
+                return StatusCode(415, new StatusErrorInformation(InvalidData));
+            }
+
+            if(file.Length/1024 > 2048)
+            {
+                return StatusCode(413, new StatusErrorInformation(FileSizeTooBig));
+            }
+
+            string imageId = await imageService.UploadVehicleImage(file);
+
+            await vehicleService.AddImageToVehicle(vehicleId, imageId);
+            return StatusCode(200);
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
             return StatusCode(400, new StatusErrorInformation(GenericError));
         }
-
-        string imageId = await imageService.UploadVehicleImage(file);
-
-        await  vehicleService.AddImageToVehicle(vehicleId, imageId);
-        return StatusCode(200);
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusErrorInformation(GenericError));
+        }
 
     }
 
