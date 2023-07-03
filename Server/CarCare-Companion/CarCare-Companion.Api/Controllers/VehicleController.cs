@@ -146,8 +146,17 @@ public class VehicleController : BaseController
 
             string imageId = await imageService.UploadVehicleImage(file);
 
-            await vehicleService.AddImageToVehicle(vehicleId, imageId);
-            return StatusCode(200, new StatusInformationMessage(Success));
+            bool isAdded = await vehicleService.AddImageToVehicle(vehicleId, imageId);
+
+            if (isAdded) 
+            {
+                return StatusCode(200, new StatusInformationMessage(Success));
+            }
+
+            logger.LogInformation("Attempt to adding an image to non existent car has occurred");
+            return StatusCode(400, new StatusInformationMessage(InvalidData));
+
+
         }
         catch (SqlException ex)
         {
