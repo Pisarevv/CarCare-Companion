@@ -1,12 +1,8 @@
 ﻿namespace CarCare_Companion.Core.Models.Vehicle;
 
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-using Microsoft.EntityFrameworkCore;
-
 using static CarCare_Companion.Common.ValidationConstants.Vehicle;
-using Microsoft.AspNetCore.Http;
 
 public class VehicleCreateRequestModel
 {
