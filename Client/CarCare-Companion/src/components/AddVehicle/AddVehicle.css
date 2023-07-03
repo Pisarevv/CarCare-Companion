@@ -14,6 +14,12 @@ section {
     background-color: #242424;
 }
 
+.step-two-container:focus-visible{
+    opacity: 0;
+    transform: translate3d(0, 500px, 0);
+    animation: arrive 500ms ease-in-out 0.3s forwards;
+}
+
 .add-container {
     width: 100%;
     display: flex;
