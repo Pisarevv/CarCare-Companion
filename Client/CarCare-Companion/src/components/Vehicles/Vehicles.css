@@ -32,7 +32,7 @@ section {
 }
 
 .vehicle-container a{
-    transition: all 0.3s ease 0s;
+    /* transition: all 0.3s ease 0s; */
     background-color: rgb(45, 51, 68);
     opacity: 60%;
     padding: 20px;
@@ -59,6 +59,9 @@ section {
     flex-direction: column;
     align-items: center;
     gap: 2em;
+    opacity: 0;
+    transform: translate3d(0, 300px, 0);
+    animation: arrive 500ms ease-in-out 0.2s forwards;
     
 }
 
