@@ -27,6 +27,36 @@ public class VehicleController : BaseController
         this.logger = logger;
     }
 
+
+    [HttpGet]
+    [Route("/UserVehicles")]
+    [Produces("application/json")]
+    public async Task<IActionResult> GetUserVehicles([FromHeader] string UserId)
+    {
+        try
+        {
+            ICollection<VehicleBasicInfoResponseModel> vehicles = await vehicleService.AllUserVehiclesByIdAsync(UserId);
+            foreach (var vehicle in vehicles)
+            {
+                if(vehicle.ImageUrl != null)
+                {
+                    vehicle.ImageUrl = await imageService.GetImageUrlAsync(vehicle.ImageUrl);
+                }
+            }
+            return StatusCode(200, vehicles);
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
     /// <summary>
     /// Returns the available fuel types
     /// </summary>
@@ -38,7 +68,7 @@ public class VehicleController : BaseController
     {
         try
         {
-            ICollection<FuelTypeResponseModel> fuelTypes = await vehicleService.GetAllFuelTypesAsync();
+            ICollection<FuelTypeResponseModel> fuelTypes = await vehicleService.AllFuelTypesAsync();
             return StatusCode(200, fuelTypes);
         }
         catch (SqlException ex)
@@ -64,7 +94,7 @@ public class VehicleController : BaseController
     {
         try
         {
-            ICollection<VehicleTypeResponseModel> vehicleTypes = await vehicleService.GetAllVehicleTypesAsync();
+            ICollection<VehicleTypeResponseModel> vehicleTypes = await vehicleService.AllVehicleTypesAsync();
 
             return StatusCode(200, vehicleTypes);
         }
@@ -170,5 +200,6 @@ public class VehicleController : BaseController
         }
 
     }
+
 
 }
