@@ -20,3 +20,8 @@ export async function uploadVehicleImage(formData,vehicleId){
     var result = await fileApi.post("/VehicleImageUpload",formData,vehicleId);
     return result;
 }
+
+export async function getUserVehicles(){
+    var result = await api.get("/UserVehicles");
+    return result;
+}
