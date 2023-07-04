@@ -37,6 +37,11 @@ const errors = {
         title : "Comment field cannot be empty",
         message : "Please write your comment befor submiting",
         type : "warning"
+    },
+    "Generic error" : {
+        title : "Unexpected error",
+        message : "Something unexpected happend. Please refresh the page.",
+        type : "danger"
     }
 }
 
@@ -46,21 +51,7 @@ const errors = {
 export const ErrorHandler = (inputError) => {
 
     if(!errors.hasOwnProperty(inputError)){
-        return (
-            Store.addNotification({
-                title: "Unexpected error",
-                message: "Something unexpected happend. Please refresh the page.",
-                type: "danger",
-                insert: "top",
-                container: "top-center",
-                animationIn: ["animate__animated", "animate__fadeIn"],
-                animationOut: ["animate__animated", "animate__fadeOut"],
-                dismiss: {
-                    duration: 3000,
-                    onScreen: true
-                }
-            })
-        )
+       inputError = "Generic error"
     }
     
     const {title,message,type} = errors[inputError];
