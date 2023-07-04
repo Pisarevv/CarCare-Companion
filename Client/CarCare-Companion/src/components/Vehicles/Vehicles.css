@@ -1,5 +1,5 @@
-section {
-    padding: 50px 10%;
+.vehicles {
+    padding: 50px 2%;
 }
 
 .vehicle-container {
@@ -10,15 +10,6 @@ section {
     grid-row-gap: 0px;
 }
 
-.vehicle-container div {
-    /* background-color: rgb(45, 51, 68);
-    opacity: 60%;
-    padding: 60px;
-    border-radius: 50px;
-    opacity: 0;
-    transform: translate3d(0, 500px, 0);
-    animation: arrive 500ms ease-in-out 0.7s forwards; */
-}
 
 .vehicle-container .create-button {
     grid-area: 1 / 1 / 2 / 2;
@@ -32,7 +23,6 @@ section {
 }
 
 .vehicle-container a{
-    /* transition: all 0.3s ease 0s; */
     background-color: rgb(45, 51, 68);
     opacity: 60%;
     padding: 20px;
@@ -41,16 +31,22 @@ section {
 
 
 
-.div2 {
-    grid-area: 3 / 1 / 6 / 2;
+.user-recent-trips {
+    grid-area: 2 / 1 / 6 / 3;
+    position: sticky;
+    top: 0;
 }
 
 .div3 {
-    grid-area: 7 / 1 / 10 / 2;
+    grid-area: 5 / 1 / 10 / 2;
+    position: sticky;
+    top: 0;
 }
 
 .div4 {
     grid-area: 2 / 8 / 8 / 9;
+    position: sticky;   
+    top: 0;
 }
 
 .user-vehicles {
