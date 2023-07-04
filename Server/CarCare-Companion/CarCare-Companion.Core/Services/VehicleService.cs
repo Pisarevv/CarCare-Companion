@@ -80,7 +80,7 @@ public class VehicleService : IVehicleService
         return false;
     }
 
-    public async Task<ICollection<FuelTypeResponseModel>> GetAllFuelTypesAsync()
+    public async Task<ICollection<FuelTypeResponseModel>> AllFuelTypesAsync()
     {
         return await repository.AllReadonly<FuelType>()
                .Select(ft => new FuelTypeResponseModel
@@ -91,7 +91,23 @@ public class VehicleService : IVehicleService
                .ToListAsync();
     }
 
-    public async Task<ICollection<VehicleTypeResponseModel>> GetAllVehicleTypesAsync()
+
+    public async Task<ICollection<VehicleBasicInfoResponseModel>> AllUserVehiclesByIdAsync(string userId)
+    {
+        return await repository.AllReadonly<Vehicle>()
+               .Where(v => v.OwnerId == Guid.Parse(userId))
+               .OrderBy(v => v.CreatedOn)
+               .Select(v => new VehicleBasicInfoResponseModel
+               {
+                   Id = v.Id.ToString(),
+                   Make = v.Make,
+                   Model = v.Model,
+                   ImageUrl = v.VehicleImageKey.ToString()
+               })
+               .ToListAsync();
+    }
+
+    public async Task<ICollection<VehicleTypeResponseModel>> AllVehicleTypesAsync()
     {
         return await repository.AllReadonly<VehicleType>()
              .Select(ft => new VehicleTypeResponseModel
