@@ -11,7 +11,9 @@ using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Ads;
 
 
-
+/// <summary>
+/// The AdService is responsible for retrieving the ads to the client
+/// </summary>
 public class AdService : IAdService
 {
     private readonly IRepository repository;
@@ -21,6 +23,10 @@ public class AdService : IAdService
         this.repository = repository;
     }
 
+    /// <summary>
+    /// Retrieves the carousel ads data
+    /// </summary>
+    /// <returns>Collection of carousel ad models</returns>
     public async Task<ICollection<CarouselAdResponseModel>> GetFiveAsync()
     {
         return await repository.AllReadonly<CarouselAdModel>()
