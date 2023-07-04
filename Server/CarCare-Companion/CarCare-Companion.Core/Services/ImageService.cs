@@ -26,12 +26,12 @@ public class ImageService : IImageService
             throw new ArgumentNullException("Bucket does not exist");
         }
 
-        var imageKey = Guid.NewGuid().ToString();
+        var imageKey = Guid.NewGuid().ToString().ToUpper();
 
         var request = new PutObjectRequest()
         {
             BucketName = AWSBucket,
-            Key = $"UserImages/{imageKey}",
+            Key = imageKey,
             InputStream = file.OpenReadStream()
         };
 
@@ -46,4 +46,25 @@ public class ImageService : IImageService
 
         return "invalidKey";
     }
+
+    public async Task<string> GetImageUrlAsync(string stringKey)
+    {
+        bool bucketExists = await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(s3Client, AWSBucket);
+        if (!bucketExists)
+        {
+            throw new ArgumentNullException("Bucket does not exist");
+        }
+
+        var urlRequest = new GetPreSignedUrlRequest()
+        {
+            BucketName = AWSBucket,
+            Key = stringKey,
+            Expires = DateTime.UtcNow.AddDays(1)
+        };
+
+        return s3Client.GetPreSignedURL(urlRequest);
+       
+    }
+
+
 }
