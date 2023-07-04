@@ -11,12 +11,13 @@ async function request(method, url, data) {
         options.body = JSON.stringify(data);
     }
     
-    const user = localStorage.getItem('user');
-    const auth = JSON.parse(user || '{}');
+    const userObj = localStorage.getItem('user');
+    const user = JSON.parse(userObj || '{}');
 
 
-    if (auth.accessToken) {
-        options.headers['Authorization'] = "Bearer " + auth.accessToken;
+    if (user.accessToken) {
+        options.headers['Authorization'] = "Bearer " + user.accessToken;
+        options.headers['UserId'] = user.id;
     }
 
     try {
