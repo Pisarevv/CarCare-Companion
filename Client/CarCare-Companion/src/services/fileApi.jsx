@@ -6,7 +6,7 @@ async function request(method, url, data, vehicleId) {
         headers: {}
     }
 
-    options.headers["vehicleId"] = vehicleId;
+    options.headers["VehicleId"] = vehicleId;
     options.body = data;
     
     const user = localStorage.getItem('user');
