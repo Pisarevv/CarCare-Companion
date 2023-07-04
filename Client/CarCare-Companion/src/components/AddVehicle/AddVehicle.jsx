@@ -252,7 +252,7 @@ const AddVehicle = (props) => {
         const formData = new FormData();
         formData.append("file", dataURLtoFile(vehicleImage, "inputImage"));
         await uploadVehicleImage(formData, vehicleId);
-        navigate('/');
+        navigate('/MyVehicles');
 
       } catch (error) {
         window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -1,22 +1,34 @@
+import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 
-import './Vehicles.css';
-import { useEffect, useState } from 'react';
 import { getUserVehicles } from '../../services/vehicleService';
+
 import VehicleCard from './VehicleCard';
 
-const Vehicles = () => {
+import { ErrorHandler } from "../../utils/ErrorHandler/ErrorHandler";
 
-    const navigate = useNavigate();
+import IsLoadingHOC from '../Common/IsLoadingHoc';
+
+import './Vehicles.css';
+
+const Vehicles = (props) => {
+
+    const { setLoading } = props;
 
     const [userVehicles, setUserVehicles] = useState([]);
 
 
     useEffect(() => {
         (async() => {
+          try {
            const vehicles = await getUserVehicles();
            setUserVehicles(userVehicles => vehicles);
-           console.log(vehicles);
+           setLoading(false);
+          }
+           catch (error) {
+            ErrorHandler(error)
+            setLoading(false);
+          }
         })()
     },[])
 
@@ -34,4 +46,4 @@ const Vehicles = () => {
     );
 }
 
-export default Vehicles;
+export default IsLoadingHOC(Vehicles);

@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 
 import { useContext, useEffect, useState } from "react";
 
+import { ErrorHandler } from "../../utils/ErrorHandler/ErrorHandler";
 
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
