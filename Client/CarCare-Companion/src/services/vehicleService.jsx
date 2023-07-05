@@ -25,3 +25,8 @@ export async function getUserVehicles(){
     var result = await api.get("/UserVehicles");
     return result;
 }
+
+export async function getVehicleDetails(vehicleId){
+    var result = await api.get(`/VehicleDetails/${vehicleId}`);
+    return result;
+}
