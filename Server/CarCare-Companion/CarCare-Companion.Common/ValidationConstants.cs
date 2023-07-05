@@ -30,6 +30,13 @@
             public const double MaxMileage = 999999999;
         }
 
+
+        public static class TaxRecord
+        {
+            public const int MinTitleLength = 2;
+            public const int MaxTitleLength = 50;
+        }
+
         public static class TripRecord
         {
             public const int MinStartDestinationNameLength = 2;
