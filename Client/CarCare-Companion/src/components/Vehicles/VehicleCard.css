@@ -46,7 +46,7 @@
 }
 
 
-.vehicle-card:hover{
+.vehicle-card:hover{ 
     transform: scale(1.1);
     transition: box-shadow 0.5s, transform 0.5s;
 }
