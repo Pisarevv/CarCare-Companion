@@ -28,6 +28,9 @@ public class ServiceRecord : BaseDeletableModel<ServiceRecord>
     [Comment("Description of the service")]
     public string? Description { get; set; }
 
+    [Comment("Cost of the service")]
+    public decimal Cost { get; set; }
+
     [Comment("The vehicle identifier")]
     [ForeignKey(nameof(Vehicle))]
     [Required]

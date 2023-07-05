@@ -32,6 +32,9 @@ public class TripRecord : BaseDeletableModel<TripRecord>
     [Comment("The used destination on the trip")]
     public double? UsedFuel { get; set; }
 
+    [Comment("The price of the fuel during the trip")]
+    public decimal? FuelPrice { get; set; }
+
     [Comment("The used vehicle on the trip")]
     [Required]
     public Vehicle Vehicle { get; set; } = null!;
