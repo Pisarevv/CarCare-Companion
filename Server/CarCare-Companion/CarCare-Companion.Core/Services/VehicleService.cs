@@ -140,7 +140,7 @@ public class VehicleService : IVehicleService
     /// <returns>A collection of vehicles with basic information about them</returns>
     public async Task<ICollection<VehicleBasicInfoResponseModel>> AllUserVehiclesByIdAsync(string userId)
     {
-                return await repository.AllReadonly<Vehicle>()
+         return await repository.AllReadonly<Vehicle>()
                .Where(v => v.OwnerId == Guid.Parse(userId))
                .OrderBy(v => v.CreatedOn)
                .Select(v => new VehicleBasicInfoResponseModel
@@ -153,5 +153,52 @@ public class VehicleService : IVehicleService
                .ToListAsync();
     }
 
-  
+    /// <summary>
+    /// Retrieves the vehicle details to the user
+    /// </summary>
+    /// <param name="vehicleId">The vehicle identifier</param>
+    /// <returns>Detailed model containing all the vehicle information</returns>
+    public async Task<VehicleDetailsResponseModel> GetVehicleDetails(string vehicleId)
+    {
+        return await repository.AllReadonly<Vehicle>()
+               .Where(v => v.IsDeleted == false)
+               .Where(v => v.Id == Guid.Parse(vehicleId))
+               .Select(v => new VehicleDetailsResponseModel
+               {
+                   Id = v.Id.ToString(),
+                   Make = v.Make,
+                   Model = v.Model,
+                   Mileage = v.Mileage.ToString(),
+                   ImageUrl = v.VehicleImageKey.ToString(),
+                   FuelType = v.FuelType.Name,
+                   VehicleType = v.VehicleType.Name
+               })
+               .FirstAsync();
+                                         
+    }
+
+    /// <summary>
+    /// Checks if the vehicle with the passed id exists
+    /// </summary>
+    /// <param name="id">The vehicle identifier</param>
+    /// <returns>Boolean based on the search result</returns>
+    public async Task<bool> DoesVehicleExistByIdAsync(string id)
+    {
+        return await repository.AllReadonly<Vehicle>().
+                     Where(v => v.Id == Guid.Parse(id))
+                     .AnyAsync();
+    }
+
+    /// <summary>
+    /// Checks if the user is the owner of the vehicle
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <param name="vehicleId">The vehicle identifier</param>
+    /// <returns>Boolean based on the search result</returns>
+    public async Task<bool> IsUserOwnerOfVehicleAsync(string userId, string vehicleId)
+    {
+        return await repository.AllReadonly<Vehicle>().
+                    Where(v => v.Id == Guid.Parse(vehicleId) && v.OwnerId == Guid.Parse(userId))
+                    .AnyAsync();    
+    }
 }

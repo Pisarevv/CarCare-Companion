@@ -12,9 +12,15 @@ public interface IVehicleService
 
     public Task<bool> DoesVehicleTypeExistAsync(int id);
 
+    public Task<bool> DoesVehicleExistByIdAsync(string id);
+
     public Task<string> CreateVehicleAsync(VehicleCreateRequestModel model);
 
     public Task<bool> AddImageToVehicle(string vehicleId, string imageId);
 
     public Task<ICollection<VehicleBasicInfoResponseModel>> AllUserVehiclesByIdAsync(string userId);
+
+    public Task<VehicleDetailsResponseModel> GetVehicleDetails(string vehicleId);
+
+    public Task<bool> IsUserOwnerOfVehicleAsync(string  userId, string vehicleId);
 }
