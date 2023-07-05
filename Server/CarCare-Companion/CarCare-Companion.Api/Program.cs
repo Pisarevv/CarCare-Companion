@@ -6,7 +6,8 @@ using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using CarCare_Companion.Infrastructure.Data.Seeding;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;  
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -93,7 +94,10 @@ namespace CarCare_Companion.Api
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IVehicleService, VehicleService>();
 
-            services.AddMvc();
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
 
             services.AddCors(options =>
             {
