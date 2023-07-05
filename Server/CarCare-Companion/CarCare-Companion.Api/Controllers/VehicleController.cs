@@ -149,7 +149,7 @@ public class VehicleController : BaseController
     /// <summary>
     /// Uploads the vehicle image to Amazon S3 and adds a relation to the vehicle
     /// </summary>
-    /// <param name="vehicleId">The vehicle Id</param>
+    /// <param name="vehicleId">The vehicle identifier</param>
     /// <param name="file">The image file for the vehicle</param>
     /// <returns></returns>
     [HttpPost]
@@ -199,6 +199,57 @@ public class VehicleController : BaseController
             return StatusCode(403, new StatusInformationMessage(GenericError));
         }
 
+    }
+
+
+    /// <summary>
+    /// Retrieves detailed vehicle  information
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <param name="vehicleId">The vehicle identifier</param>
+    /// <returns>Model containing all the vehicle details</returns>
+    [HttpGet]
+    [Route("/VehicleDetails/{vehicleId}")]
+    [Produces("application/json")]
+    public async Task<IActionResult> VehicleDetails([FromHeader] string userId,[FromRoute] string vehicleId)
+    {
+        try
+        {
+            bool vehicleExist = await vehicleService.DoesVehicleExistByIdAsync(vehicleId);
+
+            if (!vehicleExist)
+            {
+                return StatusCode(404, new StatusInformationMessage(ResourceNotFound));
+            }
+
+            bool isUserOwnerOfVehicle = await vehicleService.IsUserOwnerOfVehicleAsync(userId,vehicleId);
+
+
+            if (!isUserOwnerOfVehicle)
+            {
+                return StatusCode(403, new StatusInformationMessage(NoPermission));
+            }
+
+            VehicleDetailsResponseModel vehicle = await vehicleService.GetVehicleDetails(vehicleId);
+
+            if(vehicle.ImageUrl != null)
+            {
+                vehicle.ImageUrl = await imageService.GetImageUrlAsync(vehicle.ImageUrl);
+            }
+
+            return StatusCode(200, vehicle);
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
     }
 
 
