@@ -11,6 +11,7 @@ import Vehicles from './components/Vehicles/Vehicles';
 import AddVehicle from './components/AddVehicle/AddVehicle';
 
 import './App.css'
+import VehicleDetails from './components/VehicleDetails/VehicleDetails';
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path='/Logout' element={<Logout/>}/>
           <Route path='/MyVehicles' element={<Vehicles/>}/>
           <Route path='/Vehicle/Create' element={<AddVehicle/>}/>
+          <Route path='/Vehicle/Details/:id' element={<VehicleDetails/>}/>
           </Routes>
         </main> 
       </div>
