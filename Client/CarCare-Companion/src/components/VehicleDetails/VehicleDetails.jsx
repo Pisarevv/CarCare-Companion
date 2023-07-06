@@ -13,24 +13,24 @@ const VehicleDetails = (props) => {
 
     const { setLoading } = props;
 
-    const { id } = useParams(); 
+    const { id } = useParams();
 
-    const [vehicleDetails,setVehicleDetails] = useState({});
+    const [vehicleDetails, setVehicleDetails] = useState({});
 
 
     useEffect(() => {
-        ( async () => {
+        (async () => {
             try {
                 var vehicleDetailsResult = await getVehicleDetails(id)
                 setVehicleDetails(vehicleDetails => vehicleDetailsResult);
                 setLoading(false);
-            } 
+            }
             catch (error) {
                 ErrorHandler(error);
                 setLoading(false);
             }
         })()
-    },[])
+    }, [])
 
 
     return (
@@ -45,10 +45,10 @@ const VehicleDetails = (props) => {
                 <div className="vehicle-information">
                     <div className="vehicl-details-card">
                         {
-                        vehicleDetails.imageUrl 
-                            ? <img src={vehicleDetails.imageUrl} className="vehicle-details-image"></img>
-                            :
-                            <img src='/car-logo.png' className="vehicle-details-image"></img>
+                            vehicleDetails.imageUrl
+                                ? <img src={vehicleDetails.imageUrl} className="vehicle-details-image"></img>
+                                :
+                                <img src='/car-logo.png' className="vehicle-details-image"></img>
                         }
                         <div className="vehicle-details-card-container">
                             <div className="vehicle-details-information">Make: {vehicleDetails.make}</div>
