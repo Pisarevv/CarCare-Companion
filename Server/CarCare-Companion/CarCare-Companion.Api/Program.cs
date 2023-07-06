@@ -1,4 +1,15 @@
+using System.Text;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+
 using Amazon.S3;
+
+using Serilog;
+
 using CarCare_Companion.Api.ModelBinders;
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Services;
@@ -6,13 +17,6 @@ using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using CarCare_Companion.Infrastructure.Data.Seeding;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Serilog;
-using System.Text;
 
 namespace CarCare_Companion.Api
 {
