@@ -124,10 +124,7 @@ public class VehicleController : BaseController
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, new
-                {
-                    title = MissingOrInvalidFields,
-                });
+                return StatusCode(400, new StatusInformationMessage(InvalidData));
             }
             string vehicleId = await vehicleService.CreateVehicleAsync(model);
           
@@ -159,6 +156,11 @@ public class VehicleController : BaseController
     {
         try
         {
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(400, new StatusInformationMessage(InvalidData));
+            }
+
             if (file.Length == 0 || file == null)
             {
                 return StatusCode(400, new StatusInformationMessage(InvalidData));
