@@ -12,6 +12,8 @@ import AddVehicle from './components/AddVehicle/AddVehicle';
 
 import './App.css'
 import VehicleDetails from './components/VehicleDetails/VehicleDetails';
+import AddTrip from './components/AddTrip/AddTrip';
+import Trips from './components/Trips/Trips';
 
 
 function App() {
@@ -28,6 +30,8 @@ function App() {
           <Route path='/MyVehicles' element={<Vehicles/>}/>
           <Route path='/Vehicle/Create' element={<AddVehicle/>}/>
           <Route path='/Vehicle/Details/:id' element={<VehicleDetails/>}/>
+          <Route path='/Trips' element={<Trips/>}/>
+          <Route path='/Trips/Add' element={<AddTrip/>}/>
           </Routes>
         </main> 
       </div>
