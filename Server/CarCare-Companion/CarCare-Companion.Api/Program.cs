@@ -1,4 +1,5 @@
 using Amazon.S3;
+using CarCare_Companion.Api.ModelBinders;
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Services;
 using CarCare_Companion.Infrastructure.Data;
@@ -111,7 +112,10 @@ namespace CarCare_Companion.Api
             });
 
 
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
+            });
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
