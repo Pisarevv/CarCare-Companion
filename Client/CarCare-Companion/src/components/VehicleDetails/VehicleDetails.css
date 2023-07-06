@@ -6,19 +6,19 @@
     grid-row-gap: 31px;
 }
 
-.div1 {
+.management-buttons {
     grid-area: 1 / 1 / 2 / 2;
 }
 
-.div2 {
+.last-three-trips-container {
     grid-area: 2 / 1 / 3 / 2;
 }
 
-.div3 {
+.last-three-taes-container {
     grid-area: 3 / 1 / 4 / 2;
 }
 
-.div4 {
+.vehicle-information {
     grid-area: 1 / 2 / 4 / 3;
 }
 

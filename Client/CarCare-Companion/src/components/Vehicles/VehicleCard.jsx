@@ -8,7 +8,7 @@ const VehicleCard = ({vehicleData}) => {
         <div className="vehicle-card">
             {imageUrl 
             ? <img src={imageUrl} className="vehicle-image"></img> 
-            : <img src='../../public/car-logo.png' className="vehicle-image"></img> 
+            : <img src='/car-logo.png' className="vehicle-image"></img> 
             }
             <div className="vehicle-card-container">
                 <div className="vehicle-make">{make}</div>

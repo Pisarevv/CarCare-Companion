@@ -5,8 +5,9 @@ import { ErrorHandler } from '../../utils/ErrorHandler/ErrorHandler';
 
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
-import './VehicleDetails.css'
 import { getVehicleDetails } from '../../services/vehicleService';
+
+import './VehicleDetails.css'
 
 const VehicleDetails = (props) => {
 
@@ -39,15 +40,15 @@ const VehicleDetails = (props) => {
                     <NavLink to={`/Vehicle/Details`}>Trip manager</NavLink>
                     <NavLink to={`/Vehicle/Details`}>Service manager</NavLink>
                 </div>
-                <div className="div2"> TEST2</div>
-                <div className="div3">TEST3 </div>
-                <div className="div4">
+                <div className="last-three-trips-container"> TEST2</div>
+                <div className="last-three-taes-container">TEST3 </div>
+                <div className="vehicle-information">
                     <div className="vehicl-details-card">
                         {
                         vehicleDetails.imageUrl 
                             ? <img src={vehicleDetails.imageUrl} className="vehicle-details-image"></img>
                             :
-                            <img src='../../public/car-logo.png' className="vehicle-details-image"></img>
+                            <img src='/car-logo.png' className="vehicle-details-image"></img>
                         }
                         <div className="vehicle-details-card-container">
                             <div className="vehicle-details-information">Make: {vehicleDetails.make}</div>

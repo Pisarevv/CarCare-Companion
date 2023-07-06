@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink} from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import { getUserVehicles } from '../../services/vehicleService';
 
@@ -20,18 +20,18 @@ const Vehicles = (props) => {
 
 
     useEffect(() => {
-        (async() => {
-          try {
-           const vehicles = await getUserVehicles();
-           setUserVehicles(userVehicles => vehicles);
-           setLoading(false);
-          }
-           catch (error) {
-            ErrorHandler(error)
-            setLoading(false);
-          }
+        (async () => {
+            try {
+                const vehicles = await getUserVehicles();
+                setUserVehicles(userVehicles => vehicles);
+                setLoading(false);
+            }
+            catch (error) {
+                ErrorHandler(error)
+                setLoading(false);
+            }
         })()
-    },[])
+    }, [])
 
 
     return (
@@ -39,9 +39,9 @@ const Vehicles = (props) => {
             <div className="vehicle-container">
                 <div className="create-button"> <NavLink to="/Vehicle/Create">Add vehicle</NavLink></div>
                 <div className="user-recent-trips"><RecentTrips/></div>
-                <div className="div3"> test3</div>
-                <div className="div4"> test4</div>
-                <div className="user-vehicles"> {userVehicles.map(uv => <VehicleCard key ={uv.id} vehicleData = {uv}/>)}</div>
+                <div className="user-recent-services"> test3</div>
+                <div className="user-recent-trips"> test4</div>
+                <div className="user-vehicles"> {userVehicles.map(uv => <VehicleCard key={uv.id} vehicleData={uv} />)}</div>
             </div>
         </section>
     );
