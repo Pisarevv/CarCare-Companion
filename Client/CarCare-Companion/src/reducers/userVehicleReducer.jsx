@@ -1,3 +1,9 @@
+/**
+ * userVehicleReducer 
+ * ---------------------
+ * Reducer used in create and edit user vehicles storing their state.
+ * ---------------------- 
+**/
 
 const userVehicleReducer = (state, action) => {
     switch (action.type) {
