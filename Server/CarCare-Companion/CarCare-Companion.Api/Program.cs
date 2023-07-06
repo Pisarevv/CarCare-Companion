@@ -115,6 +115,7 @@ namespace CarCare_Companion.Api
             services.AddControllers(options =>
             {
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
+                options.ModelBinderProviders.Insert(1, new DoubleModelBinderProvider());
             });
 
             services.AddEndpointsApiExplorer();
