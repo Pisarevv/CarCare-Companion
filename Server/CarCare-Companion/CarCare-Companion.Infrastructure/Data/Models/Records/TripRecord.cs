@@ -30,9 +30,13 @@ public class TripRecord : BaseDeletableModel<TripRecord>
     public double MileageTravelled { get; set; }
 
     [Comment("The used destination on the trip")]
+    [Range(MinUsedFuel, MaxUsedFuel)]
     public double? UsedFuel { get; set; }
 
+
     [Comment("The price of the fuel during the trip")]
+    [Range(MinFuelPrice,MaxFuelPrice)]
+    [Precision(18,2)]
     public decimal? FuelPrice { get; set; }
 
     [Comment("The used vehicle on the trip")]

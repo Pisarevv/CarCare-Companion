@@ -29,6 +29,8 @@ public class TaxRecord : BaseDeletableModel<TaxRecord>
     public string? Description { get; set; }
 
     [Comment("Cost of the tax")]
+    [Range(MinCost,MaxCost)]
+    [Precision(18, 2)]
     public decimal Cost { get; set; }
 
     [Comment("The vehicle identifier")]

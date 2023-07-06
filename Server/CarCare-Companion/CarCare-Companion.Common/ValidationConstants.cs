@@ -27,7 +27,9 @@
             public const int MinTitleLength = 2;
             public const int MaxTitleLength = 50;
             public const double MinMileage = 0;
-            public const double MaxMileage = 999999999;
+            public const double MaxMileage = double.MaxValue;
+            public const double MinCost = 0;
+            public const double MaxCost = double.MaxValue;
         }
 
 
@@ -35,6 +37,8 @@
         {
             public const int MinTitleLength = 2;
             public const int MaxTitleLength = 50;
+            public const double MinCost = 0;
+            public const double MaxCost = double.MaxValue;
         }
 
         public static class TripRecord
@@ -45,6 +49,10 @@
             public const int MaxEndDestinationNameLength = 100;
             public const double MinTravelledRange = 0;
             public const double MaxTravelledRange = 10000;
+            public const double MinUsedFuel = 0;
+            public const double MaxUsedFuel = double.MaxValue;
+            public const double MinFuelPrice = 0;
+            public const double MaxFuelPrice = double.MaxValue;
         }
 
         public static class Vehicle

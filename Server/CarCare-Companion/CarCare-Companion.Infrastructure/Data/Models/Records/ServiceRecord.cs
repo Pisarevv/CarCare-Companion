@@ -29,6 +29,8 @@ public class ServiceRecord : BaseDeletableModel<ServiceRecord>
     public string? Description { get; set; }
 
     [Comment("Cost of the service")]
+    [Range(MinCost, MaxCost)]
+    [Precision(18, 2)]
     public decimal Cost { get; set; }
 
     [Comment("The vehicle identifier")]
