@@ -10,6 +10,7 @@ using CarCare_Companion.Infrastructure.Data.Models.BaseModels;
 using Models.Vehicle;
 
 using static CarCare_Companion.Common.ValidationConstants.TaxRecord;
+using CarCare_Companion.Infrastructure.Data.Models.Identity;
 
 public class TaxRecord : BaseDeletableModel<TaxRecord>
 {
@@ -41,4 +42,12 @@ public class TaxRecord : BaseDeletableModel<TaxRecord>
     [Comment("The vehicle that the tax is payed")]
     [Required]
     public Vehicle Vehicle { get; set; } = null!;
+
+    [Comment("Vehicle owner identifier")]
+    [Required]
+    [ForeignKey(nameof(Owner))]
+    public Guid OwnerId { get; set; }
+
+    [Required]
+    public ApplicationUser Owner { get; set; } = null!;
 }

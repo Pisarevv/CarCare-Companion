@@ -8,7 +8,8 @@ using CarCare_Companion.Infrastructure.Data.Models.BaseModels;
 using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
 
 using static CarCare_Companion.Common.ValidationConstants.TripRecord;
-
+using System.ComponentModel.DataAnnotations.Schema;
+using CarCare_Companion.Infrastructure.Data.Models.Identity;
 
 public class TripRecord : BaseDeletableModel<TripRecord>
 {
@@ -46,4 +47,14 @@ public class TripRecord : BaseDeletableModel<TripRecord>
     [Comment("The vehicle identifier")]
     [Required]
     public Guid VehicleId { get; set; }
+
+    [Comment("Vehicle owner identifier")]
+    [Required]
+    [ForeignKey(nameof(Owner))]
+    public Guid OwnerId { get; set; }
+
+    [Required]
+    public ApplicationUser Owner { get; set; } = null!;
+
+
 }
