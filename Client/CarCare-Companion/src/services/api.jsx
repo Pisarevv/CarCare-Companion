@@ -43,20 +43,20 @@ async function request(method, url, data) {
 
 
 
-function post(url, data, contentType) {
-    return request("POST", url, data, contentType)
+function post(url, data) {
+    return request("POST", url, data)
 }
 
 function get(url) {
     return request("GET", url);
 }
 
-function put(url, data, contentType) {
-    return request("PUT", url, data, contentType)
+function put(url, data) {
+    return request("PUT", url, data)
 }
 
-function patch(url, data, contentType) {
-    return request("PATCH", url, data, contentType)
+function patch(url, data) {
+    return request("PATCH", url, data)
 }
 
 function del(url) {
