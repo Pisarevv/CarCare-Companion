@@ -1,5 +1,5 @@
 /**
- * userProductReducer 
+ * tripReducer 
  * ---------------------
  * Reducer used in create and edit user trips storing their state.
  * ---------------------- 

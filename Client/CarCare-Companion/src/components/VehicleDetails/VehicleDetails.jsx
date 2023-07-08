@@ -40,8 +40,8 @@ const VehicleDetails = (props) => {
                     <NavLink to={`/Vehicle/Details`}>Trip manager</NavLink>
                     <NavLink to={`/Vehicle/Details`}>Service manager</NavLink>
                 </div>
-                <div className="last-three-trips-container"> TEST2</div>
-                <div className="last-three-taes-container">TEST3 </div>
+                <div className="last-three-taxes-container"> TEST2</div>
+                <div className="last-three-trips-container">TEST3 </div>
                 <div className="vehicle-information">
                     <div className="vehicl-details-card">
                         {

@@ -1,5 +1,6 @@
-.vehicles {
+.vehicles-section {
     padding: 50px 2%;
+    background-color: #242424;
 }
 
 .vehicle-container {
@@ -8,6 +9,7 @@
     grid-template-rows: repeat(9, 1fr);
     grid-column-gap: 0px;
     grid-row-gap: 0px;
+  
 }
 
 
@@ -37,23 +39,23 @@
     top: 0;
 }
 
-.div3 {
+.user-recent-services {
     grid-area: 5 / 1 / 10 / 2;
     position: sticky;
     top: 0;
 }
 
-.div4 {
+.user-recent-taxes {
     grid-area: 2 / 8 / 8 / 9;
     position: sticky;   
     top: 0;
 }
 
 .user-vehicles {
-    grid-area: 1 / 3 / 9 / 7;
+    grid-area: 1 / 3 / 7 / 7;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: baseline;
     gap: 2em;
     opacity: 0;
     transform: translate3d(0, 300px, 0);

@@ -35,12 +35,12 @@ const Vehicles = (props) => {
 
 
     return (
-        <section className="vehicles">
+        <section className="vehicles-section">
             <div className="vehicle-container">
                 <div className="create-button"> <NavLink to="/Vehicle/Create">Add vehicle</NavLink></div>
-                <div className="user-recent-trips"><RecentTrips/></div>
+                {/* <div className="user-recent-trips"></div> */}
                 <div className="user-recent-services"> test3</div>
-                <div className="user-recent-trips"> test4</div>
+                <div className="user-recent-trips"><RecentTrips/></div>
                 <div className="user-vehicles"> {userVehicles.map(uv => <VehicleCard key={uv.id} vehicleData={uv} />)}</div>
             </div>
         </section>
