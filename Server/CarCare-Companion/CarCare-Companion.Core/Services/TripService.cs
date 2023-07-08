@@ -17,7 +17,7 @@ public class TripService : ITripService
         this.repository = repository;
     }
 
-    public async Task<string> CreateTripAsync(TripCreateRequestModel model)
+    public async Task<string> CreateTripAsync(string userId, TripCreateRequestModel model)
     {
         TripRecord tripToAdd = new TripRecord()
         {
@@ -27,7 +27,8 @@ public class TripService : ITripService
             UsedFuel = model.UsedFuel,
             FuelPrice = model.FuelPrice,
             CreatedOn = DateTime.UtcNow,
-            VehicleId = Guid.Parse(model.VehicleId)
+            VehicleId = Guid.Parse(model.VehicleId),
+            OwnerId = Guid.Parse(userId)
 
         };
 
@@ -36,4 +37,6 @@ public class TripService : ITripService
 
         return tripToAdd.Id.ToString();
     }
+
+
 }

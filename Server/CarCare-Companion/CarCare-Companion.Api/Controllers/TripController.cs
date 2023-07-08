@@ -14,24 +14,38 @@ public class TripController : BaseController
 {
     private readonly ITripService tripService;
     private readonly IVehicleService vehicleService;
+    private readonly IIdentityService identityService;
     private readonly ILogger<TripController> logger;
 
-    public TripController(ITripService tripService, IVehicleService vehicleService, ILogger<TripController> logger)
+    public TripController
+    (
+        ITripService tripService, IVehicleService vehicleService,
+        IIdentityService identityService, ILogger<TripController> logger
+    )
+
     {
         this.tripService = tripService;
         this.vehicleService = vehicleService;
+        this.identityService = identityService;
         this.logger = logger;
     }
 
     [HttpPost]
     [Route("/CreateTrip")]
-    public async Task<IActionResult> CreateTrip(TripCreateRequestModel model)
+    public async Task<IActionResult> CreateTrip([FromHeader] string userId,[FromBody] TripCreateRequestModel model)
     {
         try
         {
             if (!ModelState.IsValid)
             {
                 return StatusCode(400, InvalidData);
+            }
+
+            bool doesUserExist = await identityService.DoesUserExistByIdAsync(userId);
+
+            if (!doesUserExist)
+            {
+                return StatusCode(403, InvalidUser);
             }
 
             bool doesVehicleExist = await vehicleService.DoesVehicleExistByIdAsync(model.VehicleId);
@@ -41,9 +55,9 @@ public class TripController : BaseController
                 return StatusCode(404, ResourceNotFound);
             }
 
-            string createdTripId = await tripService.CreateTripAsync(model);
+            string createdTripId = await tripService.CreateTripAsync(userId,model);
 
-            return StatusCode(200, createdTripId);
+            return StatusCode(200, new StatusInformationMessage(createdTripId));
         }
         catch (SqlException ex)
         {
