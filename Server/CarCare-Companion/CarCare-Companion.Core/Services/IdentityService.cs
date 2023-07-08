@@ -52,9 +52,9 @@ public class IdentityService : IIdentityService
     /// </summary>
     /// <param name="username">The user username used for the searching.</param>
     /// <returns>A boolean if the user exists.</returns>
-    public async Task<bool> DoesUserExistByIdAsync(string id)
+    public async Task<bool> DoesUserExistByIdAsync(string userId)
     {
-        var userExists = await userManager.FindByIdAsync(id);
+        var userExists = await userManager.FindByIdAsync(userId);
 
         if (userExists == null)
         {
@@ -167,7 +167,7 @@ public class IdentityService : IIdentityService
                     new Claim(JwtRegisteredClaimNames.Name, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
-
+        
         foreach (var userRole in userRoles)
         {
             authClaims.Add(new Claim(ClaimTypes.Role, userRole));
