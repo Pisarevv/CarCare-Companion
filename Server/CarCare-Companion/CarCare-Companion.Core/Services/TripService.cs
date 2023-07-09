@@ -55,7 +55,7 @@ public class TripService : ITripService
                    UsedFuel = t.UsedFuel,
                    VehicleMake = t.Vehicle.Make,
                    VehicleModel = t.Vehicle.Model,
-                   DateCreated = t.CreatedOn,
+                   DateCreated = t.CreatedOn.ToString("dd/MM/yyyy"),
                    TripCost = t.Cost
              
                })
