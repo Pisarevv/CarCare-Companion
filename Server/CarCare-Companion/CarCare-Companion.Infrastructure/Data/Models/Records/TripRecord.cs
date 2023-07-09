@@ -35,10 +35,14 @@ public class TripRecord : BaseDeletableModel<TripRecord>
     public double? UsedFuel { get; set; }
 
 
-    [Comment("The price of the fuel during the trip")]
+    [Comment("The price of the fuel during the trip in levs")]
     [Range(MinFuelPrice,MaxFuelPrice)]
     [Precision(18,2)]
     public decimal? FuelPrice { get; set; }
+
+    [Comment("The cost of the trip")]
+    [Precision(18, 2)]
+    public decimal? Cost { get; set; }
 
     [Comment("The used vehicle on the trip")]
     [Required]
