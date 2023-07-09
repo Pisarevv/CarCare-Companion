@@ -11,3 +11,8 @@ export async function createTrip(startDestination,endDestination,mileageTravelle
     var result = await api.post("/CreateTrip", {startDestination,endDestination,mileageTravelled,usedFuel,fuelPrice,vehicleId});
     return result;
 }
+
+export async function getAllUserTrips(){
+    var result = await api.get("/AllUserTrips");
+    return result;
+}
