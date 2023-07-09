@@ -1,17 +1,45 @@
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+
+import { getAllUserTrips } from '../../services/tripService';
+
+import UserTripCard from './UserTripCard';
+
+import { ErrorHandler } from '../../utils/ErrorHandler/ErrorHandler';
+
+import IsLoadingHOC from '../Common/IsLoadingHoc';
+
 import './Trips.css'
 
-const Trips = () => {
+const Trips = (props) => {
+
+    const [userTrips, setUserTrips] = useState([]);
+
+    const { setLoading } = props;
+
+    useEffect(() => {
+        (async () => {
+            try {
+                let userTripsResult = await getAllUserTrips();
+                setUserTrips(userTrips => userTripsResult);
+                setLoading(false);
+            } catch (error) {
+              ErrorHandler(error);
+              setLoading(false);
+            }
+        })()
+    }, [])
 
     return (
         <section className="trips-section">
             <div className="trips-container">
-                <div className="div1"><NavLink to="/Trips/Add">Add trip</NavLink> </div>
-                <div className="div2"> </div>
-                <div className="div3"> </div>
+                <div className="add-trip-button"><NavLink to="/Trips/Add">Add trip</NavLink> </div>
+                <div className="div2"> 1</div>
+                <div className="trips-list">{userTrips.map(ut => <UserTripCard key={ut.id} tripDetails={ut} />)}</div>
             </div>
         </section>
     )
 }
 
-export default Trips;
+
+export default IsLoadingHOC(Trips);
