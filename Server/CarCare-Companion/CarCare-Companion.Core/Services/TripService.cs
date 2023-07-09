@@ -1,12 +1,13 @@
 ﻿namespace CarCare_Companion.Core.Services;
 
-using System;
-using System.Threading.Tasks;
-
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Trip;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class TripService : ITripService
 {
@@ -28,7 +29,8 @@ public class TripService : ITripService
             FuelPrice = model.FuelPrice,
             CreatedOn = DateTime.UtcNow,
             VehicleId = Guid.Parse(model.VehicleId),
-            OwnerId = Guid.Parse(userId)
+            OwnerId = Guid.Parse(userId),
+            Cost = CalculateTripCost(model.FuelPrice, model.UsedFuel)
 
         };
 
@@ -38,5 +40,32 @@ public class TripService : ITripService
         return tripToAdd.Id.ToString();
     }
 
+    public async Task<ICollection<TripDetailsByUserResponseModel>> GetAllTripsByUsedIdAsync(string userId)
+    {
+        return await repository.AllReadonly<TripRecord>()
+               .Where(t => t.OwnerId == Guid.Parse(userId))
+               .OrderByDescending(t => t.CreatedOn)
+               .Select(t => new TripDetailsByUserResponseModel
+               {
+                   Id = t.Id.ToString(),
+                   StartDestination = t.StartDestination,
+                   EndDestination = t.EndDestination,
+                   MileageTravelled = t.MileageTravelled,
+                   FuelPrice = t.FuelPrice,
+                   UsedFuel = t.UsedFuel,
+                   VehicleMake = t.Vehicle.Make,
+                   VehicleModel = t.Vehicle.Model,
+                   DateCreated = t.CreatedOn,
+                   TripCost = t.Cost
+             
+               })
+               .ToListAsync();
 
+    }
+
+
+    private decimal? CalculateTripCost(decimal? fuelPrice, double? usedFuel)
+    {
+        return fuelPrice * Convert.ToDecimal(usedFuel);
+    }
 }
