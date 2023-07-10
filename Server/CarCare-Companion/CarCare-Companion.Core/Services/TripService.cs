@@ -63,6 +63,21 @@ public class TripService : ITripService
 
     }
 
+    public async Task<int> GetAllUserTripsCountAsync(string userId)
+    {
+        return await repository.AllReadonly<TripRecord>()
+               .Where(tr => tr.OwnerId == Guid.Parse(userId))
+               .CountAsync();
+    }
+
+    public async Task<decimal?> GetAllUserTripsCostAsync(string userId)
+    {
+        return await repository.All<TripRecord>()
+               .Where(tr => tr.OwnerId == Guid.Parse(userId) && tr.Cost != null)
+               .Select(t => t.Cost)
+               .SumAsync();
+           
+    }
 
     private decimal? CalculateTripCost(decimal? fuelPrice, double? usedFuel)
     {
