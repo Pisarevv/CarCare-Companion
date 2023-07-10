@@ -9,18 +9,18 @@ using CarCare_Companion.Core.Models.Trip;
 
 using static Common.StatusResponses;
 
-[Route("api/[controller]")]
-public class TripController : BaseController
+[Route("[controller]")]
+public class TripsController : BaseController
 {
     private readonly ITripService tripService;
     private readonly IVehicleService vehicleService;
     private readonly IIdentityService identityService;
-    private readonly ILogger<TripController> logger;
+    private readonly ILogger<TripsController> logger;
 
-    public TripController
+    public TripsController
     (
         ITripService tripService, IVehicleService vehicleService,
-        IIdentityService identityService, ILogger<TripController> logger
+        IIdentityService identityService, ILogger<TripsController> logger
     )
 
     {
@@ -31,13 +31,47 @@ public class TripController : BaseController
     }
 
     /// <summary>
+    /// Retrieves  all the user trips 
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>Collection of the user trips </returns>
+    [HttpGet]
+    [Produces("application/json")]
+    public async Task<IActionResult> AllTripsByUsedIdAsync([FromHeader] string userId)
+    {
+        try
+        {
+            bool doesUserExist = await identityService.DoesUserExistByIdAsync(userId);
+
+            if (!doesUserExist)
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            ICollection<TripDetailsByUserResponseModel> userTrips = await tripService.GetAllTripsByUsedIdAsync(userId);
+            return StatusCode(200, userTrips);
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
     /// Creates a trip on a vehicle selected by the user
     /// </summary>
     /// <param name="userId">The user identifier</param>
     /// <param name="model">The model containing the trip details</param>
     /// <returns>The Id of the created trip</returns>
     [HttpPost]
-    [Route("/CreateTrip")]
+    [Produces("application/json")]
     public async Task<IActionResult> CreateTrip([FromHeader] string userId,[FromBody] TripCreateRequestModel model)
     {
         try
@@ -77,38 +111,7 @@ public class TripController : BaseController
         }
     }
 
-    /// <summary>
-    /// Creates a trip on a vehicle selected by the user
-    /// </summary>
-    /// <param name="userId">The user identifier</param>
-    /// <param name="model">The model containing the trip details</param>
-    /// <returns>The Id of the created trip</returns>
-    [HttpGet]
-    [Route("/AllUserTrips")]
-    public async Task<IActionResult> AllTripsByUsedIdAsync([FromHeader] string userId)
-    {
-        try
-        {
-            bool doesUserExist = await identityService.DoesUserExistByIdAsync(userId);
+    
 
-            if (!doesUserExist)
-            {
-                return StatusCode(403, InvalidUser);
-            }
-
-            ICollection<TripDetailsByUserResponseModel> userTrips = await tripService.GetAllTripsByUsedIdAsync(userId);           
-            return StatusCode(200, userTrips);
-
-        }
-        catch (SqlException ex)
-        {
-            logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
-        }
-        catch (Exception ex)
-        {
-            logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
-        }
-    }
+   
 }

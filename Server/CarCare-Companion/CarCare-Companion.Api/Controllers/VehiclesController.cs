@@ -13,29 +13,32 @@ using static CarCare_Companion.Common.StatusResponses;
 /// <summary>
 /// The vehicle controller handles vehicle related operations
 /// </summary>
-[Route("[/Vehicle]")]
-public class VehicleController : BaseController
+[Route("[controller]")]
+public class VehiclesController : BaseController
 {
     private readonly IVehicleService vehicleService;
     private readonly IImageService imageService;
-    private readonly ILogger<VehicleController> logger;
+    private readonly ILogger<VehiclesController> logger;
 
-    public VehicleController(IVehicleService vehicleService, IImageService imageService, ILogger<VehicleController> logger)
+    public VehiclesController(IVehicleService vehicleService, IImageService imageService, ILogger<VehiclesController> logger)
     {
         this.vehicleService = vehicleService;
         this.imageService = imageService;
         this.logger = logger;
     }
 
-
+    /// <summary>
+    /// Retrieves all the user vehicles
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns>Collection of the user vehicles</returns>
     [HttpGet]
-    [Route("/UserVehicles")]
     [Produces("application/json")]
-    public async Task<IActionResult> GetUserVehicles([FromHeader] string UserId)
+    public async Task<IActionResult> GetUserVehicles([FromHeader] string userId)
     {
         try
         {
-            ICollection<VehicleBasicInfoResponseModel> vehicles = await vehicleService.AllUserVehiclesByIdAsync(UserId);
+            ICollection<VehicleBasicInfoResponseModel> vehicles = await vehicleService.AllUserVehiclesByIdAsync(userId);
             foreach (var vehicle in vehicles)
             {
                 if(vehicle.ImageUrl != null)
@@ -57,58 +60,6 @@ public class VehicleController : BaseController
         }
     }
 
-    /// <summary>
-    /// Returns the available fuel types
-    /// </summary>
-    /// <returns>Collection of fuel types</returns>
-    [HttpGet]
-    [Route("/FuelTypes")]
-    [Produces("application/json")]
-    public async Task<IActionResult> GetFuelTypes()
-    {
-        try
-        {
-            ICollection<FuelTypeResponseModel> fuelTypes = await vehicleService.AllFuelTypesAsync();
-            return StatusCode(200, fuelTypes);
-        }
-        catch (SqlException ex)
-        {
-            logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
-        }
-        catch (Exception ex)
-        {
-            logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
-        }
-    }
-
-    /// <summary>
-    /// Returns the available vehicle types
-    /// </summary>
-    /// <returns>Collection of vehicle types</returns>
-    [HttpGet]
-    [Route("/VehicleTypes")]
-    [Produces("application/json")]
-    public async Task<IActionResult> GetVehicleTypes()
-    {
-        try
-        {
-            ICollection<VehicleTypeResponseModel> vehicleTypes = await vehicleService.AllVehicleTypesAsync();
-
-            return StatusCode(200, vehicleTypes);
-        }
-        catch (SqlException ex)
-        {
-            logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
-        }
-        catch (Exception ex)
-        {
-            logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
-        }
-    }
 
     /// <summary>
     /// Creates a new vehicle and adds it to the user vehicle collection
@@ -116,7 +67,6 @@ public class VehicleController : BaseController
     /// <param name="model">The input data containing the vehicle information</param>
     /// <returns>The Id of the created vehicle</returns>
     [HttpPost]
-    [Route("/VehicleCreate")]
     [Produces("application/json")]
     public async Task<IActionResult> CreateVehicle(VehicleCreateRequestModel model)
     {
@@ -150,7 +100,7 @@ public class VehicleController : BaseController
     /// <param name="file">The image file for the vehicle</param>
     /// <returns></returns>
     [HttpPost]
-    [Route("/VehicleImageUpload")]
+    [Route("ImageUpload")]
     [Produces("application/json")]
     public async Task<IActionResult> UploadVehicleImage([FromHeader] string vehicleId,[FromForm] IFormFile file)
     {
@@ -211,7 +161,7 @@ public class VehicleController : BaseController
     /// <param name="vehicleId">The vehicle identifier</param>
     /// <returns>Model containing all the vehicle details</returns>
     [HttpGet]
-    [Route("/VehicleDetails/{vehicleId}")]
+    [Route("Details/{vehicleId}")]
     [Produces("application/json")]
     public async Task<IActionResult> VehicleDetails([FromHeader] string userId,[FromRoute] string vehicleId)
     {
@@ -241,6 +191,59 @@ public class VehicleController : BaseController
 
             return StatusCode(200, vehicle);
 
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
+    /// Returns the available fuel types
+    /// </summary>
+    /// <returns>Collection of fuel types</returns>
+    [HttpGet]
+    [Route("FuelTypes")]
+    [Produces("application/json")]
+    public async Task<IActionResult> GetFuelTypes()
+    {
+        try
+        {
+            ICollection<FuelTypeResponseModel> fuelTypes = await vehicleService.AllFuelTypesAsync();
+            return StatusCode(200, fuelTypes);
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
+    /// Returns the available vehicle types
+    /// </summary>
+    /// <returns>Collection of vehicle types</returns>
+    [HttpGet]
+    [Route("Types")]
+    [Produces("application/json")]
+    public async Task<IActionResult> GetVehicleTypes()
+    {
+        try
+        {
+            ICollection<VehicleTypeResponseModel> vehicleTypes = await vehicleService.AllVehicleTypesAsync();
+
+            return StatusCode(200, vehicleTypes);
         }
         catch (SqlException ex)
         {
