@@ -8,6 +8,7 @@ using CarCare_Companion.Core.Models.Status;
 using CarCare_Companion.Core.Models.Vehicle;
 
 using static CarCare_Companion.Common.StatusResponses;
+using CarCare_Companion.Common;
 
 
 /// <summary>
@@ -30,14 +31,20 @@ public class VehiclesController : BaseController
     /// <summary>
     /// Retrieves all the user vehicles
     /// </summary>
-    /// <param name="userId"></param>
     /// <returns>Collection of the user vehicles</returns>
     [HttpGet]
     [Produces("application/json")]
-    public async Task<IActionResult> GetUserVehicles([FromHeader] string userId)
+    public async Task<IActionResult> GetUserVehicles()
     {
         try
         {
+            var userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
             ICollection<VehicleBasicInfoResponseModel> vehicles = await vehicleService.AllUserVehiclesByIdAsync(userId);
             foreach (var vehicle in vehicles)
             {
@@ -157,13 +164,12 @@ public class VehiclesController : BaseController
     /// <summary>
     /// Retrieves detailed vehicle  information
     /// </summary>
-    /// <param name="userId">The user identifier</param>
     /// <param name="vehicleId">The vehicle identifier</param>
     /// <returns>Model containing all the vehicle details</returns>
     [HttpGet]
     [Route("Details/{vehicleId}")]
     [Produces("application/json")]
-    public async Task<IActionResult> VehicleDetails([FromHeader] string userId,[FromRoute] string vehicleId)
+    public async Task<IActionResult> VehicleDetails([FromRoute] string vehicleId)
     {
         try
         {
@@ -172,6 +178,13 @@ public class VehiclesController : BaseController
             if (!vehicleExist)
             {
                 return StatusCode(404, new StatusInformationMessage(ResourceNotFound));
+            }
+
+            var userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
             }
 
             bool isUserOwnerOfVehicle = await vehicleService.IsUserOwnerOfVehicleAsync(userId,vehicleId);
