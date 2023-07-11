@@ -161,11 +161,11 @@ public class IdentityService : IIdentityService
     /// <returns>Collection of Claims to be used in the JWT token generator</returns>
     private List<Claim> GenerateUserAuthClaims(ApplicationUser user, IList<string> userRoles)
     {
-     
+
         var authClaims = new List<Claim>
                 {
-                    new Claim(JwtRegisteredClaimNames.Name, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName),
                 };
         
         foreach (var userRole in userRoles)
