@@ -74,8 +74,8 @@ public class TripService : ITripService
     {
         return await repository.All<TripRecord>()
                .Where(tr => tr.OwnerId == Guid.Parse(userId) && tr.Cost != null)
-               .Select(t => t.Cost)
-               .SumAsync();
+               .SumAsync(tr => tr.Cost);
+       
            
     }
 
