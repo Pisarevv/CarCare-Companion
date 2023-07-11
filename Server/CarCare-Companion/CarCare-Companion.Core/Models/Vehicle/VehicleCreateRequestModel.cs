@@ -28,9 +28,6 @@ public class VehicleCreateRequestModel
     public int FuelTypeId { get; set; }
 
     [Required]
-    public Guid OwnerId { get; set; }
-
-    [Required]
     public int VehicleTypeId { get; set; }
 
 }

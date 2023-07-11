@@ -47,23 +47,6 @@ public class IdentityService : IIdentityService
         return true;
     }
 
-    /// <summary>
-    /// Checks if an user exists by his Id.
-    /// </summary>
-    /// <param name="username">The user username used for the searching.</param>
-    /// <returns>A boolean if the user exists.</returns>
-    public async Task<bool> DoesUserExistByIdAsync(string userId)
-    {
-        var userExists = await userManager.FindByIdAsync(userId);
-
-        if (userExists == null)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
 
     /// <summary>
     /// Logs in the user.
@@ -102,8 +85,7 @@ public class IdentityService : IIdentityService
         {
             AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
             Email = user.Email,
-            Id = user.Id.ToString(),
-            Role = userRoles.First().ToString()
+
         };
        
     }
@@ -144,9 +126,7 @@ public class IdentityService : IIdentityService
         return new AuthDataModel
         {
             AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
-            Email = user.Email,
-            Id = user.Id.ToString(),
-            Role = "User"
+            Email = user.Email, 
         };
 
     }

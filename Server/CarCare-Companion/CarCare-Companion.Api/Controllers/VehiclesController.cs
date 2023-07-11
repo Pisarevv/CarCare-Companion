@@ -79,11 +79,18 @@ public class VehiclesController : BaseController
     {
         try
         {
+            var userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
             if (!ModelState.IsValid)
             {
                 return StatusCode(400, new StatusInformationMessage(InvalidData));
             }
-            string vehicleId = await vehicleService.CreateVehicleAsync(model);
+            string vehicleId = await vehicleService.CreateVehicleAsync(userId,model);
           
             return StatusCode(200, vehicleId);
 

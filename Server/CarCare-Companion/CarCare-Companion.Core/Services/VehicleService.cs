@@ -27,7 +27,7 @@ public class VehicleService : IVehicleService
     /// </summary>
     /// <param name="model">The input model containing the vehicle information</param>
     /// <returns>String containing the newly created vehicle Id</returns>
-    public async Task<string> CreateVehicleAsync(VehicleCreateRequestModel model)
+    public async Task<string> CreateVehicleAsync(string userId, VehicleCreateRequestModel model)
     {
         Vehicle newVehicle = new Vehicle()
         {
@@ -37,7 +37,7 @@ public class VehicleService : IVehicleService
             FuelTypeId = model.FuelTypeId,
             VehicleTypeId = model.VehicleTypeId,
             Year = model.Year,
-            OwnerId = model.OwnerId,
+            OwnerId = Guid.Parse(userId),
             CreatedOn = DateTime.UtcNow
         };
 
