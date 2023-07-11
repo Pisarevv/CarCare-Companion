@@ -56,7 +56,7 @@ const ValidationErrors = {
   inputNotNumber: "This field accepts only valid numbers",
   yearNotValid: `The start year has to be past 1900 and before ${new Date().getFullYear()}`,
   invalidFileFormat: "The file format is not supported",
-  fileSizeTooBig : "Please select a file under 2 MB"
+  fileSizeTooBig: "Please select a file under 2 MB"
 }
 
 const ValidationRegexes = {
@@ -68,8 +68,6 @@ const ValidationRegexes = {
 
 const AddVehicle = (props) => {
 
-  const { user } = useAuthContext();
-
   const navigate = useNavigate();
 
   const { setLoading } = props;
@@ -77,8 +75,6 @@ const AddVehicle = (props) => {
   const [vehicleImage, setVehicleImage] = useState(null);
   const [vehicleImageError, setVehicleImageError] = useState("");
   const [isImageValid, setIsImageValid] = useState("false");
-
-  const [vehicleId, setVehicleId] = useState("");
 
   const [fuelTypes, setFuelTypes] = useState([]);
   const [vehicleTypes, setVehicleTypes] = useState([]);
@@ -204,15 +200,37 @@ const AddVehicle = (props) => {
   }
 
   const validateImageFileSize = (file) => {
-    const fileSizeInMb = Math.round((file.size/1024));
-    if(fileSizeInMb < 2048){
+    const fileSizeInMb = Math.round((file.size / 1024));
+    if (fileSizeInMb < 2048) {
       setVehicleImageError("");
       setIsImageValid(true);
       return true;
     }
-      setVehicleImageError(ValidationErrors.fileSizeTooBig);
-      setIsImageValid(false);
-      return false;
+    setVehicleImageError(ValidationErrors.fileSizeTooBig);
+    setIsImageValid(false);
+    return false;
+  }
+
+  const onStepOneFinished = (e) => {
+    e.preventDefault()
+    let isMakeValid = validateTextFields("make", userVehicle.make);
+    let isModelValid = validateTextFields("model", userVehicle.model);
+    let isFuelTypeValid = validateSelectFields("fuelType", userVehicle.fuelType);
+    let isMileageValid = validateNumberFields("mileage", userVehicle.mileage);
+    let isTypeValid = validateSelectFields("type", userVehicle.type);
+    let isYearValid = validateNumberFields("year", userVehicle.year);
+
+    if (isMakeValid && isMileageValid &&
+      isFuelTypeValid && isModelValid &&
+      isTypeValid && isYearValid
+    ) {
+      setStepOneFinished(stepOneFinished => true)
+    }
+    else {
+      setStepOneFinished(stepOneFinished => false)
+    }
+
+
   }
 
   const onVehicleAdd = async (e) => {
@@ -225,20 +243,29 @@ const AddVehicle = (props) => {
       let isTypeValid = validateSelectFields("type", userVehicle.type);
       let isYearValid = validateNumberFields("year", userVehicle.year);
 
+      let vehicleId = "";
+
       if (isMakeValid && isMileageValid &&
         isFuelTypeValid && isModelValid &&
         isTypeValid && isYearValid
       ) {
         const { make, model, mileage, year, fuelType, type } = userVehicle;
-        const userId = user.id;
-
-        var vehicleIdResponse = await createVehicle(make, model, mileage, year, fuelType, type, userId);
-        setVehicleId(vehicleId => vehicleIdResponse);
-        setStepOneFinished(true);
+        var vehicleIdResponse = await createVehicle(make, model, mileage, year, fuelType, type);
+        vehicleId = vehicleIdResponse;
       }
+
       else {
         throw "Invalid input fields"
       }
+
+      if (vehicleImage && isImageValid) {
+
+        const formData = new FormData();
+        formData.append("file", dataURLtoFile(vehicleImage, "inputImage"));
+        await uploadVehicleImage(formData, vehicleId);
+        navigate('/MyVehicles');
+      }
+
     } catch (error) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       ErrorHandler(error)
@@ -259,7 +286,7 @@ const AddVehicle = (props) => {
         ErrorHandler(error)
       }
     }
-    else{
+    else {
       navigate('/');
     }
   }
@@ -275,7 +302,7 @@ const AddVehicle = (props) => {
                 ?
                 <>
                   <h2>Vehicle details</h2>
-                  <form onSubmit={onVehicleAdd}>
+                  <form onSubmit={onStepOneFinished}>
                     <div className="input-group input-group-lg">
                       <label>Make:</label>
                       <input className="form-control" type="text" placeholder="Vehicle make" name="make" value={userVehicle.make} onChange={onInputChange} />
@@ -321,7 +348,7 @@ const AddVehicle = (props) => {
                 :
                 <div className="step-two-container">
                   <h2>Vehicle image</h2>
-                  <form onSubmit={onImageAdd}>
+                  <form onSubmit={onVehicleAdd}>
                     <div className="input-group input-group-lg img-group">
                       <label>Image: (Optional)</label>
                       {vehicleImage && <img className="vehicle-image" src={vehicleImage} alt="Selected" />}
