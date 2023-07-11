@@ -17,11 +17,13 @@ export async function createTrip(startDestination,endDestination,mileageTravelle
     return result;
 }
 
-export async function getTripsCount(){
+export async function getUserTripsCount(){
     var result = await api.get("/Trips/Count");
+    return result;
 }
 
-export async function getTripsCost(){
+export async function getUserTripsCost(){
     var result = await api.get("/Trips/Cost");
+    return result;
 }
 
