@@ -7,12 +7,12 @@ export async function getFuelTypes(){
 }
 
 export async function getVehicleTypes(){
-    var result = await api.get("Vehicles/Types")
+    var result = await api.get("/Vehicles/Types")
     return result;
 }
 
-export async function createVehicle(make,model,mileage,year,fuelTypeId, vehicleTypeId, ownerId){
-    var result = await api.post("/Vehicles",{make,model,mileage,year,fuelTypeId, vehicleTypeId, ownerId})
+export async function createVehicle(make,model,mileage,year,fuelTypeId, vehicleTypeId){
+    var result = await api.post("/Vehicles",{make,model,mileage,year,fuelTypeId, vehicleTypeId})
     return result;
 }
 

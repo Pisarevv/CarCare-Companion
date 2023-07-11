@@ -17,7 +17,6 @@ async function request(method, url, data) {
 
     if (user.accessToken) {
         options.headers['Authorization'] = "Bearer " + user.accessToken;
-        options.headers['UserId'] = user.id;
     }
 
     try {
