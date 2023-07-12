@@ -82,8 +82,28 @@ public class TripService : ITripService
            
     }
 
+    public async Task<ICollection<TripBasicInformationByUserResponseModel>> GetLastNCountAsync(string userId, int count)
+    {
+        return await repository.AllReadonly<TripRecord>()
+               .Where(v => v.IsDeleted == false)
+               .Where(t => t.OwnerId == Guid.Parse(userId))
+               .OrderByDescending(t => t.CreatedOn)
+               .Take(count)
+               .Select(t => new TripBasicInformationByUserResponseModel
+               {
+                   Id = t.Id.ToString(),
+                   StartDestination = t.StartDestination,
+                   EndDestination = t.EndDestination,
+                   MileageTravelled = t.MileageTravelled,     
+                   Vehicle = $"{t.Vehicle.Make} {t.Vehicle.Model}"
+               })
+               .ToListAsync();
+    }
+
     private decimal? CalculateTripCost(decimal? fuelPrice, double? usedFuel)
     {
         return fuelPrice * Convert.ToDecimal(usedFuel);
     }
+
+    
 }
