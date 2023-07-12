@@ -14,6 +14,7 @@ import './App.css'
 import VehicleDetails from './components/VehicleDetails/VehicleDetails';
 import AddTrip from './components/AddTrip/AddTrip';
 import Trips from './components/Trips/Trips';
+import VehicleDelete from './components/VehicleDetails/VehicleDelete';
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Route path='/MyVehicles' element={<Vehicles/>}/>
           <Route path='/Vehicle/Create' element={<AddVehicle/>}/>
           <Route path='/Vehicle/Details/:id' element={<VehicleDetails/>}/>
+          <Route path='/Vehicle/Delete/:id' element={<VehicleDelete/>}/>
           <Route path='/Trips' element={<Trips/>}/>
           <Route path='/Trips/Add' element={<AddTrip/>}/>
           </Routes>
