@@ -43,6 +43,7 @@ public class TripService : ITripService
     public async Task<ICollection<TripDetailsByUserResponseModel>> GetAllTripsByUsedIdAsync(string userId)
     {
         return await repository.AllReadonly<TripRecord>()
+               .Where(v => v.IsDeleted == false)
                .Where(t => t.OwnerId == Guid.Parse(userId))
                .OrderByDescending(t => t.CreatedOn)
                .Select(t => new TripDetailsByUserResponseModel
@@ -66,6 +67,7 @@ public class TripService : ITripService
     public async Task<int> GetAllUserTripsCountAsync(string userId)
     {
         return await repository.AllReadonly<TripRecord>()
+               .Where(v => v.IsDeleted == false)
                .Where(tr => tr.OwnerId == Guid.Parse(userId))
                .CountAsync();
     }
@@ -73,6 +75,7 @@ public class TripService : ITripService
     public async Task<decimal?> GetAllUserTripsCostAsync(string userId)
     {
         return await repository.All<TripRecord>()
+               .Where(v => v.IsDeleted == false)
                .Where(tr => tr.OwnerId == Guid.Parse(userId) && tr.Cost != null)
                .SumAsync(tr => tr.Cost);
        
