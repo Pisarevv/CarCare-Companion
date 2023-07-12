@@ -12,6 +12,11 @@ export async function getAllUserTrips(){
     return result;
 }
 
+export async function getLatestTrips(count){
+    var result = await api.get(`/Trips/Last/${count}`)
+    return result;
+}
+
 export async function createTrip(startDestination,endDestination,mileageTravelled,usedFuel,fuelPrice,vehicleId){
     var result = await api.post("/Trips", {startDestination,endDestination,mileageTravelled,usedFuel,fuelPrice,vehicleId});
     return result;
