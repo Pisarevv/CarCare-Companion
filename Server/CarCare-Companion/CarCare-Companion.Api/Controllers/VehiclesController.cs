@@ -108,6 +108,49 @@ public class VehiclesController : BaseController
     }
 
     /// <summary>
+    /// Deletes a vehicle and all of its records
+    /// </summary>
+    /// <param name="vehicleId">The vehicle identifier</param>
+    /// <returns>A status code with message based on the process of deleting </returns>
+    [HttpPost]
+    [Route("Delete/{vehicleId}")]
+    [Produces("application/json")]
+    public async Task<IActionResult> Delete([FromRoute] string vehicleId)
+    {
+        try
+        {
+            var userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            bool isUserOwner = await vehicleService.IsUserOwnerOfVehicleAsync(userId,vehicleId);
+
+            if (!isUserOwner)
+            {
+                return StatusCode(403, InvalidUser);
+            }
+           
+            await vehicleService.DeleteVehicleAsync(vehicleId);
+
+            return StatusCode(200, new StatusInformationMessage(Success));
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
     /// Uploads the vehicle image to Amazon S3 and adds a relation to the vehicle
     /// </summary>
     /// <param name="vehicleId">The vehicle identifier</param>
