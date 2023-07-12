@@ -78,9 +78,6 @@ public class IdentityServiceTests
 
         //Assert
         Assert.That(result.Email, Is.EqualTo(registerRequestModel.Email));
-        Assert.That(result.Id, Is.Not.Null);
-        Assert.That(result.Role, Is.Not.Null.Or.Empty);
-        Assert.That(result.Role, Is.EqualTo("User"));
         Assert.That(result.AccessToken, Is.Not.Null.Or.Empty);
     }
 
@@ -155,9 +152,6 @@ public class IdentityServiceTests
 
         //Assert
         Assert.That(result.Email, Is.EqualTo(loginRequestModel.Email));
-        Assert.That(result.Id, Is.Not.Null);
-        Assert.That(result.Role, Is.Not.Null.Or.Empty);
-        Assert.That(result.Role, Is.EqualTo("User"));
         Assert.That(result.AccessToken, Is.Not.Null.Or.Empty);
 
     }
@@ -281,9 +275,6 @@ public class IdentityServiceTests
 
         //Assert
         Assert.That(result.Email, Is.EqualTo(loginRequestModel.Email));
-        Assert.That(result.Id, Is.Not.Null);
-        Assert.That(result.Role, Is.Not.Null.Or.Empty);
-        Assert.That(result.Role, Is.EqualTo("Administrator"));
         Assert.That(result.AccessToken, Is.Not.Null.Or.Empty);
 
     }

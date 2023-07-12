@@ -7,6 +7,7 @@ using CarCare_Companion.Core.Models.Vehicle;
 using CarCare_Companion.Core.Services;
 using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Common;
+using Amazon.S3.Model;
 
 
 [TestFixture]
@@ -38,6 +39,7 @@ public class VehicleServiceTests
         //Arrange
         repository = new Repository(carCareCompanionDbContext);
         vehicleService = new VehicleService(repository);
+        string OwnerId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
 
         VehicleCreateRequestModel vehicleToAdd = new VehicleCreateRequestModel()
         {
@@ -47,11 +49,11 @@ public class VehicleServiceTests
             FuelTypeId = 1,
             VehicleTypeId = 1,
             Mileage = 12000,
-            OwnerId = Guid.Parse("0cda5780-8fa7-4e53-99b5-93c31c26f6ec")
+           
         };
 
         //Act
-        string responseId = await vehicleService.CreateVehicleAsync(vehicleToAdd);
+        string responseId = await vehicleService.CreateVehicleAsync(OwnerId,vehicleToAdd);
 
         bool isCarCreated = await carCareCompanionDbContext.Vehicles.AnyAsync(v => v.Id == Guid.Parse(responseId));
 
@@ -69,6 +71,7 @@ public class VehicleServiceTests
     {
         //Arrange
         string imageId = "123a5780-8fa7-4e53-99b5-93c31c26f6ec";
+        string OwnerId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
         repository = new Repository(carCareCompanionDbContext);
         vehicleService = new VehicleService(repository);
 
@@ -80,11 +83,10 @@ public class VehicleServiceTests
             FuelTypeId = 1,
             VehicleTypeId = 1,
             Mileage = 12000,
-            OwnerId = Guid.Parse("0cda5780-8fa7-4e53-99b5-93c31c26f6ec")
         };
 
         //Act
-        string vehicleId = await vehicleService.CreateVehicleAsync(vehicleToAdd);
+        string vehicleId = await vehicleService.CreateVehicleAsync(OwnerId, vehicleToAdd);
 
         bool isAddedSuccessful = await vehicleService.AddImageToVehicle(vehicleId, imageId);
 
