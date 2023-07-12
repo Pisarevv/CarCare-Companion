@@ -16,6 +16,7 @@ public class Vehicle : BaseDeletableModel<Vehicle>
     {    
         this.ServiceRecords = new HashSet<ServiceRecord>();
         this.TripRecords = new HashSet<TripRecord>();
+        this.TaxRecords = new HashSet<TaxRecord>();
     }
 
     [Comment("Make name")]
@@ -73,5 +74,8 @@ public class Vehicle : BaseDeletableModel<Vehicle>
 
     [Comment("Vehicle trip records")]
     public ICollection<TripRecord> TripRecords { get; set; }
-    
+
+    [Comment("Vehicle tax records")]
+    public ICollection<TaxRecord> TaxRecords { get; set; }
+
 }
