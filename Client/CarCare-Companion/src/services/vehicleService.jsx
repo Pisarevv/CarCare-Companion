@@ -30,3 +30,7 @@ export async function getVehicleDetails(vehicleId){
     var result = await api.get(`/Vehicles/Details/${vehicleId}`);
     return result;
 }
+
+export async function deleteVehicle(vehicleId){
+    var result = await api.post(`/Vehicles/Delete/${vehicleId}`);
+}
