@@ -9,6 +9,7 @@ using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Vehicle;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
+using CarCare_Companion.Infrastructure.Data.Models.Contracts;
 
 /// <summary>
 /// The VehicleService is responsible for operations regarding the vehicle-related actions
@@ -141,6 +142,7 @@ public class VehicleService : IVehicleService
     public async Task<ICollection<VehicleBasicInfoResponseModel>> AllUserVehiclesByIdAsync(string userId)
     {
          return await repository.AllReadonly<Vehicle>()
+               .Where(v => v.IsDeleted == false)
                .Where(v => v.OwnerId == Guid.Parse(userId))
                .OrderBy(v => v.CreatedOn)
                .Select(v => new VehicleBasicInfoResponseModel
@@ -161,7 +163,6 @@ public class VehicleService : IVehicleService
     public async Task<VehicleDetailsResponseModel> GetVehicleDetails(string vehicleId)
     {
         return await repository.AllReadonly<Vehicle>()
-               .Where(v => v.IsDeleted == false)
                .Where(v => v.Id == Guid.Parse(vehicleId))
                .Select(v => new VehicleDetailsResponseModel
                {
@@ -201,4 +202,42 @@ public class VehicleService : IVehicleService
                     Where(v => v.Id == Guid.Parse(vehicleId) && v.OwnerId == Guid.Parse(userId))
                     .AnyAsync();    
     }
+
+    /// <summary>
+    /// Deletes a vehicle and all of its records
+    /// </summary>
+    /// <param name="vehicleId">The vehicle identifier</param>
+    public async Task DeleteVehicleAsync(string vehicleId)
+    {
+        Vehicle vehicleToDelete = await repository.All<Vehicle>().
+                                  Where(v => v.Id == Guid.Parse(vehicleId))
+                                  .Include(v => v.TaxRecords)
+                                  .AsSplitQuery()
+                                  .Include(v => v.TripRecords)
+                                  .AsSplitQuery()
+                                  .Include(v => v.ServiceRecords)
+                                  .AsSplitQuery()
+                                  .FirstAsync();
+
+
+        repository.SoftDelete(vehicleToDelete);
+
+        foreach(var serviceRecord in vehicleToDelete.ServiceRecords)
+        {
+            repository.SoftDelete(serviceRecord);
+        }
+
+        foreach(var tripRecord in vehicleToDelete.TripRecords)
+        {
+            repository.SoftDelete(tripRecord);
+        }
+
+        foreach (var taxRecord in vehicleToDelete.TaxRecords)
+        {
+            repository.SoftDelete(taxRecord);
+        }
+
+        await repository.SaveChangesAsync();
+    }
+
 }

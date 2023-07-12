@@ -16,6 +16,8 @@ public interface IVehicleService
 
     public Task<string> CreateVehicleAsync(string userId, VehicleCreateRequestModel model);
 
+    public Task DeleteVehicleAsync(string vehicleId);
+
     public Task<bool> AddImageToVehicle(string vehicleId, string imageId);
 
     public Task<ICollection<VehicleBasicInfoResponseModel>> AllUserVehiclesByIdAsync(string userId);
