@@ -4,6 +4,10 @@
     grid-template-rows: repeat(3, 1fr);
     grid-column-gap: 40px;
     grid-row-gap: 31px;
+
+    opacity: 0;
+    transform: translate3d(0, 500px, 0);
+    animation: arrive 500ms ease-in-out 0.5s forwards;
 }
 
 .management-buttons {
