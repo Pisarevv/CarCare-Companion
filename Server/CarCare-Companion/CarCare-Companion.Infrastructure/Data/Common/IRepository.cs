@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using CarCare_Companion.Infrastructure.Data.Models.Contracts;
+using System.Linq.Expressions;
 
 namespace CarCare_Companion.Infrastructure.Data.Common;
 
@@ -67,6 +68,13 @@ public interface IRepository : IDisposable
     /// </summary>
     /// <param name="id">Identificator of record to be deleted</param>
     Task DeleteAsync<T>(object id) where T : class;
+
+    /// <summary>
+    /// Deletes a record from the database by setting its property "IsDeleted" to true
+    /// </summary>
+    /// <typeparam name="T">An entity implementing the IDeletableEntity interface</typeparam>
+    /// <param name="entity">Entity representing record to be deleted</param>
+    public void SoftDelete<T>(T entity) where T : IDeletableEntity;
 
     /// <summary>
     /// Deletes a record from database

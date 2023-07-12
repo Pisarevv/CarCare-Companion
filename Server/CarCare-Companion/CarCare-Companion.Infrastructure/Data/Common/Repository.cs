@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using CarCare_Companion.Infrastructure.Data.Models.Contracts;
 
 namespace CarCare_Companion.Infrastructure.Data.Common;
 
@@ -117,6 +118,17 @@ public class Repository : IRepository
         }
 
         entry.State = EntityState.Deleted;
+    }
+
+    /// <summary>
+    /// Deletes a record from the database by setting its property "IsDeleted" to true
+    /// </summary>
+    /// <typeparam name="T">An entity implementing the IDeletableEntity interface</typeparam>
+    /// <param name="entity">Entity representing record to be deleted</param>
+    public void SoftDelete<T>(T entity) where T : IDeletableEntity
+    {
+        entity.IsDeleted = true;
+        entity.DeletedOn = DateTime.UtcNow;
     }
 
     /// <summary>
