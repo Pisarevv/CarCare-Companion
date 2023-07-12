@@ -65,6 +65,40 @@ public class TripsController : BaseController
     }
 
     /// <summary>
+    /// Retrieves  all the user trips 
+    /// </summary>
+    /// <returns>Collection of the user trips </returns>
+    [HttpGet]
+    [Route("Last/{count?}")]
+    [Produces("application/json")]
+    public async Task<IActionResult> LastNCountTripsByUserId([FromQuery] int count = 3)
+    {
+        try
+        {
+            var userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            ICollection<TripBasicInformationByUserResponseModel> userTrips = await tripService.GetLastNCountAsync(userId,count);
+            return StatusCode(200, userTrips);
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
     /// Creates a trip on a vehicle selected by the user
     /// </summary>
     /// <param name="model">The model containing the trip details</param>
