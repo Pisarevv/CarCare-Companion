@@ -7,6 +7,7 @@
     opacity: 70%;
     border-radius: 40px;
     padding: 10% 0px;
+    width: 90%;
 
     opacity: 0;
     transform: translate3d(0, 300px, 0);
