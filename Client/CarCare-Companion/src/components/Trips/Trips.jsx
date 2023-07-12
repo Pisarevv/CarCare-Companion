@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { getAllUserTrips } from '../../services/tripService';
+import { getAllUserTrips, getUserTripsCost, getUserTripsCount } from '../../services/tripService';
 
 import UserTripCard from './UserTripCard';
 
@@ -14,6 +14,8 @@ import './Trips.css'
 const Trips = (props) => {
 
     const [userTrips, setUserTrips] = useState([]);
+    const [userTripsCount, setUserTripsCount] = useState(null);
+    const [userTripsCost, setUserTripsCost] = useState(null);
 
     const { setLoading } = props;
 
@@ -21,7 +23,16 @@ const Trips = (props) => {
         (async () => {
             try {
                 let userTripsResult = await getAllUserTrips();
+                let userTripsCountResult = await getUserTripsCount();
+                let userTripsCostResult = await getUserTripsCost();
+                
                 setUserTrips(userTrips => userTripsResult);
+                setUserTripsCount(userTripsCost => userTripsCountResult);
+                setUserTripsCost(userTripsCost => userTripsCostResult);
+
+                console.log(userTripsCountResult);
+                console.log(userTripsCostResult);
+               
                 setLoading(false);
             } catch (error) {
               ErrorHandler(error);
