@@ -75,7 +75,7 @@ public class VehiclesController : BaseController
     /// <returns>The Id of the created vehicle</returns>
     [HttpPost]
     [Produces("application/json")]
-    public async Task<IActionResult> CreateVehicle(VehicleCreateRequestModel model)
+    public async Task<IActionResult> CreateVehicle(VehicleFormRequestModel model)
     {
         try
         {
