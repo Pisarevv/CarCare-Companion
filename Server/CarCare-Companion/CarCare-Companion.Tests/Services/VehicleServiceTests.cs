@@ -41,7 +41,7 @@ public class VehicleServiceTests
         vehicleService = new VehicleService(repository);
         string OwnerId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
 
-        VehicleCreateRequestModel vehicleToAdd = new VehicleCreateRequestModel()
+        VehicleFormRequestModel vehicleToAdd = new VehicleFormRequestModel()
         {
             Make = "BMW",
             Model = "M5 CS",
@@ -75,7 +75,7 @@ public class VehicleServiceTests
         repository = new Repository(carCareCompanionDbContext);
         vehicleService = new VehicleService(repository);
 
-        VehicleCreateRequestModel vehicleToAdd = new VehicleCreateRequestModel()
+        VehicleFormRequestModel vehicleToAdd = new VehicleFormRequestModel()
         {
             Make = "BMW",
             Model = "M5 CS",
