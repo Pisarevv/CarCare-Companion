@@ -28,7 +28,7 @@ public class VehicleService : IVehicleService
     /// </summary>
     /// <param name="model">The input model containing the vehicle information</param>
     /// <returns>String containing the newly created vehicle Id</returns>
-    public async Task<string> CreateVehicleAsync(string userId, VehicleCreateRequestModel model)
+    public async Task<string> CreateVehicleAsync(string userId, VehicleFormRequestModel model)
     {
         Vehicle newVehicle = new Vehicle()
         {
@@ -46,6 +46,26 @@ public class VehicleService : IVehicleService
         await repository.SaveChangesAsync();
 
         return newVehicle.Id.ToString();
+    }
+
+    /// <summary>
+    /// Edit a existing vehicle
+    /// </summary>
+    /// <param name="vehicleId">The vehicle identifier</param>
+    /// <param name="model">The input model containing the vehicle information</param>
+    public async Task EditVehicleAsync(string vehicleId, VehicleFormRequestModel model)
+    {
+        Vehicle vehicleToEdit = await repository.GetByIdAsync<Vehicle>(Guid.Parse(vehicleId));
+
+        vehicleToEdit.Make = model.Make;
+        vehicleToEdit.Model = model.Model;
+        vehicleToEdit.Mileage = model.Mileage;
+        vehicleToEdit.Year = model.Year;
+        vehicleToEdit.FuelTypeId = model.FuelTypeId;
+        vehicleToEdit.VehicleTypeId = model.VehicleTypeId;
+        vehicleToEdit.ModifiedOn = DateTime.UtcNow;
+
+        await repository.SaveChangesAsync();
     }
 
 
@@ -169,13 +189,38 @@ public class VehicleService : IVehicleService
                    Id = v.Id.ToString(),
                    Make = v.Make,
                    Model = v.Model,
-                   Mileage = v.Mileage.ToString(),
+                   Mileage = v.Mileage,
+                   Year = v.Year,
                    ImageUrl = v.VehicleImageKey.ToString(),
                    FuelType = v.FuelType.Name,
                    VehicleType = v.VehicleType.Name
                })
                .FirstAsync();
                                          
+    }
+
+    /// <summary>
+    /// Retrieves the vehicle details to the user
+    /// </summary>
+    /// <param name="vehicleId">The vehicle identifier</param>
+    /// <returns>Detailed model containing all the vehicle information</returns>
+    public async Task<VehicleDetailsResponseModel> GetVehicleEditDetails(string vehicleId)
+    {
+        return await repository.AllReadonly<Vehicle>()
+               .Where(v => v.Id == Guid.Parse(vehicleId))
+               .Select(v => new VehicleDetailsResponseModel
+               {
+                   Id = v.Id.ToString(),
+                   Make = v.Make,
+                   Model = v.Model,
+                   Mileage = v.Mileage,
+                   Year = v.Year,
+                   ImageUrl = v.VehicleImageKey.ToString(),
+                   FuelType = v.FuelType.Name,
+                   VehicleType = v.VehicleType.Name
+               })
+               .FirstAsync();
+
     }
 
     /// <summary>
@@ -240,4 +285,5 @@ public class VehicleService : IVehicleService
         await repository.SaveChangesAsync();
     }
 
+    
 }
