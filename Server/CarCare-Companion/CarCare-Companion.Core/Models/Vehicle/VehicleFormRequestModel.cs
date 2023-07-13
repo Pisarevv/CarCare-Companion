@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 using static CarCare_Companion.Common.ValidationConstants.Vehicle;
 
-public class VehicleCreateRequestModel
+public class VehicleFormRequestModel
 {
     [Required]
     [MinLength(MinMakeNameLength)]
