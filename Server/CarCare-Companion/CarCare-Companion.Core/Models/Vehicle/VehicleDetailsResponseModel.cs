@@ -8,7 +8,9 @@ public class VehicleDetailsResponseModel
 
     public string Model { get; set; } = null!;
 
-    public string Mileage { get; set; } = null!;
+    public double Mileage { get; set; }
+
+    public int Year { get; set; }
 
     public string? ImageUrl { get; set; } 
 
