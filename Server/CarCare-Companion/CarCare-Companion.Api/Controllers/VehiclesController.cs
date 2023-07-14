@@ -268,6 +268,62 @@ public class VehiclesController : BaseController
     }
 
     /// <summary>
+    /// Retrieves detailed vehicle  information
+    /// </summary>
+    /// <param name="vehicleId">The vehicle identifier</param>
+    /// <returns>Model containing all the vehicle details</returns>
+    [HttpGet]
+    [Route("Edit/{vehicleId}")]
+    [Produces("application/json")]
+    public async Task<IActionResult> VehicleEditDetails([FromRoute] string vehicleId)
+    {
+        try
+        {
+            bool vehicleExist = await vehicleService.DoesVehicleExistByIdAsync(vehicleId);
+
+            if (!vehicleExist)
+            {
+                return StatusCode(404, new StatusInformationMessage(ResourceNotFound));
+            }
+
+            var userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            bool isUserOwnerOfVehicle = await vehicleService.IsUserOwnerOfVehicleAsync(userId, vehicleId);
+
+
+            if (!isUserOwnerOfVehicle)
+            {
+                return StatusCode(403, new StatusInformationMessage(NoPermission));
+            }
+
+            VehicleDetailsEditResponseModel vehicle = await vehicleService.GetVehicleEditDetails(vehicleId);
+
+            //if (vehicle.ImageUrl != null)
+            //{
+            //    vehicle.ImageUrl = await imageService.GetImageUrlAsync(vehicle.ImageUrl);
+            //}
+
+            return StatusCode(200, vehicle);
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
     /// Returns the available fuel types
     /// </summary>
     /// <returns>Collection of fuel types</returns>
