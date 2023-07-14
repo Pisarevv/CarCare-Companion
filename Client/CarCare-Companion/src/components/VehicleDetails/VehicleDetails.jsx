@@ -21,7 +21,7 @@ const VehicleDetails = (props) => {
     useEffect(() => {
         (async () => {
             try {
-                var vehicleDetailsResult = await getVehicleDetails(id)
+                var vehicleDetailsResult = await getVehicleDetails(id);
                 setVehicleDetails(vehicleDetails => vehicleDetailsResult);
                 setLoading(false);
             }
