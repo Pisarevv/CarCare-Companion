@@ -108,6 +108,63 @@ public class VehiclesController : BaseController
     }
 
     /// <summary>
+    /// Edits a record of a user vehicle
+    /// </summary>
+    /// <param name="vehicleId">The vehicle identifier</param>
+    /// <param name="model">The input data containing the vehicle information</param>
+    /// <returns>Status response based on the edit result</returns>
+    [HttpPost]
+    [Route("Edit/{vehicleId}")]
+    [Produces("application/json")]
+    public async Task<IActionResult> EditVehicle([FromRoute] string vehicleId, VehicleFormRequestModel model)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(400, new StatusInformationMessage(InvalidData));
+            }
+
+            bool vehicleExist = await vehicleService.DoesVehicleExistByIdAsync(vehicleId);
+
+            if (!vehicleExist)
+            {
+                return StatusCode(404, new StatusInformationMessage(ResourceNotFound));
+            }
+
+            var userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            bool isUserOwnerOfVehicle = await vehicleService.IsUserOwnerOfVehicleAsync(userId, vehicleId);
+
+
+            if (!isUserOwnerOfVehicle)
+            {
+                return StatusCode(403, new StatusInformationMessage(NoPermission));
+            }
+
+            await vehicleService.EditVehicleAsync(vehicleId, model);
+
+            return StatusCode(200, new StatusInformationMessage(Success));
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
     /// Deletes a vehicle and all of its records
     /// </summary>
     /// <param name="vehicleId">The vehicle identifier</param>
@@ -322,6 +379,7 @@ public class VehiclesController : BaseController
             return StatusCode(403, new StatusInformationMessage(InvalidData));
         }
     }
+
 
     /// <summary>
     /// Returns the available fuel types
