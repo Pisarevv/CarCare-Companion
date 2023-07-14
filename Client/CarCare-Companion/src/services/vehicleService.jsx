@@ -31,6 +31,11 @@ export async function getVehicleDetails(vehicleId){
     return result;
 }
 
+export async function getVehicleEditDetails(vehicleId){
+    var result = await api.get(`/Vehicles/Edit/${vehicleId}`);
+    return result;
+}
+
 export async function deleteVehicle(vehicleId){
     var result = await api.post(`/Vehicles/Delete/${vehicleId}`);
 }
