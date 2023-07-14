@@ -72,7 +72,6 @@ const AddVehicle = (props) => {
 
   const [vehicleImage, setVehicleImage] = useState(null);
   const [vehicleImageError, setVehicleImageError] = useState("");
-  const [isImageValid, setIsImageValid] = useState("false");
 
   const [fuelTypes, setFuelTypes] = useState([]);
   const [vehicleTypes, setVehicleTypes] = useState([]);
@@ -188,11 +187,9 @@ const AddVehicle = (props) => {
     const fileType = file.type;
     if (fileType.startsWith('image/')) {
       setVehicleImageError("");
-      setIsImageValid(true);
       return true;
     } else {
       setVehicleImageError(ValidationErrors.invalidFileFormat);
-      setIsImageValid(false);
       return false;
     }
   }
@@ -201,11 +198,9 @@ const AddVehicle = (props) => {
     const fileSizeInMb = Math.round((file.size / 1024));
     if (fileSizeInMb < 2048) {
       setVehicleImageError("");
-      setIsImageValid(true);
       return true;
     }
     setVehicleImageError(ValidationErrors.fileSizeTooBig);
-    setIsImageValid(false);
     return false;
   }
 
@@ -256,7 +251,7 @@ const AddVehicle = (props) => {
         throw "Invalid input fields"
       }
 
-      if (vehicleImage && isImageValid) {
+      if (vehicleImage && !vehicleImageError) {
 
         const formData = new FormData();
         formData.append("file", dataURLtoFile(vehicleImage, "inputImage"));
@@ -264,33 +259,13 @@ const AddVehicle = (props) => {
       }
 
       navigate('/MyVehicles');
-    } 
-    
+    }
+
     catch (error) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       ErrorHandler(error)
     }
   }
-
-  const onImageAdd = async (e) => {
-    e.preventDefault();
-    if (vehicleImage && isImageValid) {
-      try {
-        const formData = new FormData();
-        formData.append("file", dataURLtoFile(vehicleImage, "inputImage"));
-        await uploadVehicleImage(formData, vehicleId);
-        navigate('/MyVehicles');
-
-      } catch (error) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        ErrorHandler(error)
-      }
-    }
-    else {
-      navigate('/');
-    }
-  }
-
 
   return (
     <section className="add-vehicle">
