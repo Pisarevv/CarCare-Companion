@@ -12,8 +12,6 @@ public class VehicleDetailsEditResponseModel
 
     public int Year { get; set; }
 
-    public string? ImageUrl { get; set; } 
-
     public int FuelTypeId { get; set; }
 
     public int VehicleTypeId { get; set;}
