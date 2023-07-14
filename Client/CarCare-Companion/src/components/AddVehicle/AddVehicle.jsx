@@ -36,8 +36,6 @@
 import { useEffect, useReducer, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
-import { useAuthContext } from '../../contexts/AuthContext';
-
 import { ErrorHandler } from "../../utils/ErrorHandler/ErrorHandler";
 
 import IsLoadingHOC from '../Common/IsLoadingHoc';
@@ -85,14 +83,14 @@ const AddVehicle = (props) => {
     mileage: "",
     fuelType: "",
     model: "",
-    type: "",
+    vehicleType: "",
     year: "",
 
     makeError: "",
     mileageError: "",
     fuelTypeError: "",
     modelError: "",
-    typeError: "",
+    vehicleTypeError: "",
     yearError: ""
   })
 
@@ -104,7 +102,7 @@ const AddVehicle = (props) => {
         setFuelTypes(fuelTypes => fuelTypesResult);
         setVehicleTypes(vehicleTypes => vehicleTypesResult);
         dispatch({ type: `SET_FUELTYPE`, payload: fuelTypesResult[0].id })
-        dispatch({ type: `SET_TYPE`, payload: vehicleTypesResult[0].id })
+        dispatch({ type: `SET_VEHICLETYPE`, payload: vehicleTypesResult[0].id })
         setLoading(false);
       }
       catch (error) {
@@ -217,12 +215,12 @@ const AddVehicle = (props) => {
     let isModelValid = validateTextFields("model", userVehicle.model);
     let isFuelTypeValid = validateSelectFields("fuelType", userVehicle.fuelType);
     let isMileageValid = validateNumberFields("mileage", userVehicle.mileage);
-    let isTypeValid = validateSelectFields("type", userVehicle.type);
+    let isVehicleTypeValid = validateSelectFields("vehicleType", userVehicle.vehicleType);
     let isYearValid = validateNumberFields("year", userVehicle.year);
 
     if (isMakeValid && isMileageValid &&
       isFuelTypeValid && isModelValid &&
-      isTypeValid && isYearValid
+      isVehicleTypeValid && isYearValid
     ) {
       setStepOneFinished(stepOneFinished => true)
     }
@@ -240,17 +238,17 @@ const AddVehicle = (props) => {
       let isModelValid = validateTextFields("model", userVehicle.model);
       let isFuelTypeValid = validateSelectFields("fuelType", userVehicle.fuelType);
       let isMileageValid = validateNumberFields("mileage", userVehicle.mileage);
-      let isTypeValid = validateSelectFields("type", userVehicle.type);
+      let isVehicleTypeValid = validateSelectFields("vehicletype", userVehicle.vehicleType);
       let isYearValid = validateNumberFields("year", userVehicle.year);
 
       let vehicleId = "";
 
       if (isMakeValid && isMileageValid &&
         isFuelTypeValid && isModelValid &&
-        isTypeValid && isYearValid
+        isVehicleTypeValid && isYearValid
       ) {
-        const { make, model, mileage, year, fuelType, type } = userVehicle;
-        var vehicleIdResponse = await createVehicle(make, model, mileage, year, fuelType, type);
+        const { make, model, mileage, year, fuelType, vehicleType } = userVehicle;
+        var vehicleIdResponse = await createVehicle(make, model, mileage, year, fuelType, vehicleType);
         vehicleId = vehicleIdResponse;
       }
 
@@ -332,11 +330,11 @@ const AddVehicle = (props) => {
                     <div className="input-group input-group-lg">
                       <label>Vehicle type:</label>
                       <div className="form-control select">
-                        <select className="select-group" name="type" onChange={onInputChange}>
+                        <select className="select-group" name="vehicleType" onChange={onInputChange}>
                           {vehicleTypes.map(vt => <option key={vt.id} value={vt.id}>{vt.name}</option>)}
                         </select>
                       </div>
-                      {userVehicle.typeError && <p className="invalid-field">{userVehicle.typeError}</p>}
+                      {userVehicle.vehicleTypeError && <p className="invalid-field">{userVehicle.vehicleTypeError}</p>}
                     </div>
                     <div className="input-group input-group-lg">
                       <label>Year:</label>
