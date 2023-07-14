@@ -56,8 +56,7 @@ const VehicleDetails = (props) => {
                             <div className="vehicle-details-information">Mileage: {vehicleDetails.mileage}</div>
                             <div className="vehicle-details-information">Fuel: {vehicleDetails.fuelType}</div>
                             <div className="vehicle-details-information">Type: {vehicleDetails.vehicleType}</div>
-                            <NavLink to={`/Vehicle/Details/`}>Edit</NavLink>
-                            {/* <VehicleDelete details = {[vehicleDetails.make, vehicleDetails.model]}>Delete</VehicleDelete> */}
+                            <NavLink to={`/Vehicle/Edit/${id}`}>Edit</NavLink>
                             <Link 
                             to={`/Vehicle/Delete/${id}`}
                             state = {{details : {make:vehicleDetails.make, model:vehicleDetails.model}}}
