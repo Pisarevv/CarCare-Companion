@@ -16,6 +16,11 @@ export async function createVehicle(make,model,mileage,year,fuelTypeId, vehicleT
     return result;
 }
 
+export async function editVehicle(make,model,mileage,year,fuelTypeId, vehicleTypeId, vehicleId){
+    var result = await api.post(`/Vehicles/Edit/${vehicleId}`,{make,model,mileage,year,fuelTypeId, vehicleTypeId})
+    return result;
+}
+
 export async function uploadVehicleImage(formData,vehicleId){
     var result = await fileApi.post("/Vehicles/ImageUpload",formData,vehicleId);
     return result;
