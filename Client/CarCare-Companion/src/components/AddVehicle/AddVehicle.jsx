@@ -10,6 +10,8 @@
  * ----------------------
  * - userVehicle (object): This object contains the properties of the product
  *   and errors that can occur on them. The userVehicle is controlled by a reducer.
+ * - vehicleImage (object): This object contains the vehicle image.
+ * - vehicleImageError (object): Object containing an error based on the vehicleImage validity.
  * ---------------
  * 
  * Functions:
@@ -23,8 +25,8 @@
  *  Function that validates fields that a field is not blank and contains digits only.
  *  There is a possibility to add different validation.
  * - onVehicleAdd:
- *  Function that creates the product if all of the properties are valid.
- *  If the request is successful it redirects to the user products listing page - ("/recylce").
+ *  Function that creates the vehicle if all of the properties are valid.
+ *  If the request is successful it redirects to the user vehiclles collection.
  * -----------------
  * 
  * - ErrorHandler
