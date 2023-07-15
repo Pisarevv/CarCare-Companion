@@ -1,7 +1,7 @@
 import { Link, NavLink, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-import { ErrorHandler } from '../../utils/ErrorHandler/ErrorHandler';
+import { NotificationHandler } from '../../utils/NotificationHandler'
 
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
@@ -26,7 +26,7 @@ const VehicleDetails = (props) => {
                 setLoading(false);
             }
             catch (error) {
-                ErrorHandler(error);
+                NotificationHandler(error);
                 setLoading(false);
             }
         })()

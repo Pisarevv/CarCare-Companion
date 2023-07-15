@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import './VehicleDelete.css'
 import { deleteVehicle } from '../../services/vehicleService';
-import { ErrorHandler } from '../../utils/ErrorHandler/ErrorHandler';
+import { NotificationHandler } from '../../utils/NotificationHandler'
 
 const VehicleDelete = () => {
     const location = useLocation();
@@ -21,7 +21,7 @@ const VehicleDelete = () => {
         navigate("/MyVehicles")
       } 
       catch (error) {
-        ErrorHandler(error)
+        NotificationHandler(error)
         navigate(`/Vehicle/Details/${id}`)
       }
     }

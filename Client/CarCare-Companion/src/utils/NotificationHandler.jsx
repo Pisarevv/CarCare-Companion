@@ -1,7 +1,7 @@
 /**
- *  ErrorHandler
- *  This is a custom function that handles errors thrown by the REST api or application 
- *  and based on the error shows the user notifications.
+ *  NotificationsHandler
+ *  This is a custom function that handles notifications or errors thrown by the REST api or application 
+ *  and based on the input shows the user notifications.
  * -----------------
 **/
 
@@ -48,7 +48,7 @@ const errors = {
 
 
 
-export const ErrorHandler = (inputError) => {
+export const NotificationHandler = (inputError) => {
 
     if(!errors.hasOwnProperty(inputError)){
        inputError = "Generic error"

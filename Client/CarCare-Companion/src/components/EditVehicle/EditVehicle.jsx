@@ -38,12 +38,12 @@
 import { useEffect, useReducer, useState } from "react";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 
-import { ErrorHandler } from "../../utils/ErrorHandler/ErrorHandler";
+import { NotificationHandler } from "../../utils/NotificationHandler";
 
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
 import userVehicleReducer from "../../reducers/userVehicleReducer";
-import dataURLtoFile from "../../utils/ErrorHandler/URLtoFileConverter";
+import dataURLtoFile from "../../utils/URLtoFileConverter";
 
 import './EditVehicle.css'
 
@@ -112,7 +112,7 @@ const EditVehicle = (props) => {
         setLoading(false);
       }
       catch (error) {
-        ErrorHandler(error);
+        NotificationHandler(error);
         setLoading(false);
       }
 
@@ -272,7 +272,7 @@ const EditVehicle = (props) => {
     
     catch (error) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      ErrorHandler(error)
+      NotificationHandler(error)
     }
   }
 

@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 
 import { useContext, useEffect, useState } from "react";
 
-import { ErrorHandler } from "../../utils/ErrorHandler/ErrorHandler";
+import { NotificationHandler } from '../../utils/NotificationHandler'
 
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
@@ -32,7 +32,7 @@ const Home = (props) => {
             }
             catch (error) {
                 if (error === "Invalid access token") {
-                    ErrorHandler(error);
+                    NotificationHandler(error);
                     userLogout();
                     setLoading(false);
                     

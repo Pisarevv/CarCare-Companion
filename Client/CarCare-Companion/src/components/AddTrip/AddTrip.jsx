@@ -6,8 +6,9 @@ import tripReducer from '../../reducers/tripReducer'
 import './AddTrip.css'
 import { getUserVehicles } from '../../services/vehicleService'
 import IsLoadingHOC from '../Common/IsLoadingHoc'
-import { ErrorHandler } from '../../utils/ErrorHandler/ErrorHandler'
+
 import { createTrip } from '../../services/tripService'
+import { NotificationHandler } from '../../utils/NotificationHandler'
 
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
@@ -57,7 +58,7 @@ const AddTrip = (props) => {
                 setLoading(false);
             }
             catch (error) {
-                ErrorHandler(error);
+                NotificationHandler(error)
                 setLoading(false);
             }
         })()
@@ -135,7 +136,7 @@ const AddTrip = (props) => {
 
         }
         catch (error) {
-            ErrorHandler(error);
+            NotificationHandler(error);
             navigate('/Trips')
         }
     }

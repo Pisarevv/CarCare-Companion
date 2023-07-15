@@ -7,7 +7,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 
 import { register } from '../../services/authService';  
 
-import { ErrorHandler } from '../../utils/ErrorHandler/ErrorHandler';
+import { NotificationHandler } from '../../utils/NotificationHandler'
 
 const ValidationRegexes = {
     //The current regex validates that the input email address 
@@ -138,7 +138,7 @@ const Register = () => {
             }
         }
         catch(error){
-            ErrorHandler(error);
+            NotificationHandler(error);
         }
         
        }

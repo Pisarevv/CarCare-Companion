@@ -5,7 +5,7 @@ import { getAllUserTrips, getUserTripsCost, getUserTripsCount } from '../../serv
 
 import UserTripCard from './UserTripCard';
 
-import { ErrorHandler } from '../../utils/ErrorHandler/ErrorHandler';
+import { NotificationHandler } from '../../utils/NotificationHandler'
 
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
@@ -35,7 +35,7 @@ const Trips = (props) => {
                
                 setLoading(false);
             } catch (error) {
-              ErrorHandler(error);
+              NotificationHandler(error);
               setLoading(false);
             }
         })()

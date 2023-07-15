@@ -6,7 +6,7 @@ import { getUserVehicles } from '../../services/vehicleService';
 import VehicleCard from './VehicleCard';
 
 
-import { ErrorHandler } from "../../utils/ErrorHandler/ErrorHandler";
+import { NotificationHandler } from '../../utils/NotificationHandler'
 
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
@@ -34,7 +34,7 @@ const Vehicles = (props) => {
                 setLoading(false);
             }
             catch (error) {
-                ErrorHandler(error)
+                NotificationHandler(error)
                 setLoading(false);
             }
         })()

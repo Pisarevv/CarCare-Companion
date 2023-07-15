@@ -48,7 +48,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 
 import { login } from "../../services/authService";
 
-import { ErrorHandler } from "../../utils/ErrorHandler/ErrorHandler";
+import { NotificationHandler } from '../../utils/NotificationHandler'
 
 import { AuthContext } from "../../contexts/AuthContext";
 
@@ -85,7 +85,7 @@ const Login = () => {
             
         } 
         catch (error) {
-            ErrorHandler(error);
+            NotificationHandler(error);
         }
     }
 
