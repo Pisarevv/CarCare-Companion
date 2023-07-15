@@ -19,6 +19,7 @@ public class ServiceRecord : BaseDeletableModel<ServiceRecord>
     public string Title { get; set; } = null!;
 
     [Comment("Date of the performed service")]
+    [Required]
     public DateTime PerformedOn { get; set; }
 
     [Comment("Vehicle mileage")]
@@ -30,6 +31,7 @@ public class ServiceRecord : BaseDeletableModel<ServiceRecord>
     public string? Description { get; set; }
 
     [Comment("Cost of the service")]
+    [Required]
     [Range(MinCost, MaxCost)]
     [Precision(18, 2)]
     public decimal Cost { get; set; }
