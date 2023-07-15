@@ -1,13 +1,17 @@
 ﻿namespace CarCare_Companion.Core.Services;
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using Microsoft.EntityFrameworkCore;
+
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Trip;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
+using static Common.FormattingMethods;
 
 public class TripService : ITripService
 {
@@ -56,7 +60,7 @@ public class TripService : ITripService
                    UsedFuel = t.UsedFuel,
                    VehicleMake = t.Vehicle.Make,
                    VehicleModel = t.Vehicle.Model,
-                   DateCreated = t.CreatedOn.ToString("dd/MM/yyyy"),
+                   DateCreated = FormatDateTimeToString(t.CreatedOn),
                    TripCost = t.Cost
              
                })
