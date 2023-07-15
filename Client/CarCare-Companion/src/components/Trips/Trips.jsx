@@ -10,29 +10,19 @@ import { NotificationHandler } from '../../utils/NotificationHandler'
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
 import './Trips.css'
+import TripsStatistics from './TripsStatistics';
 
 const Trips = (props) => {
 
     const [userTrips, setUserTrips] = useState([]);
-    const [userTripsCount, setUserTripsCount] = useState(null);
-    const [userTripsCost, setUserTripsCost] = useState(null);
-
+   
     const { setLoading } = props;
 
     useEffect(() => {
         (async () => {
             try {
-                let userTripsResult = await getAllUserTrips();
-                let userTripsCountResult = await getUserTripsCount();
-                let userTripsCostResult = await getUserTripsCost();
-                
-                setUserTrips(userTrips => userTripsResult);
-                setUserTripsCount(userTripsCost => userTripsCountResult);
-                setUserTripsCost(userTripsCost => userTripsCostResult);
-
-                console.log(userTripsCountResult);
-                console.log(userTripsCostResult);
-               
+                let userTripsResult = await getAllUserTrips();               
+                setUserTrips(userTrips => userTripsResult);            
                 setLoading(false);
             } catch (error) {
               NotificationHandler(error);
@@ -45,7 +35,7 @@ const Trips = (props) => {
         <section className="trips-section">
             <div className="trips-container">
                 <div className="add-trip-button"><NavLink to="/Trips/Add">Add trip</NavLink> </div>
-                <div className="trips-statistics"> 1</div>
+                <div className="trips-statistics"><TripsStatistics/></div>
                 <div className="trips-list">{userTrips.map(ut => <UserTripCard key={ut.id} tripDetails={ut} />)}</div>
             </div>
         </section>

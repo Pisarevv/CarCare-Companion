@@ -1,0 +1,17 @@
+.trips-statistics-list{
+    display: flex;
+    flex-direction: column;
+    padding: 10%;
+    gap: 0.5em;
+}
+
+.trips-statistics-list h1 {
+    
+}
+
+.trip-statistics-border{
+    width: 160px;
+    height: 5px;
+    background-color: #3910b4;
+    margin: 22px auto;
+}
