@@ -45,7 +45,7 @@ const Trips = (props) => {
         <section className="trips-section">
             <div className="trips-container">
                 <div className="add-trip-button"><NavLink to="/Trips/Add">Add trip</NavLink> </div>
-                <div className="div2"> 1</div>
+                <div className="trips-statistics"> 1</div>
                 <div className="trips-list">{userTrips.map(ut => <UserTripCard key={ut.id} tripDetails={ut} />)}</div>
             </div>
         </section>

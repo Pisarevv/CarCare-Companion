@@ -29,6 +29,7 @@
     opacity: 0;
     transform: translate3d(0, 300px, 0);
     animation: arrive 500ms ease-in-out 0.1s forwards;
+    transition: all 0.3s ease 0s;
 } 
 
 .vehicle-container a {
@@ -36,6 +37,7 @@
     opacity: 60%;
     padding: 20px;
     border-radius: 50px;
+    transition: all 0.3s ease 0s;
 }
 
 
