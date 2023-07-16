@@ -2,7 +2,7 @@
 
 using CarCare_Companion.Core.Models.Trip;
 
-public interface ITripService
+public interface ITripRecordsService
 {
     public Task<string> CreateTripAsync(string userId, TripCreateRequestModel model);
 
