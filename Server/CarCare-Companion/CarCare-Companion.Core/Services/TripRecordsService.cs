@@ -13,15 +13,23 @@ using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 using static Common.FormattingMethods;
 
-public class TripService : ITripService
+/// <summary>
+/// The TripService is responsible for operations regarding the trip record-related actions
+/// </summary>
+public class TripRecordsService : ITripService
 {
     private readonly IRepository repository;
 
-    public TripService(IRepository repository)
+    public TripRecordsService(IRepository repository)
     {
         this.repository = repository;
     }
 
+    /// <summary>
+    /// Creates a new trip record
+    /// </summary>
+    /// <param name="model">The input model containing the trip information</param>
+    /// <returns>String containing the newly created trip record Id</returns>
     public async Task<string> CreateTripAsync(string userId, TripCreateRequestModel model)
     {
         TripRecord tripToAdd = new TripRecord()
@@ -44,6 +52,11 @@ public class TripService : ITripService
         return tripToAdd.Id.ToString();
     }
 
+    /// <summary>
+    /// Retrieves all user record trips ordered by date of their creation
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>A collection of trip records</returns>
     public async Task<ICollection<TripDetailsByUserResponseModel>> GetAllTripsByUsedIdAsync(string userId)
     {
         return await repository.AllReadonly<TripRecord>()
@@ -68,6 +81,10 @@ public class TripService : ITripService
 
     }
 
+    /// <summary>
+    /// Retrieves all user trip records count
+    /// </summary>
+    /// <returns>The count of the user trip records</returns>
     public async Task<int> GetAllUserTripsCountAsync(string userId)
     {
         return await repository.AllReadonly<TripRecord>()
@@ -76,16 +93,26 @@ public class TripService : ITripService
                .CountAsync();
     }
 
+    /// <summary>
+    /// Retrieves all user trip records cost
+    /// </summary>
+    /// <returns>The total cost of the user trip records</returns>
     public async Task<decimal?> GetAllUserTripsCostAsync(string userId)
     {
         return await repository.All<TripRecord>()
                .Where(v => v.IsDeleted == false)
                .Where(tr => tr.OwnerId == Guid.Parse(userId) && tr.Cost != null)
                .SumAsync(tr => tr.Cost);
-       
-           
+                 
     }
 
+    /// <summary>
+    /// Retrieves a specified count of records containing basic information about the user trip records
+    /// ordered by time
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <param name="count">The amount of record to be retrieved</param>
+    /// <returns>A collection of trip records</returns>
     public async Task<ICollection<TripBasicInformationByUserResponseModel>> GetLastNCountAsync(string userId, int count)
     {
         return await repository.AllReadonly<TripRecord>()
@@ -104,7 +131,11 @@ public class TripService : ITripService
                .ToListAsync();
     }
 
-    private decimal? CalculateTripCost(decimal? fuelPrice, double? usedFuel)
+    /// <summary>
+    /// Calculates the total cost of the user trips
+    /// </summary>
+    /// <returns>The total cost of the user trip record</returns>
+    private static decimal? CalculateTripCost(decimal? fuelPrice, double? usedFuel)
     {
         return fuelPrice * Convert.ToDecimal(usedFuel);
     }
