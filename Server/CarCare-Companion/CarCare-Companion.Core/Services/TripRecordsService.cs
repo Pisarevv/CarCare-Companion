@@ -16,7 +16,7 @@ using static Common.FormattingMethods;
 /// <summary>
 /// The TripService is responsible for operations regarding the trip record-related actions
 /// </summary>
-public class TripRecordsService : ITripService
+public class TripRecordsService : ITripRecordsService
 {
     private readonly IRepository repository;
 

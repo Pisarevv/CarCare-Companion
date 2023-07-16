@@ -1,33 +1,28 @@
 ﻿namespace CarCare_Companion.Api.Controllers;
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-
 using CarCare_Companion.Common;
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Status;
 using CarCare_Companion.Core.Models.Trip;
-
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using static Common.StatusResponses;
 
 [Route("[controller]")]
 public class TripsController : BaseController
 {
-    private readonly ITripService tripService;
+    private readonly ITripRecordsService tripService;
     private readonly IVehicleService vehicleService;
-    private readonly IIdentityService identityService;
     private readonly ILogger<TripsController> logger;
 
     public TripsController
     (
-        ITripService tripService, IVehicleService vehicleService,
-        IIdentityService identityService, ILogger<TripsController> logger
+        ITripRecordsService tripService, IVehicleService vehicleService, ILogger<TripsController> logger
     )
 
     {
         this.tripService = tripService;
         this.vehicleService = vehicleService;
-        this.identityService = identityService;
         this.logger = logger;
     }
 

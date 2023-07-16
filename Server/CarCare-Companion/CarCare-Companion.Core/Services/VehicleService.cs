@@ -74,7 +74,7 @@ public class VehicleService : IVehicleService
     /// </summary>
     /// <param name="vehicleId">The vehicle Id</param>
     /// <param name="imageId">The image Id</param>
-    /// <returns>A boolen regarding the adding process</returns>
+    /// <returns>A boolean regarding the adding process</returns>
     public async Task<bool> AddImageToVehicle(string vehicleId, string imageId)
     {
         Vehicle vehicle = await repository.GetByIdAsync<Vehicle>(Guid.Parse(vehicleId));
