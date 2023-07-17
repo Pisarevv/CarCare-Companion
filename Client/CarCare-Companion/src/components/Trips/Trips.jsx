@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { getAllUserTrips, getUserTripsCost, getUserTripsCount } from '../../services/tripService';
+import { getAllUserTrips} from '../../services/tripService';
 
 import UserTripCard from './UserTripCard';
 
