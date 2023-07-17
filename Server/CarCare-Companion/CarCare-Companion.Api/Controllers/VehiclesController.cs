@@ -302,7 +302,7 @@ public class VehiclesController : BaseController
                 return StatusCode(403, new StatusInformationMessage(NoPermission));
             }
 
-            VehicleDetailsResponseModel vehicle = await vehicleService.GetVehicleDetails(vehicleId);
+            VehicleDetailsResponseModel vehicle = await vehicleService.GetVehicleDetailsByIdAsync(vehicleId);
 
             if(vehicle.ImageUrl != null)
             {
