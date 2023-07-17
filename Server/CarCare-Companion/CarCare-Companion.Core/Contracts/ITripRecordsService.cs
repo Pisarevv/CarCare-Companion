@@ -8,6 +8,8 @@ public interface ITripRecordsService
 
     public Task EditAsync(string tripId, TripFormRequestModel model);
 
+    public Task DeleteAsync(string tripId);
+
     public Task<TripEditDetailsResponseModel> GetTripDetailsByIdAsync(string tripId);
 
     public Task<bool> DoesTripExistById(string tripId);

@@ -75,6 +75,15 @@ public class TripRecordsService : ITripRecordsService
         await repository.SaveChangesAsync();
     }
 
+    public async Task DeleteAsync(string tripId)
+    {
+        TripRecord tripToDelete = await repository.GetByIdAsync<TripRecord>(Guid.Parse(tripId));
+
+        repository.SoftDelete<TripRecord>(tripToDelete);
+
+        await repository.SaveChangesAsync();
+    }
+
     public async Task<bool> DoesTripExistById(string tripId)
     {
         return await repository.AllReadonly<TripRecord>()
@@ -206,5 +215,5 @@ public class TripRecordsService : ITripRecordsService
         return fuelPrice * Convert.ToDecimal(usedFuel);
     }
 
-  
+    
 }
