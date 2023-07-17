@@ -22,6 +22,17 @@ export async function createTrip(startDestination,endDestination,mileageTravelle
     return result;
 }
 
+export async function editTrip(startDestination,endDestination,mileageTravelled,usedFuel,fuelPrice,vehicleId, tripId){
+    var result = await api.post(`/Trips/Edit/${tripId}`, {startDestination,endDestination,mileageTravelled,usedFuel,fuelPrice,vehicleId});
+    return result;
+}
+
+
+export async function getTripDetails(tripId){
+    var result = await api.get(`/Trips/Details/${tripId}`);
+    return result;
+}
+
 export async function getUserTripsCount(){
     var result = await api.get("/Trips/Count");
     return result;
@@ -32,3 +43,6 @@ export async function getUserTripsCost(){
     return result;
 }
 
+export async function deleteTrip(tripId){
+    var result = await api.post(`/Trips/Delete/${tripId}`);
+}
