@@ -15,7 +15,7 @@ const UserTripCard = ({ tripDetails }) => {
             {tripCost && <div>Trip cost: {tripCost} levs.</div>}
             <div>Vehicle: {vehicleMake} {vehicleModel}</div>
             <div className="trip-card-border"></div>
-            <div className='trip-actions-container'>
+            <div className="trip-actions-container">
                 <Link to={`/Trips/Edit/${id}`}>Edit</Link>
                 <Link
                     to={`/Trips/Delete/${id}`}

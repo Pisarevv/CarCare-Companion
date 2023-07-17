@@ -15,3 +15,11 @@
     background-color: #cece46;
     margin: 22px auto;
 }
+
+.trip-actions-container{
+    align-self: center;
+}
+
+.trip-actions-container a{
+    text-decoration: none;
+}

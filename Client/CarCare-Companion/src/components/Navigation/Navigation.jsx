@@ -43,6 +43,8 @@ const Navigation = () => {
                     <li><NavLink to="/">Home</NavLink></li>
                     <li><NavLink to="/MyVehicles">My vehicles</NavLink></li>
                     <li><NavLink to="/Trips">Trips manager</NavLink></li>
+                    <li><NavLink to="/Trips">Services manager</NavLink></li>
+                    <li><NavLink to="/Trips">Taxes manager</NavLink></li>
                 
                 </ul>
             </nav>
@@ -50,12 +52,15 @@ const Navigation = () => {
                 {
                         isAuthenticated
                         ?
-                        <><li><NavLink to="/Logout">Logout</NavLink></li>
-                           <li><NavLink to="/Profile">Profile</NavLink></li>                         
+                        <>
+                           <li><NavLink to="/Profile">Profile</NavLink></li>      
+                           <li><NavLink to="/Logout">Logout</NavLink></li>                   
                         </>
                         :
-                        <><li><NavLink to="/Register">Register</NavLink></li>
-                          <li><NavLink to="/Login">Login</NavLink></li></>
+                        <>
+                        <li><NavLink to="/Register">Register</NavLink></li>
+                        <li><NavLink to="/Login">Login</NavLink></li>
+                        </>
                 }
 
             </ul>
