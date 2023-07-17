@@ -18,7 +18,7 @@ const UserTripCard = ({ tripDetails }) => {
             <div className='trip-actions-container'>
                 <Link to={`/Trips/Edit/${id}`}>Edit</Link>
                 <Link
-                    to={`/Trip/Delete/${id}`}
+                    to={`/Trips/Delete/${id}`}
                     state={{ details: { startDestination, endDestination, vehicleMake, vehicleModel } }}
                 >Delete
                 </Link>
