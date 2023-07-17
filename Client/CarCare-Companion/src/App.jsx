@@ -17,6 +17,7 @@ import Trips from './components/Trips/Trips';
 import VehicleDelete from './components/VehicleDetails/VehicleDelete';
 import EditVehicle from './components/EditVehicle/EditVehicle';
 import EditTrip from './components/EditTrip/EditTrip';
+import DeleteTrip from './components/DeleteTrip/DeleteTrip';
 
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
           <Route path='/Trips' element={<Trips/>}/>
           <Route path='/Trips/Add' element={<AddTrip/>}/>
           <Route path='/Trips/Edit/:id' element={<EditTrip/>}/>
+          <Route path='/Trips/Delete/:id' element={<DeleteTrip/>}/>
           </Routes>
         </main> 
       </div>
