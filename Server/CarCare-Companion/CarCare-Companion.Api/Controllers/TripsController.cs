@@ -1,11 +1,12 @@
 ﻿namespace CarCare_Companion.Api.Controllers;
 
+using Microsoft.AspNetCore.Mvc;
+
+using Microsoft.Data.SqlClient;
 using CarCare_Companion.Common;
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Status;
 using CarCare_Companion.Core.Models.Trip;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 
 using static Common.StatusResponses;
 
@@ -107,6 +108,49 @@ public class TripsController : BaseController
             }
 
             await tripService.EditAsync(tripId, model);
+
+            return StatusCode(200, new StatusInformationMessage(Success));
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
+    /// Deletes a trip record
+    /// </summary>
+    /// <param name="tripId">The vehicle identifier</param>
+    /// <returns>A status code with message based on the process of deleting </returns>
+    [HttpPost]
+    [Route("Delete/{tripId}")]
+    [Produces("application/json")]
+    public async Task<IActionResult> Delete([FromRoute] string tripId)
+    {
+        try
+        {
+            var userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            bool isUserCreator = await tripService.IsUserCreatorOfTripAsync(userId, tripId);
+
+            if (!isUserCreator)
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            await tripService.DeleteAsync(tripId);
 
             return StatusCode(200, new StatusInformationMessage(Success));
 
