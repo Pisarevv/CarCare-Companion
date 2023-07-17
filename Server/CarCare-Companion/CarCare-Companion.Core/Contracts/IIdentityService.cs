@@ -1,6 +1,6 @@
-﻿using CarCare_Companion.Core.Models.Identity;
+﻿namespace CarCare_Companion.Core.Contracts;
 
-namespace CarCare_Companion.Core.Contracts;
+using CarCare_Companion.Core.Models.Identity;
 
 public interface IIdentityService
 {

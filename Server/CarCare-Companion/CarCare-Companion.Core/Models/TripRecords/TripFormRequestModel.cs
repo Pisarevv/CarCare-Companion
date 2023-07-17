@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 using static CarCare_Companion.Common.ValidationConstants.TripRecord;
 
-public class TripCreateRequestModel
+public class TripFormRequestModel
 {
     [Required]
     [MinLength(MinStartDestinationNameLength)]
