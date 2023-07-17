@@ -69,6 +69,7 @@ public class TripRecordsService : ITripRecordsService
         tripToEdit.UsedFuel = model.UsedFuel;
         tripToEdit.FuelPrice = model.FuelPrice;
         tripToEdit.ModifiedOn = DateTime.UtcNow;
+        tripToEdit.VehicleId = Guid.Parse(model.VehicleId);
         tripToEdit.Cost = CalculateTripCost(model.FuelPrice, model.UsedFuel);
 
         await repository.SaveChangesAsync();
