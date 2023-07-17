@@ -14,11 +14,11 @@ public interface IVehicleService
 
     public Task<bool> DoesVehicleExistByIdAsync(string id);
 
-    public Task<string> CreateVehicleAsync(string userId, VehicleFormRequestModel model);
+    public Task<string> CreateAsync(string userId, VehicleFormRequestModel model);
 
-    public Task EditVehicleAsync(string vehicleId, VehicleFormRequestModel model);
+    public Task EditAsync(string vehicleId, VehicleFormRequestModel model);
 
-    public Task DeleteVehicleAsync(string vehicleId);
+    public Task DeleteAsync(string vehicleId);
 
     public Task<bool> AddImageToVehicle(string vehicleId, string imageId);
 

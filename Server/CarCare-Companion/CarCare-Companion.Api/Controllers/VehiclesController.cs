@@ -90,7 +90,7 @@ public class VehiclesController : BaseController
             {
                 return StatusCode(400, new StatusInformationMessage(InvalidData));
             }
-            string vehicleId = await vehicleService.CreateVehicleAsync(userId,model);
+            string vehicleId = await vehicleService.CreateAsync(userId,model);
           
             return StatusCode(200, vehicleId);
 
@@ -147,7 +147,7 @@ public class VehiclesController : BaseController
                 return StatusCode(403, new StatusInformationMessage(NoPermission));
             }
 
-            await vehicleService.EditVehicleAsync(vehicleId, model);
+            await vehicleService.EditAsync(vehicleId, model);
 
             return StatusCode(200, new StatusInformationMessage(Success));
 
@@ -190,7 +190,7 @@ public class VehiclesController : BaseController
                 return StatusCode(403, InvalidUser);
             }
            
-            await vehicleService.DeleteVehicleAsync(vehicleId);
+            await vehicleService.DeleteAsync(vehicleId);
 
             return StatusCode(200, new StatusInformationMessage(Success));
 

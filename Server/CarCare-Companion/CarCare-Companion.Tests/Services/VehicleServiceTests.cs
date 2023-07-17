@@ -53,7 +53,7 @@ public class VehicleServiceTests
         };
 
         //Act
-        string responseId = await vehicleService.CreateVehicleAsync(OwnerId,vehicleToAdd);
+        string responseId = await vehicleService.CreateAsync(OwnerId,vehicleToAdd);
 
         bool isCarCreated = await carCareCompanionDbContext.Vehicles.AnyAsync(v => v.Id == Guid.Parse(responseId));
 
@@ -86,7 +86,7 @@ public class VehicleServiceTests
         };
 
         //Act
-        string vehicleId = await vehicleService.CreateVehicleAsync(OwnerId, vehicleToAdd);
+        string vehicleId = await vehicleService.CreateAsync(OwnerId, vehicleToAdd);
 
         bool isAddedSuccessful = await vehicleService.AddImageToVehicle(vehicleId, imageId);
 

@@ -28,7 +28,7 @@ public class VehicleService : IVehicleService
     /// </summary>
     /// <param name="model">The input model containing the vehicle information</param>
     /// <returns>String containing the newly created vehicle Id</returns>
-    public async Task<string> CreateVehicleAsync(string userId, VehicleFormRequestModel model)
+    public async Task<string> CreateAsync(string userId, VehicleFormRequestModel model)
     {
         Vehicle newVehicle = new Vehicle()
         {
@@ -53,7 +53,7 @@ public class VehicleService : IVehicleService
     /// </summary>
     /// <param name="vehicleId">The vehicle identifier</param>
     /// <param name="model">The input model containing the vehicle information</param>
-    public async Task EditVehicleAsync(string vehicleId, VehicleFormRequestModel model)
+    public async Task EditAsync(string vehicleId, VehicleFormRequestModel model)
     {
         Vehicle vehicleToEdit = await repository.GetByIdAsync<Vehicle>(Guid.Parse(vehicleId));
 
@@ -251,7 +251,7 @@ public class VehicleService : IVehicleService
     /// Deletes a vehicle and all of its records
     /// </summary>
     /// <param name="vehicleId">The vehicle identifier</param>
-    public async Task DeleteVehicleAsync(string vehicleId)
+    public async Task DeleteAsync(string vehicleId)
     {
         Vehicle vehicleToDelete = await repository.All<Vehicle>().
                                   Where(v => v.Id == Guid.Parse(vehicleId))

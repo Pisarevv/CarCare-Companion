@@ -124,7 +124,7 @@ public class TripsController : BaseController
                 return StatusCode(404, ResourceNotFound);
             }
 
-            string createdTripId = await tripService.CreateTripAsync(userId,model);
+            string createdTripId = await tripService.CreateAsync(userId,model);
 
             return StatusCode(200, new StatusInformationMessage(createdTripId));
         }

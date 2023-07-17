@@ -30,7 +30,7 @@ public class TripRecordsService : ITripRecordsService
     /// </summary>
     /// <param name="model">The input model containing the trip information</param>
     /// <returns>String containing the newly created trip record Id</returns>
-    public async Task<string> CreateTripAsync(string userId, TripCreateRequestModel model)
+    public async Task<string> CreateAsync(string userId, TripCreateRequestModel model)
     {
         TripRecord tripToAdd = new TripRecord()
         {
