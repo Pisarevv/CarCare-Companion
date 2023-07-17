@@ -11,9 +11,8 @@ using CarCare_Companion.Core.Models.Trip;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 
+
 using static Common.FormattingMethods;
-using Amazon.S3.Model;
-using Microsoft.Extensions.Hosting;
 
 /// <summary>
 /// The TripService is responsible for operations regarding the trip record-related actions

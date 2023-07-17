@@ -35,14 +35,14 @@ const AddTrip = (props) => {
     const [trip, dispatch] = useReducer(tripReducer, {
         startDestination: "",
         endDestination: "",
-        travelledMileage: "",
+        mileageTravelled: "",
         fuelPrice: "",
         usedFuel: "",
         vehicle: "",
 
         startDestinationError: "",
         endDestinationError: "",
-        travelledMileageError: "",
+        mileageTravelledError: "",
         fuelPriceError: "",
         usedFuelError: "",
         vehicleError: ""
@@ -89,7 +89,7 @@ const AddTrip = (props) => {
         e.preventDefault()
         let isStartDestinationValid = validateTextFields("startDestination", trip.startDestination);
         let isEndDestinationValid = validateTextFields("endDestination", trip.endDestination);
-        let isMileageValid = validateNumberFields("travelledMileage", trip.travelledMileage);
+        let isMileageValid = validateNumberFields("mileageTravelled", trip.mileageTravelled);
         let isVehicleValid = validateTextFields("vehicle", trip.vehicle);
 
         if (isStartDestinationValid && isEndDestinationValid &&
@@ -112,13 +112,13 @@ const AddTrip = (props) => {
         try {
             let isStartDestinationValid = validateTextFields("startDestination", trip.startDestination);
             let isEndDestinationValid = validateTextFields("endDestination", trip.endDestination);
-            let isMileageValid = validateNumberFields("travelledMileage", trip.travelledMileage);
+            let isMileageValid = validateNumberFields("mileageTravelled", trip.mileageTravelled);
             let isVehicleValid = validateTextFields("vehicle", trip.vehicle);
             if (!trip.usedFuel || !trip.fuelPrice) {
                 if (isStartDestinationValid && isEndDestinationValid &&
                     isMileageValid && isVehicleValid) {
-                    const { startDestination, endDestination, travelledMileage, usedFuel, fuelPrice, vehicle } = trip;
-                    await createTrip(startDestination, endDestination, travelledMileage, null, null, vehicle);
+                    const { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicle } = trip;
+                    await createTrip(startDestination, endDestination, mileageTravelled, null, null, vehicle);
                 }
             }
             else {
@@ -127,8 +127,8 @@ const AddTrip = (props) => {
                 if (isStartDestinationValid && isEndDestinationValid &&
                     isMileageValid && isFuelPriceValid &&
                     isUsedFuelValid && isVehicleValid) {
-                    const { startDestination, endDestination, travelledMileage, usedFuel, fuelPrice, vehicle } = trip;
-                    await createTrip(startDestination, endDestination, travelledMileage, usedFuel, fuelPrice, vehicle);
+                    const { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicle } = trip;
+                    await createTrip(startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicle);
                 }
             }
 
@@ -166,8 +166,8 @@ const AddTrip = (props) => {
                                     </div>
                                     <div className="input-group input-group-lg">
                                         <label>Travelled mileage:</label>
-                                        <input className="form-control" type="text" placeholder="Travelled mileage" name="travelledMileage" value={trip.travelledMileage} onChange={onInputChange} />
-                                        {trip.travelledMileageError && <p className="invalid-field" >{trip.travelledMileageError}</p>}
+                                        <input className="form-control" type="text" placeholder="Travelled mileage" name="mileageTravelled" value={trip.mileageTravelled} onChange={onInputChange} />
+                                        {trip.mileageTravelledError && <p className="invalid-field" >{trip.mileageTravelledError}</p>}
                                     </div>
                                     <div className="input-group input-group-lg">
                                         <label>Vehicle:</label>
