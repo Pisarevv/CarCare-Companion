@@ -12,6 +12,8 @@ using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 using static Common.FormattingMethods;
+using Amazon.S3.Model;
+using Microsoft.Extensions.Hosting;
 
 /// <summary>
 /// The TripService is responsible for operations regarding the trip record-related actions
@@ -30,7 +32,7 @@ public class TripRecordsService : ITripRecordsService
     /// </summary>
     /// <param name="model">The input model containing the trip information</param>
     /// <returns>String containing the newly created trip record Id</returns>
-    public async Task<string> CreateAsync(string userId, TripCreateRequestModel model)
+    public async Task<string> CreateAsync(string userId, TripFormRequestModel model)
     {
         TripRecord tripToAdd = new TripRecord()
         {
@@ -50,6 +52,34 @@ public class TripRecordsService : ITripRecordsService
         await repository.SaveChangesAsync();
 
         return tripToAdd.Id.ToString();
+    }
+
+    /// <summary>
+    /// Edits a user trip record
+    /// </summary>
+    /// <param name="tripId">The trip record identifier</param>
+    /// <param name="model">The input model containing the trip information</param>
+    /// <returns></returns>
+    public async Task EditAsync(string tripId, TripFormRequestModel model)
+    {
+        TripRecord tripToEdit = await repository.GetByIdAsync<TripRecord>(Guid.Parse(tripId));
+
+        tripToEdit.StartDestination = model.StartDestination;
+        tripToEdit.EndDestination = model.EndDestination;
+        tripToEdit.MileageTravelled = model.MileageTravelled;
+        tripToEdit.UsedFuel = model.UsedFuel;
+        tripToEdit.FuelPrice = model.FuelPrice;
+        tripToEdit.ModifiedOn = DateTime.UtcNow;
+        tripToEdit.Cost = CalculateTripCost(model.FuelPrice, model.UsedFuel);
+
+        await repository.SaveChangesAsync();
+    }
+
+    public async Task<bool> DoesTripExistById(string tripId)
+    {
+        return await repository.AllReadonly<TripRecord>()
+                     .Where(tr => tr.Id == Guid.Parse(tripId))
+                     .AnyAsync();
     }
 
     /// <summary>
@@ -78,6 +108,42 @@ public class TripRecordsService : ITripRecordsService
              
                })
                .ToListAsync();
+
+    }
+
+    /// <summary>
+    /// Checks if the user is the creator of the trip record
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <param name="tripId">The trip record identifier</param>
+    /// <returns>Boolean based on the search result</returns>
+    public async Task<bool> IsUserCreatorOfTripAsync(string userId, string tripId)
+    {
+        return await repository.AllReadonly<TripRecord>().
+                   Where(v => v.Id == Guid.Parse(tripId) && v.OwnerId == Guid.Parse(userId))
+                   .AnyAsync();
+    }
+
+    /// <summary>
+    /// Retrieves the trip details to the user
+    /// </summary>
+    /// <param name="tripId">The trip identifier</param>
+    /// <returns>Detailed model containing all the trip information</returns>
+    public async Task<TripEditDetailsResponseModel> GetTripDetailsByIdAsync(string tripId)
+    {
+        return await repository.AllReadonly<TripRecord>()
+               .Where(t => t.Id == Guid.Parse(tripId))
+               .Select(t => new TripEditDetailsResponseModel
+               {
+                   Id = t.Id.ToString(),
+                   StartDestination = t.StartDestination,
+                   EndDestination = t.EndDestination,
+                   MileageTravelled = t.MileageTravelled,
+                   FuelPrice = t.FuelPrice,
+                   UsedFuel = t.UsedFuel,
+                   Vehicle = t.VehicleId.ToString()
+               })
+               .FirstAsync();
 
     }
 
@@ -140,5 +206,5 @@ public class TripRecordsService : ITripRecordsService
         return fuelPrice * Convert.ToDecimal(usedFuel);
     }
 
-    
+  
 }
