@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 using CarCare_Companion.Infrastructure.Data.Models.BaseModels;
 using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
+using CarCare_Companion.Infrastructure.Data.Models.Identity;
 
 using static CarCare_Companion.Common.ValidationConstants.ServiceRecord;
-using CarCare_Companion.Infrastructure.Data.Models.Identity;
 
 public class ServiceRecord : BaseDeletableModel<ServiceRecord>
 {
