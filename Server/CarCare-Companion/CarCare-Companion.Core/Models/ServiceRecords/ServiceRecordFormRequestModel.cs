@@ -14,7 +14,7 @@ public class ServiceRecordFormRequestModel
     public string Title { get; set; } = null!;
 
     [Required]
-    public string PerformedOn { get; set; } = null!;
+    public DateTime PerformedOn { get; set; }
 
     [Required]
     [Range(MinMileage, MaxMileage)]

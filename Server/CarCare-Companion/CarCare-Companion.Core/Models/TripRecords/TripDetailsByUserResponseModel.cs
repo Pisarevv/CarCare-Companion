@@ -20,5 +20,5 @@ public class TripDetailsByUserResponseModel
 
     public string VehicleModel { get; set; } = null!;
 
-    public string DateCreated { get; set; } = null!;
+    public DateTime DateCreated { get; set; }
 }
