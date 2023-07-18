@@ -21,6 +21,7 @@ import DeleteTrip from './components/Trips/DeleteTrip/DeleteTrip';
 import ServiceRecords from './components/ServiceRecords/ServiceRecords';
 
 import './App.css'
+import AddServiceRecord from './components/ServiceRecords/AddServiceRecord/AddServiceRecord';
 
 function App() {
   return(
@@ -43,6 +44,7 @@ function App() {
           <Route path='/Trips/Edit/:id' element={<EditTrip/>}/>
           <Route path='/Trips/Delete/:id' element={<DeleteTrip/>}/>
           <Route path='/ServiceRecords' element={<ServiceRecords/>}/>
+          <Route path='/ServiceRecords/Add' element={<AddServiceRecord/>}/>
           </Routes>
         </main> 
       </div>
