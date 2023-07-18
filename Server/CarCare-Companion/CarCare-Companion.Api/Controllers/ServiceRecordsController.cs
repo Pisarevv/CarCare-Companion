@@ -32,6 +32,41 @@ public class ServiceRecordsController : BaseController
     }
 
     /// <summary>
+    /// Retrieves all service records of an user
+    /// </summary>
+    /// <returns>A collection of user service records</returns>
+    [HttpGet]
+    [Produces("application/json")]
+    public async Task<IActionResult> All()
+    {
+        try
+        {
+            string userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            ICollection<ServiceRecordResponseModel> serviceRecords = await serviceRecordsService.GetAllByUserIdAsync(userId);
+
+            return StatusCode(200, serviceRecords);
+
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
     /// Creates a new service records 
     /// </summary>
     /// <param name="model">The input data containing the service record information</param>
