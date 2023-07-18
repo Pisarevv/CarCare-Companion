@@ -36,7 +36,7 @@
     background: rgb(45, 51, 68); 
     padding: 4% 10%;
     border-radius: 30px;
-    max-height: 25%;
+    height: 300px;
 
     opacity: 0;
     transform: translate3d(0, 300px, 0);

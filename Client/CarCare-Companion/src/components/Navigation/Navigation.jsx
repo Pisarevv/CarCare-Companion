@@ -24,7 +24,7 @@
  * -----------------
 **/
 
-import { NavLink } from 'react-router-dom'
+import { Link  } from 'react-router-dom'
 
 import { useAuthContext } from '../../contexts/AuthContext';
 
@@ -40,11 +40,11 @@ const Navigation = () => {
             {/* <img className="logo" src="/images/fhlogo.png" alt="image" /> */}
             <nav>
                 <ul className="nav_links">
-                    <li><NavLink to="/">Home</NavLink></li>
-                    <li><NavLink to="/MyVehicles">My vehicles</NavLink></li>
-                    <li><NavLink to="/Trips">Trips manager</NavLink></li>
-                    <li><NavLink to="/Trips">Services manager</NavLink></li>
-                    <li><NavLink to="/Trips">Taxes manager</NavLink></li>
+                    <li><Link to="/">Home</Link></li>
+                    <li><Link to="/MyVehicles">My vehicles</Link></li>
+                    <li><Link to="/Trips">Trips manager</Link></li>
+                    <li><Link to="/ServiceRecords">Services manager</Link></li>
+                    <li><Link to="/Trips">Taxes manager</Link></li>
                 
                 </ul>
             </nav>
@@ -53,13 +53,13 @@ const Navigation = () => {
                         isAuthenticated
                         ?
                         <>
-                           <li><NavLink to="/Profile">Profile</NavLink></li>      
-                           <li><NavLink to="/Logout">Logout</NavLink></li>                   
+                           <li><Link to="/Profile">Profile</Link></li>      
+                           <li><Link to="/Logout">Logout</Link></li>                   
                         </>
                         :
                         <>
-                        <li><NavLink to="/Register">Register</NavLink></li>
-                        <li><NavLink to="/Login">Login</NavLink></li>
+                        <li><Link to="/Register">Register</Link></li>
+                        <li><Link to="/Login">Login</Link></li>
                         </>
                 }
 
