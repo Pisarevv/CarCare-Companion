@@ -11,7 +11,7 @@ const ServiceRecordCard = ({ serviceRecordDetails }) => {
             <div>Service {title} performed on {performedOn}.</div>
             <div>Vehicle: {vehicleMake} {vehicleModel}.</div>
             <div>Mileage: {mileage} km.</div>
-            <div>Cost: {cost} km.</div>
+            <div>Cost: {cost} levs.</div>
             {description && <div>Description: {description}</div>}
             <div className="service-record-card-border"></div>
             <div className="service-record-actions-container">
