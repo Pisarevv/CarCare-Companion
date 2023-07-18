@@ -4,6 +4,13 @@
     grid-template-rows: 1fr;
     grid-column-gap: 15px;
     grid-row-gap: 0px;
+    opacity: 0;
+    transform: translate3d(0, 300px, 0);
+    animation: arrive 500ms ease-in-out 0.2s forwards;
+}
+
+#add-record {
+    background: tint(#2742ae, 4%);
 }
 
 .services-statistics {
@@ -12,6 +19,8 @@
 
 .service-records-list {
     grid-area: 1 / 2 / 2 / 3;
-    display: flex;
-    align-items: center;
+    display: flex;      
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 2em;
 }

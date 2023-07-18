@@ -1,6 +1,9 @@
 .add-service-record-section {
     padding: 50px 2%;
     background-color: #242424;
+    opacity: 0;
+    transform: translate3d(0, 300px, 0);
+    animation: arrive 500ms ease-in-out 0.2s forwards;
 }
 
 .add-service-record-container {
