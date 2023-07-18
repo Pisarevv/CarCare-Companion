@@ -7,6 +7,4 @@ public static class GlobalConstants
 
     public const string AWSBucket = "car-care-companion-bucket";
 
-    public const string DefaultTimeFormat = "dd-MM-yyyy H:mm";
-
 }
