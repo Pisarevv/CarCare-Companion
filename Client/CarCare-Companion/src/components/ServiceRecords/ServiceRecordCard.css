@@ -1,0 +1,25 @@
+.service-record-card-container { 
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    gap: 0.2em;
+    width: 90%;
+    background: rgb(45, 51, 68); 
+    padding: 4% 10%;
+    border-radius: 30px;
+}
+
+.service-record-card-border{
+    width: 160px;
+    height: 5px;
+    background-color: #13741b;
+    margin: 22px auto;
+}
+
+.service-record-actions-container{
+    align-self: center;
+}
+
+.trip-actions-container a{
+    text-decoration: none;
+}
