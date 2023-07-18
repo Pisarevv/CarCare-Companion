@@ -4,7 +4,6 @@ import { getUserTripsCost, getUserTripsCount } from "../../services/tripService"
 
 import IsLoadingHOC from "../Common/IsLoadingHoc";
 
-
 import { NotificationHandler } from "../../utils/NotificationHandler";
 
 import './TripsStatistics.css'
