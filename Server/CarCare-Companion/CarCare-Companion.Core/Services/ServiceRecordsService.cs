@@ -7,6 +7,7 @@ using CarCare_Companion.Core.Models.ServiceRecords;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 
+using static Common.GlobalConstants;
 
 /// <summary>
 /// The ServiceRecordsService is responsible for operations regarding the service records-related actions
@@ -28,11 +29,11 @@ public class ServiceRecordsService : IServiceRecordsService
             Description = model.Description,
             Cost = model.Cost,
             Mileage = model.Mileage,
-            PerformedOn = DateTime.Parse(model.PerformedOn),
+            //PerformedOn = DateTime.ParseExact(model.PerformedOn, DefaultDateFormat, null),
             VehicleId = Guid.Parse(model.VehicleId),
             OwnerId = Guid.Parse(userId)
 
-        };
+        }; 
 
         await repository.AddAsync<ServiceRecord>(serviceRecordToAdd);
         await repository.SaveChangesAsync();

@@ -12,8 +12,6 @@ using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 
-using static Common.FormattingMethods;
-
 /// <summary>
 /// The TripService is responsible for operations regarding the trip record-related actions
 /// </summary>
@@ -112,7 +110,7 @@ public class TripRecordsService : ITripRecordsService
                    UsedFuel = t.UsedFuel,
                    VehicleMake = t.Vehicle.Make,
                    VehicleModel = t.Vehicle.Model,
-                   DateCreated = FormatDateTimeToString(t.CreatedOn),
+                   DateCreated = t.CreatedOn,
                    TripCost = t.Cost
              
                })
