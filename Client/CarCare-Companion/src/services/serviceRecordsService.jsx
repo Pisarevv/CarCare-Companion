@@ -13,4 +13,9 @@ export async function createServiceRecord(title, description, mileage, cost, veh
     return result;
 }
 
+export async function getAllServiceRecords(){
+    var result = await api.get("/ServiceRecords");
+    return result;
+}
+
 
