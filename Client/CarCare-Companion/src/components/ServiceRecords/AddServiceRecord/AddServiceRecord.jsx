@@ -1,22 +1,31 @@
-import { NavLink, useNavigate } from 'react-router-dom'
 import { useEffect, useReducer, useState } from 'react'
+
+import { NavLink, useNavigate } from 'react-router-dom'
+
+import { getUserVehicles } from '../../../services/vehicleService'
+import { createServiceRecord } from '../../../services/serviceRecordsService'
+
+import serviceRecordReducer from '../../../reducers/serviceRecordReducer'
+
+import { NotificationHandler } from '../../../utils/NotificationHandler'
+import StringToISODateString from '../../../utils/StringToISODateString'
 
 import IsLoadingHOC from '../../Common/IsLoadingHoc'
 
-import { NotificationHandler } from '../../../utils/NotificationHandler'
-
 import './AddServiceRecord.css'
-import { getUserVehicles } from '../../../services/vehicleService'
-import serviceRecordReducer from '../../../reducers/serviceRecordReducer'
 
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
     inputNotNumber: "This field accepts only valid numbers",
+    invalidDate : "The provided date is invalid - correct format example 15/03/2023"
 }
 
 const ValidationRegexes = {
     //Validates that the fuel price and travelled distance is a floating point  
     floatNumbersRegex: new RegExp(/^\d+(?:[.,]\d+)?$/),
+
+    //Validates that the time format is MM/dd/yyyy
+    timeFormatRegex: new RegExp(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/\d{4}$/)
 }
 
 const AddServiceRecord = (props) => {
@@ -72,6 +81,19 @@ const AddServiceRecord = (props) => {
         return true;
     }
 
+    const validateDateFields = (target, value) => {
+        if (value.trim() === "") {
+            dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput });
+            return false;
+        }
+
+        if (!ValidationRegexes.timeFormatRegex.test(value)) {
+            dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.invalidDate });
+            return false;
+        }
+        return true;
+    }
+
     const validateNumberFields = (target, value) => {
 
         if (!ValidationRegexes.floatNumbersRegex.test(value) || value.trim() === "") {
@@ -83,26 +105,31 @@ const AddServiceRecord = (props) => {
 
     const onServiceRecordAdd = async (e) => {
         e.preventDefault();
+
         try {
-            // let isStartDestinationValid = validateTextFields("startDestination", serviceRecord.title);
-            // let isEndDestinationValid = validateTextFields("endDestination", serviceRecord.performedOn);
-            // let isMileageValid = validateNumberFields("mileageTravelled", serviceRecord.mileage);
-            // let isVehicleValid = validateTextFields("vehicle", trip.vehicle);
+            let isTitleValid = validateTextFields("title", serviceRecord.title);
+            let isPerformedOnValid = validateDateFields("performedOn", serviceRecord.performedOn);
+            let isMileageValid = validateNumberFields("mileage", serviceRecord.mileage);
+            let isVehicleValid = validateTextFields("vehicle", serviceRecord.vehicle);
+            let isCostValid = validateNumberFields("cost", serviceRecord.cost);
 
-            // if (isStartDestinationValid && isEndDestinationValid &&
-            //     isMileageValid && isFuelPriceValid &&
-            //     isUsedFuelValid && isVehicleValid) {
-            //     // const { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicle } = trip;
-            //     // await createTrip(startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicle);
-            // }
+            if (isTitleValid && isPerformedOnValid &&
+                isMileageValid && isVehicleValid &&
+                isCostValid)
+            {
+                const { title, description, mileage, cost, vehicle } = serviceRecord;
+                const performedOnDate = StringToISODateString(serviceRecord.performedOn);
+                await createServiceRecord(title, description, mileage, cost, vehicle, performedOnDate);
+                navigate('/ServiceRecords')
+            }
 
 
-            navigate('/ServiceRecords')
+             
 
         }
         catch (error) {
             NotificationHandler(error);
-            navigate('/ServiceRecords')
+            // navigate('/ServiceRecords')
         }
     }
 
