@@ -1,14 +1,14 @@
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useReducer, useState } from 'react'
 
-import tripReducer from '../../reducers/tripReducer'
+import tripReducer from '../../../reducers/tripReducer'
 
 import './EditTrip.css'
-import { getUserVehicles } from '../../services/vehicleService'
-import IsLoadingHOC from '../Common/IsLoadingHoc'
+import { getUserVehicles } from '../../../services/vehicleService'
+import IsLoadingHOC from '../../Common/IsLoadingHoc'
 
-import { createTrip, editTrip, getTripDetails } from '../../services/tripService'
-import { NotificationHandler } from '../../utils/NotificationHandler'
+import { editTrip, getTripDetails } from '../../../services/tripService'
+import { NotificationHandler } from '../../../utils/NotificationHandler'
 
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",

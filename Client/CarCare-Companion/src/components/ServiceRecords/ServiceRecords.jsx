@@ -31,7 +31,7 @@ const ServiceRecords = (props) => {
                     { 
                     serviceRecords.length > 0 
                     ? 
-                    serviceRecords.map(sr => <ServiceRecordCard/>)
+                    serviceRecords.map(sr => <ServiceRecordCard key = {sr.Id} serviceRecordDetails = {sr}/>)
                     :
                     <div>You haven't added any service records yet.</div>
                     }

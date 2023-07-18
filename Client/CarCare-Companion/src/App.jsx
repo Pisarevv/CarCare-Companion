@@ -8,18 +8,19 @@ import Register from './components/Register/Register';
 import Login from './components/Login/Login';
 import Logout from './components/Logout/Logout';
 import Vehicles from './components/Vehicles/Vehicles';
-import AddVehicle from './components/AddVehicle/AddVehicle';
+import AddVehicle from './components/Vehicles/AddVehicle/AddVehicle';
 
-import './App.css'
-import VehicleDetails from './components/VehicleDetails/VehicleDetails';
-import AddTrip from './components/AddTrip/AddTrip';
+
+import VehicleDetails from './components/Vehicles/VehicleDetails/VehicleDetails';
+import AddTrip from './components/Trips/AddTrip/AddTrip';
 import Trips from './components/Trips/Trips';
-import VehicleDelete from './components/VehicleDetails/VehicleDelete';
-import EditVehicle from './components/EditVehicle/EditVehicle';
-import EditTrip from './components/EditTrip/EditTrip';
-import DeleteTrip from './components/DeleteTrip/DeleteTrip';
+import VehicleDelete from './components/Vehicles/DeleteVehicle/VehicleDelete';
+import EditVehicle from './components/Vehicles/EditVehicle/EditVehicle';
+import EditTrip from './components/Trips/EditTrip/EditTrip';
+import DeleteTrip from './components/Trips/DeleteTrip/DeleteTrip';
 import ServiceRecords from './components/ServiceRecords/ServiceRecords';
 
+import './App.css'
 
 function App() {
   return(

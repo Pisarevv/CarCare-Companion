@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import './DeleteTrip.css'
-import { deleteTrip } from '../../services/tripService';
-import { NotificationHandler } from '../../utils/NotificationHandler'
+import { deleteTrip } from '../../../services/tripService';
+import { NotificationHandler } from '../../../utils/NotificationHandler'
 
 const DeleteTrip = () => {
 

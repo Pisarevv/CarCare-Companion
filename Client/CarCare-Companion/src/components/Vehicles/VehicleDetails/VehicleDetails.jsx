@@ -1,11 +1,11 @@
-import { Link, NavLink, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Link, NavLink, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-import { NotificationHandler } from '../../utils/NotificationHandler'
+import { NotificationHandler } from '../../../utils/NotificationHandler'
 
-import IsLoadingHOC from '../Common/IsLoadingHoc';
+import IsLoadingHOC from '../../Common/IsLoadingHoc';
 
-import { getVehicleDetails } from '../../services/vehicleService';
+import { getVehicleDetails } from '../../../services/vehicleService';
 
 import './VehicleDetails.css'
 

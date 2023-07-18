@@ -1,9 +1,9 @@
 /**
- * AddVehicle Component
+ * EditVehicle Component
  * ---------------------
  * This component displays a form that is available for registered user.
- * The user can add a vehicle to his collection of vehicles.
- * If all fields are valid the vehicle is created and added.
+ * The user can edit the desired vehicle.
+ * If all fields are valid the vehicle is edited.
  * ---------------------- 
  * 
  * States:
@@ -24,9 +24,9 @@
  * - validateNumberFields:
  *  Function that validates fields that a field is not blank and contains digits only.
  *  There is a possibility to add different validation.
- * - onVehicleAdd:
- *  Function that creates the vehicle if all of the properties are valid.
- *  If the request is successful it redirects to the user vehiclles collection.
+ * - onVehicleEdit:
+ *  Function that edits the vehicle if all of the properties are valid.
+ *  If the request is successful it redirects to the vehicle details.
  * -----------------
  * 
  * - ErrorHandler
@@ -36,18 +36,18 @@
 **/
 
 import { useEffect, useReducer, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 
-import { NotificationHandler } from "../../utils/NotificationHandler";
+import { NotificationHandler } from "../../../utils/NotificationHandler";
 
-import IsLoadingHOC from '../Common/IsLoadingHoc';
+import IsLoadingHOC from '../../Common/IsLoadingHoc';
 
-import userVehicleReducer from "../../reducers/userVehicleReducer";
-import dataURLtoFile from "../../utils/URLtoFileConverter";
+import userVehicleReducer from "../../../reducers/userVehicleReducer";
+import dataURLtoFile from "../../../utils/URLtoFileConverter";
 
-import './AddVehicle.css'
+import './EditVehicle.css'
 
-import { createVehicle, getFuelTypes, getVehicleTypes, uploadVehicleImage } from "../../services/vehicleService";
+import { editVehicle, getFuelTypes, getVehicleEditDetails, getVehicleTypes, uploadVehicleImage } from "../../../services/vehicleService";
 
 
 
@@ -66,11 +66,13 @@ const ValidationRegexes = {
 }
 
 
-const AddVehicle = (props) => {
+const EditVehicle = (props) => {
 
   const navigate = useNavigate();
 
   const { setLoading } = props;
+
+  const { id } = useParams();
 
   const [vehicleImage, setVehicleImage] = useState(null);
   const [vehicleImageError, setVehicleImageError] = useState("");
@@ -98,12 +100,15 @@ const AddVehicle = (props) => {
   useEffect(() => {
     (async () => {
       try {
+        var vehicleDetails = await getVehicleEditDetails(id);
+        console.log(vehicleDetails);
+        setVehicleInitialDetails(vehicleDetails);
         var fuelTypesResult = await getFuelTypes();
         var vehicleTypesResult = await getVehicleTypes();
         setFuelTypes(fuelTypes => fuelTypesResult);
         setVehicleTypes(vehicleTypes => vehicleTypesResult);
-        dispatch({ type: `SET_FUELTYPE`, payload: fuelTypesResult[0].id })
-        dispatch({ type: `SET_VEHICLETYPE`, payload: vehicleTypesResult[0].id })
+        dispatch({ type: `SET_FUELTYPE`, payload: vehicleDetails.fuelTypeId })
+        dispatch({ type: `SET_VEHICLETYPE`, payload: vehicleDetails.vehicleTypeId })
         setLoading(false);
       }
       catch (error) {
@@ -113,6 +118,12 @@ const AddVehicle = (props) => {
 
     })()
   }, []);
+
+  const setVehicleInitialDetails = (vehicleDetails) => {
+    for (const property in vehicleDetails) {
+        dispatch({ type: `SET_${(property).toUpperCase()}`, payload: vehicleDetails[property] })
+    }
+}
 
 
   //Event handlers
@@ -162,18 +173,18 @@ const AddVehicle = (props) => {
 
   const validateNumberFields = (target, value) => {
     if (target === "mileage") {
-      if (!ValidationRegexes.yearRegex.test(value) || value.trim() === "") {
+      if (value === "") {
         dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput });
         return false;
       }
-      if (!ValidationRegexes.mileageRegex.test(value) || value.trim() === "") {
+      if (!ValidationRegexes.mileageRegex.test(value)) {
         dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.inputNotNumber });
         return false;
       }
       return true;
     }
     if (target === "year") {
-      if (!ValidationRegexes.yearRegex.test(value) || value.trim() === "") {
+      if (!ValidationRegexes.yearRegex.test(value) || (value === "")) {
         dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput });
         return false;
       }
@@ -184,7 +195,6 @@ const AddVehicle = (props) => {
       return true;
     }
   }
-
   const validateImageFile = (file) => {
     const fileType = file.type;
     if (fileType.startsWith('image/')) {
@@ -212,7 +222,7 @@ const AddVehicle = (props) => {
     let isModelValid = validateTextFields("model", userVehicle.model);
     let isFuelTypeValid = validateSelectFields("fuelType", userVehicle.fuelType);
     let isMileageValid = validateNumberFields("mileage", userVehicle.mileage);
-    let isVehicleTypeValid = validateSelectFields("vehicleType", userVehicle.vehicleType);
+    let isVehicleTypeValid = validateSelectFields("vehicletype", userVehicle.vehicleType);
     let isYearValid = validateNumberFields("year", userVehicle.year);
 
     if (isMakeValid && isMileageValid &&
@@ -228,7 +238,7 @@ const AddVehicle = (props) => {
 
   }
 
-  const onVehicleAdd = async (e) => {
+  const onVehicleEdit = async (e) => {
     e.preventDefault();
     try {
       let isMakeValid = validateTextFields("make", userVehicle.make);
@@ -238,15 +248,12 @@ const AddVehicle = (props) => {
       let isVehicleTypeValid = validateSelectFields("vehicletype", userVehicle.vehicleType);
       let isYearValid = validateNumberFields("year", userVehicle.year);
 
-      let vehicleId = "";
-
       if (isMakeValid && isMileageValid &&
         isFuelTypeValid && isModelValid &&
         isVehicleTypeValid && isYearValid
       ) {
         const { make, model, mileage, year, fuelType, vehicleType } = userVehicle;
-        var vehicleIdResponse = await createVehicle(make, model, mileage, year, fuelType, vehicleType);
-        vehicleId = vehicleIdResponse;
+        await editVehicle(make, model, mileage, year, fuelType, vehicleType, id);
       }
 
       else {
@@ -257,12 +264,12 @@ const AddVehicle = (props) => {
 
         const formData = new FormData();
         formData.append("file", dataURLtoFile(vehicleImage, "inputImage"));
-        await uploadVehicleImage(formData, vehicleId);
+        await uploadVehicleImage(formData, id);
       }
 
       navigate('/MyVehicles');
-    }
-
+    } 
+    
     catch (error) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       NotificationHandler(error)
@@ -270,10 +277,10 @@ const AddVehicle = (props) => {
   }
 
   return (
-    <section className="add-vehicle">
-      <div className="add-container">
-        <div className="add-vehicle-body">
-          <div className="add-vehicle-heading">
+    <section className="edit-vehicle-section">
+      <div className="edit-vehicle-container">
+        <div className="edit-vehicle-body">
+          <div className="edit-vehicle-heading">
             {
               stepOneFinished == false
                 ?
@@ -293,7 +300,7 @@ const AddVehicle = (props) => {
                     <div className="input-group input-group-lg">
                       <label>Fuel type:</label>
                       <div className="form-control select">
-                        <select className="select-group" name="fueltype" onChange={onInputChange}>
+                        <select className="select-group" name="fueltype" value={userVehicle.fuelType} onChange={onInputChange}>
                           {fuelTypes.map(ft => <option key={ft.id} value={ft.id}>{ft.name}</option>)}
                         </select>
                       </div>
@@ -307,7 +314,7 @@ const AddVehicle = (props) => {
                     <div className="input-group input-group-lg">
                       <label>Vehicle type:</label>
                       <div className="form-control select">
-                        <select className="select-group" name="vehicleType" onChange={onInputChange}>
+                        <select className="select-group" name="vehicleType"  value={userVehicle.vehicleType} onChange={onInputChange}>
                           {vehicleTypes.map(vt => <option key={vt.id} value={vt.id}>{vt.name}</option>)}
                         </select>
                       </div>
@@ -325,7 +332,7 @@ const AddVehicle = (props) => {
                 :
                 <div className="step-two-container">
                   <h2>Vehicle image</h2>
-                  <form onSubmit={onVehicleAdd}>
+                  <form onSubmit={onVehicleEdit}>
                     <div className="input-group input-group-lg img-group">
                       <label>Image: (Optional)</label>
                       {vehicleImage && <img className="vehicle-image" src={vehicleImage} alt="Selected" />}
@@ -351,5 +358,5 @@ const AddVehicle = (props) => {
 }
 
 
-export default IsLoadingHOC(AddVehicle);
+export default IsLoadingHOC(EditVehicle);
 

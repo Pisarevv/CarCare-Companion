@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import './VehicleDelete.css'
-import { deleteVehicle } from '../../services/vehicleService';
-import { NotificationHandler } from '../../utils/NotificationHandler'
+import { deleteVehicle } from '../../../services/vehicleService';
+import { NotificationHandler } from '../../../utils/NotificationHandler'
 
 const VehicleDelete = () => {
     const location = useLocation();

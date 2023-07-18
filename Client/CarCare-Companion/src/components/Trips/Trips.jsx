@@ -10,7 +10,7 @@ import { NotificationHandler } from '../../utils/NotificationHandler'
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
 import './Trips.css'
-import TripsStatistics from './TripsStatistics';
+import TripsStatistics from './TripsStatistics/TripsStatistics';
 
 const Trips = (props) => {
 
