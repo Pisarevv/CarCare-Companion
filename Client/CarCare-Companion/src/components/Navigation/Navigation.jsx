@@ -3,12 +3,16 @@
  * ---------------------
  * This component displays the website header. It has two states
  * - For guest (unauthorized users):
- *   The user can navigate trough Home page, Products page(where the store products are) 
- *   and Recycle page(where the user products listings are).
+ *   The user can navigate trough Home page
  *   When the user is not logged in a Register and Login links are available.
  * - For logged in users (authorized users):
- *   This user can navigate to all the links the guest can but there is no
- *   Login or Register links. Instead there is a Logout link.
+ *   This user can navigate to the following links:
+ *   - MyVehicles
+ *   - Trips
+ *   - ServiceRecords
+ *   - TaxRecords
+ *   - Profile
+ *   There is no Login or Register links. Instead there is a Logout link.
  * ---------------------- 
  * 
  * Contexts:
@@ -17,10 +21,6 @@
  *  In this component this context provides the "isAuthenticated" variable.
  *  The purpose of this variable is to determine if the user is authorized or not 
  *  and based on that to render different navigation links.
- *  
- *  - useCartContext
- *  In this component this context provides the "cart" array.
- *  The purpose of this array is to get its length and set the user cart products count on the icon of the cart.
  * -----------------
 **/
 
@@ -41,10 +41,7 @@ const Navigation = () => {
             <nav>
                 <ul className="nav_links">
                     <li><Link to="/">Home</Link></li>
-                    <li><Link to="/MyVehicles">My vehicles</Link></li>
-                    <li><Link to="/Trips">Trips manager</Link></li>
-                    <li><Link to="/ServiceRecords">Services manager</Link></li>
-                    <li><Link to="/Trips">Taxes manager</Link></li>
+                   
                 
                 </ul>
             </nav>
@@ -53,13 +50,17 @@ const Navigation = () => {
                         isAuthenticated
                         ?
                         <>
-                           <li><Link to="/Profile">Profile</Link></li>      
-                           <li><Link to="/Logout">Logout</Link></li>                   
+                         <li><Link to="/MyVehicles">My vehicles</Link></li>
+                         <li><Link to="/Trips">Trips manager</Link></li>
+                         <li><Link to="/ServiceRecords">Services manager</Link></li>
+                         <li><Link to="/TaxRecords">Taxes manager</Link></li>
+                         <li><Link to="/Profile">Profile</Link></li>      
+                         <li><Link to="/Logout">Logout</Link></li>                   
                         </>
                         :
                         <>
-                        <li><Link to="/Register">Register</Link></li>
-                        <li><Link to="/Login">Login</Link></li>
+                         <li><Link to="/Register">Register</Link></li>
+                         <li><Link to="/Login">Login</Link></li>
                         </>
                 }
 
