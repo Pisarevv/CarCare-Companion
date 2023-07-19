@@ -47,6 +47,7 @@ public class ServiceRecordsService : IServiceRecordsService
         return serviceRecordToAdd.Id.ToString();
     }
 
+
     /// <summary>
     /// Edits a  service record
     /// </summary>
@@ -90,5 +91,17 @@ public class ServiceRecordsService : IServiceRecordsService
                    VehicleModel = sr.Vehicle.Model
                })
                .ToListAsync();
+    }
+
+    /// <summary>
+    /// Checks if there exist a record and is not deleted 
+    /// </summary>
+    /// <param name="serviceRecordId">The service record identifier</param>
+    /// <returns>Boolen based on the search result</returns>
+    public async Task<bool> DoesRecordExistById(string serviceRecordId)
+    {
+        return await repository.AllReadonly<ServiceRecord>()
+               .Where(sr => sr.IsDeleted == false && sr.Id == Guid.Parse(serviceRecordId))
+               .AnyAsync();
     }
 }

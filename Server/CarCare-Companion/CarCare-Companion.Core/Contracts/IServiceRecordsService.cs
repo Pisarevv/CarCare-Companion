@@ -9,4 +9,6 @@ public interface IServiceRecordsService
     public Task<ICollection<ServiceRecordResponseModel>> GetAllByUserIdAsync(string userId);
 
     public Task EditAsync(string serviceRecordId, ServiceRecordFormRequestModel model);
+
+    public Task<bool> DoesRecordExistById(string serviceRecordId);
 }
