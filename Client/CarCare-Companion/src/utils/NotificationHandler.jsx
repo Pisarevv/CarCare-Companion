@@ -7,7 +7,7 @@
 
 import { Store } from 'react-notifications-component';
 
-export const notificationMessages = {
+const notificationMessages = {
     "Invalid access token" : {
         title : "Invalid access token",
         message : "Your session has expired. Please log in again.",
