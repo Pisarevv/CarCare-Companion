@@ -10,5 +10,7 @@ public interface IServiceRecordsService
 
     public Task EditAsync(string serviceRecordId, ServiceRecordFormRequestModel model);
 
-    public Task<bool> DoesRecordExistById(string serviceRecordId);
+    public Task<bool> DoesRecordExistByIdAsync(string serviceRecordId);
+
+    public Task<bool> IsUserCreatorOfRecordAsync(string userId, string serviceRecordId);
 }

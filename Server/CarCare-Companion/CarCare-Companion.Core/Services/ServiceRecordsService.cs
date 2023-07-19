@@ -98,10 +98,23 @@ public class ServiceRecordsService : IServiceRecordsService
     /// </summary>
     /// <param name="serviceRecordId">The service record identifier</param>
     /// <returns>Boolen based on the search result</returns>
-    public async Task<bool> DoesRecordExistById(string serviceRecordId)
+    public async Task<bool> DoesRecordExistByIdAsync(string serviceRecordId)
     {
         return await repository.AllReadonly<ServiceRecord>()
                .Where(sr => sr.IsDeleted == false && sr.Id == Guid.Parse(serviceRecordId))
+               .AnyAsync();
+    }
+
+    /// <summary>
+    /// Checks if the user is the creator of the service record
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <param name="serviceRecordId">The service record identifier</param>
+    /// <returns>Boolean based on the search result</returns>
+    public async Task<bool> IsUserCreatorOfRecordAsync(string userId, string serviceRecordId)
+    {
+        return await repository.AllReadonly<ServiceRecord>()
+               .Where(sr => sr.OwnerId == Guid.Parse(userId) && sr.Id == Guid.Parse(serviceRecordId))
                .AnyAsync();
     }
 }
