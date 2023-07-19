@@ -21,6 +21,11 @@ public class ServiceRecordsService : IServiceRecordsService
         this.repository = repository;
     }
 
+    /// <summary>
+    /// Creates a new service record
+    /// </summary>
+    /// <param name="model">The input model containing the service record information</param>
+    /// <returns>String containing the newly created service record Id</returns>
     public async Task<string> CreateAsync(string userId, ServiceRecordFormRequestModel model)
     {
         ServiceRecord serviceRecordToAdd = new ServiceRecord()
@@ -29,7 +34,8 @@ public class ServiceRecordsService : IServiceRecordsService
             Description = model.Description,
             Cost = model.Cost,
             Mileage = model.Mileage,
-            //PerformedOn = DateTime.ParseExact(model.PerformedOn, DefaultDateFormat, null),
+            PerformedOn = model.PerformedOn,
+            CreatedOn = DateTime.UtcNow,
             VehicleId = Guid.Parse(model.VehicleId),
             OwnerId = Guid.Parse(userId)
 
@@ -41,10 +47,16 @@ public class ServiceRecordsService : IServiceRecordsService
         return serviceRecordToAdd.Id.ToString();
     }
 
+    /// <summary>
+    /// Retrieves all user service records ordered by date of their creation
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>A collection of service records</returns>
     public async Task<ICollection<ServiceRecordResponseModel>> GetAllByUserIdAsync(string userId)
     {
         return await repository.AllReadonly<ServiceRecord>()
                .Where(sr => sr.IsDeleted == false)
+               .OrderBy(sr => sr.PerformedOn)
                .Select(sr => new ServiceRecordResponseModel
                {
                    Id = sr.Id.ToString(),
