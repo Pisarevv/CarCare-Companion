@@ -22,6 +22,7 @@ import ServiceRecords from './components/ServiceRecords/ServiceRecords';
 
 import './App.css'
 import AddServiceRecord from './components/ServiceRecords/AddServiceRecord/AddServiceRecord';
+import EditServiceRecord from './components/ServiceRecords/EditServiceRecord/EditServiceRecord';
 
 function App() {
   return(
@@ -45,6 +46,7 @@ function App() {
           <Route path='/Trips/Delete/:id' element={<DeleteTrip/>}/>
           <Route path='/ServiceRecords' element={<ServiceRecords/>}/>
           <Route path='/ServiceRecords/Add' element={<AddServiceRecord/>}/>
+          <Route path='/ServiceRecords/Edit/:id' element={<EditServiceRecord/>}/>
           </Routes>
         </main> 
       </div>
