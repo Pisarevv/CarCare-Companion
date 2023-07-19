@@ -18,7 +18,6 @@ export async function getAllServiceRecords(){
     return result;
 }
 
-
 export async function getServiceRecordsDetails(recordId){
     var result = await api.get(`/ServiceRecords/Details/${recordId}`);
     return result;
@@ -26,6 +25,11 @@ export async function getServiceRecordsDetails(recordId){
 
 export async function editServiceRecord(title, description, mileage, cost, vehicleId, performedOn, recordId){
     var result = await api.patch(`/ServiceRecords/Edit/${recordId}`, {title, description, mileage, cost, vehicleId, performedOn});
+    return result;
+}
+
+export async function deleteServiceRecord(recordId){
+    var result = await api.delete(`/ServiceRecords/Delete/${recordId}`);
     return result;
 }
 
