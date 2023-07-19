@@ -5,12 +5,12 @@ using System.ComponentModel.DataAnnotations;
 
 using Microsoft.EntityFrameworkCore;
 
-using CarCare_Companion.Infrastructure.Data.Models.BaseModels;
-
+using Models.BaseModels;
+using Models.Identity;
 using Models.Vehicle;
 
 using static CarCare_Companion.Common.ValidationConstants.TaxRecord;
-using CarCare_Companion.Infrastructure.Data.Models.Identity;
+
 
 public class TaxRecord : BaseDeletableModel<TaxRecord>
 {

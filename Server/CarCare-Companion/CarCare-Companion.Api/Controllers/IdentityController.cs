@@ -36,9 +36,9 @@ public class IdentityController : BaseController
     [HttpPost]
     [Route("/Register")]
     [ProducesResponseType(201, Type = typeof(AuthDataModel))]
-    [ProducesResponseType(400)]
-    [ProducesResponseType(403)]
-    [ProducesResponseType(409)]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(409, Type = typeof(StatusInformationMessage))]
    
     public async Task<IActionResult> Register([FromBody] RegisterRequestModel registerData)
     {

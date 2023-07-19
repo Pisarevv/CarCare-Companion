@@ -26,7 +26,6 @@ public class HomeController : BaseController
     }
 
     [HttpGet]
-    [Route("Home")]
     [ProducesResponseType(200, Type = typeof(CarouselAdResponseModel))]
     [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
     [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
