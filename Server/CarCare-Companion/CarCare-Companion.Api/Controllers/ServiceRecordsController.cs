@@ -67,6 +67,58 @@ public class ServiceRecordsController : BaseController
     }
 
     /// <summary>
+    /// Retrieves a service record details of an user
+    /// </summary>
+    /// <returns>A collection of user service records</returns>
+    [HttpGet]
+    [Route("Details/{recordId}")]
+    [Produces("application/json")]
+    public async Task<IActionResult> ServiceRecordDetails([FromRoute] string recordId)
+    {
+        try
+        {
+            string userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            bool doesServiceRecordExist = await serviceRecordsService.DoesRecordExistByIdAsync(recordId);
+
+            if(!doesServiceRecordExist)
+            {
+                return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
+            }
+
+            bool isUserCreator = await serviceRecordsService.IsUserCreatorOfRecordAsync(userId, recordId);
+
+            if (!isUserCreator)
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            ServiceRecordEditDetailsResponseModel serviceRecord = await serviceRecordsService.GetEditDetailsByIdAsync(recordId);
+
+            return StatusCode(200, serviceRecord);
+
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+
+
+    /// <summary>
     /// Creates a new service records 
     /// </summary>
     /// <param name="model">The input data containing the service record information</param>
