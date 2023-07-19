@@ -70,6 +70,19 @@ public class ServiceRecordsService : IServiceRecordsService
     }
 
     /// <summary>
+    /// Deletes a service record
+    /// </summary>
+    /// <param name="serviceRecordId">The service record identifier</param>
+    public async Task DeleteAsync(string serviceRecordId)
+    {
+        ServiceRecord serviceRecordToDelete = await repository.GetByIdAsync<ServiceRecord>(Guid.Parse(serviceRecordId));
+
+        repository.SoftDelete(serviceRecordToDelete);
+
+        await repository.SaveChangesAsync();
+    }
+
+    /// <summary>
     /// Retrieves all user service records ordered by date of their creation
     /// </summary>
     /// <param name="userId">The user identifier</param>
@@ -140,5 +153,5 @@ public class ServiceRecordsService : IServiceRecordsService
                .AnyAsync();
     }
 
-    
+   
 }
