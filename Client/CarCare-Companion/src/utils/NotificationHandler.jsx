@@ -7,7 +7,7 @@
 
 import { Store } from 'react-notifications-component';
 
-const errors = {
+export const notificationMessages = {
     "Invalid access token" : {
         title : "Invalid access token",
         message : "Your session has expired. Please log in again.",
@@ -42,19 +42,24 @@ const errors = {
         title : "Unexpected error",
         message : "Something unexpected happend. Please refresh the page.",
         type : "danger"
+    },
+    "Successful record removal" : {
+        title : "Sucess",
+        message : "Sucessfully removed the record.",
+        type : "success"
     }
 }
 
 
 
 
-export const NotificationHandler = (inputError) => {
+export const NotificationHandler = (input) => {
 
-    if(!errors.hasOwnProperty(inputError)){
-       inputError = "Generic error"
+    if(!notificationMessages.hasOwnProperty(input)){
+       input = "Generic error"
     }
     
-    const {title,message,type} = errors[inputError];
+    const {title,message,type} = notificationMessages[input];
     return (
         Store.addNotification({
             title: title,
