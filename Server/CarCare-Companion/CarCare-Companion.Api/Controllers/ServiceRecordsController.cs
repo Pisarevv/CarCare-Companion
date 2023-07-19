@@ -164,5 +164,61 @@ public class ServiceRecordsController : BaseController
         }
     }
 
+    /// <summary>
+    /// Creates a new service records 
+    /// </summary>
+    /// <param name="model">The input data containing the service record information</param>
+    /// <returns>The Id of the created service record</returns>
+    [HttpPatch]
+    [Route("Edit/{recordId}")]
+    [Produces("application/json")]
+    public async Task<IActionResult> Edit([FromRoute] string recordId, [FromBody] ServiceRecordFormRequestModel model)
+    {
+        try
+        {
+            string userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(400, new StatusInformationMessage(InvalidData));
+            }
+
+            bool vehicleExists = await vehicleService.DoesVehicleExistByIdAsync(model.VehicleId);
+
+            if (!vehicleExists)
+            {
+                return StatusCode(400, new StatusInformationMessage(InvalidData));
+            }
+
+            bool isUserCreator = await serviceRecordsService.IsUserCreatorOfRecordAsync(userId, recordId);
+
+            if (!isUserCreator)
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            await serviceRecordsService.EditAsync(recordId, model);
+
+            return StatusCode(200, new StatusInformationMessage(Success));
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+
+
 }
  
