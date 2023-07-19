@@ -17,7 +17,7 @@ export async function createVehicle(make,model,mileage,year,fuelTypeId, vehicleT
 }
 
 export async function editVehicle(make,model,mileage,year,fuelTypeId, vehicleTypeId, vehicleId){
-    var result = await api.post(`/Vehicles/Edit/${vehicleId}`,{make,model,mileage,year,fuelTypeId, vehicleTypeId})
+    var result = await api.patch(`/Vehicles/Edit/${vehicleId}`,{make,model,mileage,year,fuelTypeId, vehicleTypeId})
     return result;
 }
 
@@ -42,5 +42,5 @@ export async function getVehicleEditDetails(vehicleId){
 }
 
 export async function deleteVehicle(vehicleId){
-    var result = await api.post(`/Vehicles/Delete/${vehicleId}`);
+    var result = await api.delete(`/Vehicles/Delete/${vehicleId}`);
 }
