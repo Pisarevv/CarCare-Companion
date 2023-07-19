@@ -1,4 +1,5 @@
 /**
+ * -----------------
  *  StringToISODateString
  *  This function that recieves a string in a format "dd/MM/yyyy" 
  * and converts it to a ISO 8601 datetime string
@@ -8,10 +9,10 @@
 
 const StringToISODateString = (inputString) => {
 
-    //Changing all '/' with '-'
+    //Changing all '/' with '-' example - 12/03/2023 to 12-03-2023
     const formatedInput = inputString.replaceAll('/','-');
 
-    //Formatting the string in  yyyy/MM/dd format to get the correct time stamp
+    //Formatting the string in  yyyy/MM/dd format to get the correct time stamp - example - 12-03-2023 to 2023-03-12
     const formattedString = formatedInput.substring(6,10) + formatedInput.substring(2,6) + formatedInput.substring(0,2);
 
     //Making the correct time stamp for date
