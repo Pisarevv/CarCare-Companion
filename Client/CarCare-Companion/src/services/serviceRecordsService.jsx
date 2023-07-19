@@ -19,3 +19,8 @@ export async function getAllServiceRecords(){
 }
 
 
+export async function getServiceRecordsDetails(recordId){
+    var result = await api.get(`/ServiceRecords/Details/${recordId}`);
+    return result;
+}
+
