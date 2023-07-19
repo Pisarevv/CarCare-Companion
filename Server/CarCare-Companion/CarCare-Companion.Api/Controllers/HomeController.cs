@@ -25,8 +25,11 @@ public class HomeController : BaseController
         this.logger = logger;
     }
 
-    [HttpGet(Name = "/Home")]
-    [Produces("application/json")]
+    [HttpGet]
+    [Route("Home")]
+    [ProducesResponseType(200, Type = typeof(CarouselAdResponseModel))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> Index()
     {
         try

@@ -7,9 +7,8 @@ using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Status;
 using CarCare_Companion.Core.Models.Vehicle;
 
-using static CarCare_Companion.Common.StatusResponses;
 using CarCare_Companion.Common;
-
+using static CarCare_Companion.Common.StatusResponses;
 
 /// <summary>
 /// The vehicle controller handles vehicle related operations
@@ -33,7 +32,9 @@ public class VehiclesController : BaseController
     /// </summary>
     /// <returns>Collection of the user vehicles</returns>
     [HttpGet]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(ICollection<VehicleBasicInfoResponseModel>))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> GetUserVehicles()
     {
         try
@@ -74,8 +75,10 @@ public class VehiclesController : BaseController
     /// <param name="model">The input data containing the vehicle information</param>
     /// <returns>The Id of the created vehicle</returns>
     [HttpPost]
-    [Produces("application/json")]
-    public async Task<IActionResult> CreateVehicle(VehicleFormRequestModel model)
+    [ProducesResponseType(200, Type = typeof(string))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> CreateVehicle([FromBody] VehicleFormRequestModel model)
     {
         try
         {
@@ -113,10 +116,12 @@ public class VehiclesController : BaseController
     /// <param name="vehicleId">The vehicle identifier</param>
     /// <param name="model">The input data containing the vehicle information</param>
     /// <returns>Status response based on the edit result</returns>
-    [HttpPost]
+    [HttpPatch]
     [Route("Edit/{vehicleId}")]
-    [Produces("application/json")]
-    public async Task<IActionResult> EditVehicle([FromRoute] string vehicleId, VehicleFormRequestModel model)
+    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> EditVehicle([FromRoute] string vehicleId,[FromBody] VehicleFormRequestModel model)
     {
         try
         {
@@ -169,9 +174,11 @@ public class VehiclesController : BaseController
     /// </summary>
     /// <param name="vehicleId">The vehicle identifier</param>
     /// <returns>A status code with message based on the process of deleting </returns>
-    [HttpPost]
+    [HttpDelete]
     [Route("Delete/{vehicleId}")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> Delete([FromRoute] string vehicleId)
     {
         try
@@ -215,7 +222,9 @@ public class VehiclesController : BaseController
     /// <returns></returns>
     [HttpPost]
     [Route("ImageUpload")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> UploadVehicleImage([FromHeader] string vehicleId,[FromForm] IFormFile file)
     {
         try
@@ -275,7 +284,9 @@ public class VehiclesController : BaseController
     /// <returns>Model containing all the vehicle details</returns>
     [HttpGet]
     [Route("Details/{vehicleId}")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(VehicleDetailsResponseModel))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> VehicleDetails([FromRoute] string vehicleId)
     {
         try
@@ -328,10 +339,12 @@ public class VehiclesController : BaseController
     /// Retrieves detailed vehicle  information
     /// </summary>
     /// <param name="vehicleId">The vehicle identifier</param>
-    /// <returns>Model containing all the vehicle details</returns>
+    /// <returns>Model containing all the vehicle details needed</returns>
     [HttpGet]
     [Route("Edit/{vehicleId}")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(VehicleDetailsEditResponseModel))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> VehicleEditDetails([FromRoute] string vehicleId)
     {
         try
@@ -360,11 +373,6 @@ public class VehiclesController : BaseController
 
             VehicleDetailsEditResponseModel vehicle = await vehicleService.GetVehicleEditDetails(vehicleId);
 
-            //if (vehicle.ImageUrl != null)
-            //{
-            //    vehicle.ImageUrl = await imageService.GetImageUrlAsync(vehicle.ImageUrl);
-            //}
-
             return StatusCode(200, vehicle);
 
         }
@@ -387,7 +395,9 @@ public class VehiclesController : BaseController
     /// <returns>Collection of fuel types</returns>
     [HttpGet]
     [Route("FuelTypes")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(ICollection<VehicleTypeResponseModel>))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> GetFuelTypes()
     {
         try
@@ -413,7 +423,9 @@ public class VehiclesController : BaseController
     /// <returns>Collection of vehicle types</returns>
     [HttpGet]
     [Route("Types")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(ICollection<VehicleTypeResponseModel>))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> GetVehicleTypes()
     {
         try

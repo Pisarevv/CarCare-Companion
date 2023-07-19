@@ -6,11 +6,9 @@ using Microsoft.Data.SqlClient;
 
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Identity;
-using CarCare_Companion.Core.Services;
-
-using static CarCare_Companion.Common.StatusResponses;
 using CarCare_Companion.Core.Models.Status;
 
+using static CarCare_Companion.Common.StatusResponses;
 
 
 /// <summary>
@@ -35,8 +33,13 @@ public class IdentityController : BaseController
     /// last name, email, password and confirm password</param>
     /// <returns>Logs in the user and returns him with his email,id and JWT token</returns>
     [AllowAnonymous]
-    [HttpPost("/Register")]
-    [Produces("application/json")]
+    [HttpPost]
+    [Route("/Register")]
+    [ProducesResponseType(201, Type = typeof(AuthDataModel))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(409)]
+   
     public async Task<IActionResult> Register([FromBody] RegisterRequestModel registerData)
     {
         try
@@ -79,8 +82,11 @@ public class IdentityController : BaseController
     /// <param name="loginData">The input data containing the user email and password</param>
     /// <returns>The logged in user with his email,id and JWT token</returns>
     [AllowAnonymous]
-    [HttpPost("/Login")]
-    [Produces("application/json")]
+    [HttpPost]
+    [Route("/Login")]
+    [ProducesResponseType(200, Type = typeof(AuthDataModel))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(401, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> Login([FromBody] LoginRequestModel loginData)
     {
         try

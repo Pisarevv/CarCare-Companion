@@ -10,7 +10,9 @@ using CarCare_Companion.Core.Models.Trip;
 
 using static Common.StatusResponses;
 
+
 [Route("[controller]")]
+
 public class TripsController : BaseController
 {
     private readonly ITripRecordsService tripService;
@@ -34,7 +36,9 @@ public class TripsController : BaseController
     /// <param name="model">The model containing the trip details</param>
     /// <returns>The Id of the created trip</returns>
     [HttpPost]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(string))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> CreateTrip([FromBody] TripFormRequestModel model)
     {
         try
@@ -61,7 +65,7 @@ public class TripsController : BaseController
 
             string createdTripId = await tripService.CreateAsync(userId, model);
 
-            return StatusCode(200, new StatusInformationMessage(createdTripId));
+            return StatusCode(200, createdTripId);
         }
         catch (SqlException ex)
         {
@@ -76,13 +80,17 @@ public class TripsController : BaseController
     }
 
     /// <summary>
-    /// Edits a user trip
+    /// Edits a user trip record
     /// </summary>
-    /// <returns>Model of the user trip with details </returns>
-    [HttpPost]
+    /// <param name="tripId">The trip identifier</param>
+    /// <param name="model">The model containing the trip details</param>
+    /// <returns>A status message based on the result</returns>
+    [HttpPatch]
     [Route("Edit/{tripId}")]
-    [Produces("application/json")]
-    public async Task<IActionResult> Edit([FromRoute] string tripId, TripFormRequestModel model)
+    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> Edit([FromRoute] string tripId,[FromBody] TripFormRequestModel model)
     {
         try
         {
@@ -128,10 +136,12 @@ public class TripsController : BaseController
     /// Deletes a trip record
     /// </summary>
     /// <param name="tripId">The vehicle identifier</param>
-    /// <returns>A status code with message based on the process of deleting </returns>
-    [HttpPost]
+    /// <returns>A status code with message based on the process of deleting</returns>
+    [HttpDelete]
     [Route("Delete/{tripId}")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> Delete([FromRoute] string tripId)
     {
         try
@@ -172,7 +182,9 @@ public class TripsController : BaseController
     /// </summary>
     /// <returns>Collection of the user trips </returns>
     [HttpGet]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(ICollection<TripDetailsByUserResponseModel>))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> AllTripsByUsedId()
     {
         try
@@ -203,10 +215,13 @@ public class TripsController : BaseController
     /// <summary>
     /// Retrieves a user trip
     /// </summary>
+    /// <param name="tripId">The trip identifier</param>
     /// <returns>Model of the user trip with details </returns>
     [HttpGet]
     [Route("Details/{tripId}")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(TripEditDetailsResponseModel))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> TripDetails([FromRoute] string tripId)
     {
         try
@@ -250,12 +265,15 @@ public class TripsController : BaseController
 
 
     /// <summary>
-    /// Retrieves  all the user trips 
+    /// Retrieves a specified count of user records
     /// </summary>
-    /// <returns>Collection of the user trips </returns>
+    /// <param name="count">The count of records to be retrieved</param>
+    /// <returns>Collection of the user trips</returns>
     [HttpGet]
     [Route("Last/{count?}")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(ICollection<TripBasicInformationByUserResponseModel>))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> LastNCountTripsByUserId([FromQuery] int count = 3)
     {
         try
@@ -289,7 +307,9 @@ public class TripsController : BaseController
     /// <returns>The count of the user trips</returns>
     [HttpGet]
     [Route("Count")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(string))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> UserTripsCount()
     {
         try
@@ -323,7 +343,9 @@ public class TripsController : BaseController
     /// <returns>The cost of the user trips</returns>
     [HttpGet]
     [Route("Cost")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(decimal?))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> UserTripsCost()
     {
         try
@@ -335,8 +357,8 @@ public class TripsController : BaseController
                 return StatusCode(403, InvalidUser);
             }
 
-            decimal? userTripsCount = await tripService.GetAllUserTripsCostAsync(userId);
-            return StatusCode(200, userTripsCount);
+            decimal? userTripsCost = await tripService.GetAllUserTripsCostAsync(userId);
+            return StatusCode(200, userTripsCost);
 
         }
         catch (SqlException ex)

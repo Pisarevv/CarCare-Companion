@@ -11,12 +11,10 @@ using CarCare_Companion.Core.Models.ServiceRecords;
 using static Common.StatusResponses;
 
 
-
 /// <summary>
 /// The service records controller handles service records related operations
 /// </summary>
 [Route("[controller]")]
-[Produces("application/json")]
 public class ServiceRecordsController : BaseController
 {
     private readonly IServiceRecordsService serviceRecordsService;
@@ -35,7 +33,9 @@ public class ServiceRecordsController : BaseController
     /// </summary>
     /// <returns>A collection of user service records</returns>
     [HttpGet]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(ServiceRecordResponseModel))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> All()
     {
         try
@@ -44,7 +44,7 @@ public class ServiceRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new StatusInformationMessage(InvalidUser));
             }
 
             ICollection<ServiceRecordResponseModel> serviceRecords = await serviceRecordsService.GetAllByUserIdAsync(userId);
@@ -71,7 +71,9 @@ public class ServiceRecordsController : BaseController
     /// <returns>A collection of user service records</returns>
     [HttpGet]
     [Route("Details/{recordId}")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(ServiceRecordEditDetailsResponseModel))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> ServiceRecordDetails([FromRoute] string recordId)
     {
         try
@@ -123,7 +125,9 @@ public class ServiceRecordsController : BaseController
     /// <param name="model">The input data containing the service record information</param>
     /// <returns>The Id of the created service record</returns>
     [HttpPost]
-    [Produces("application/json")]
+    [ProducesResponseType(201, Type = typeof(string))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> Create([FromBody] ServiceRecordFormRequestModel model)
     {
         try
@@ -164,13 +168,16 @@ public class ServiceRecordsController : BaseController
     }
 
     /// <summary>
-    /// Creates a new service records 
+    /// Edits a service records 
     /// </summary>
     /// <param name="model">The input data containing the service record information</param>
-    /// <returns>The Id of the created service record</returns>
+    /// <param name="recordId">The record identifier</param>
+    /// <returns>A status message based on the result</returns>
     [HttpPatch]
     [Route("Edit/{recordId}")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> Edit([FromRoute] string recordId, [FromBody] ServiceRecordFormRequestModel model)
     {
         try
@@ -220,11 +227,13 @@ public class ServiceRecordsController : BaseController
     /// <summary>
     /// Deletes a new service records 
     /// </summary>
-    /// <param name="model">The input data containing the service record information</param>
-    /// <returns>The Id of the created service record</returns>
+    /// <param name="recordId">The record identifier</param>
+    /// <returns>A status message based on the result</returns>
     [HttpDelete]
     [Route("Delete/{recordId}")]
-    [Produces("application/json")]
+    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> Delete([FromRoute] string recordId)
     {
         try
