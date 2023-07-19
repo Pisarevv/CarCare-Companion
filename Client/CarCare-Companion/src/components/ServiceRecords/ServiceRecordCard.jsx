@@ -1,4 +1,7 @@
 import { Link } from 'react-router-dom';
+
+import ISODateStringToString from '../../utils/IsoDateStringToString';
+
 import './ServiceRecordCard.css'
 
 const ServiceRecordCard = ({ serviceRecordDetails }) => {
@@ -8,7 +11,7 @@ const ServiceRecordCard = ({ serviceRecordDetails }) => {
 
         <div className="service-record-card-container">
             <div className="service-record-card-border"></div>
-            <div>Service {title} performed on {performedOn}.</div>
+            <div>Service "{title}" performed on {ISODateStringToString.ddmmyyyy(performedOn)}.</div>
             <div>Vehicle: {vehicleMake} {vehicleModel}.</div>
             <div>Mileage: {mileage} km.</div>
             <div>Cost: {cost} levs.</div>
