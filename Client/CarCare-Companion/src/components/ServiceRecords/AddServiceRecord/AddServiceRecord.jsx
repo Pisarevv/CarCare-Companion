@@ -17,15 +17,17 @@ import './AddServiceRecord.css'
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
     inputNotNumber: "This field accepts only valid numbers",
-    invalidDate : "The provided date is invalid - correct format example 15/03/2023"
+    invalidDate : "The provided date is invalid - correct format example 25/03/2023"
 }
 
 const ValidationRegexes = {
     //Validates that the fuel price and travelled distance is a floating point  
     floatNumbersRegex: new RegExp(/^\d+(?:[.,]\d+)?$/),
 
+    //Validates that the time format is dd/MM/yyyy
+    timeFormatRegex: new RegExp(/^(0[1-9]|[1-2]\d|3[0-1])\/(0[1-9]|1[0-2])\/(\d{4})$/)
     //Validates that the time format is MM/dd/yyyy
-    timeFormatRegex: new RegExp(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/\d{4}$/)
+    // timeFormatRegex: new RegExp(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/\d{4}$/)
 }
 
 const AddServiceRecord = (props) => {
@@ -121,15 +123,12 @@ const AddServiceRecord = (props) => {
                 const performedOnDate = StringToISODateString(serviceRecord.performedOn);
                 await createServiceRecord(title, description, mileage, cost, vehicle, performedOnDate);
                 navigate('/ServiceRecords')
-            }
-
-
-             
+            } 
 
         }
         catch (error) {
             NotificationHandler(error);
-            // navigate('/ServiceRecords')
+            navigate('/ServiceRecords')
         }
     }
 
@@ -148,7 +147,7 @@ const AddServiceRecord = (props) => {
                         </div>
                         <div className="input-group input-group-lg">
                             <label>Date of performing:</label>
-                            <input className="form-control" type="text" placeholder="MM/DD/YYYY" name="performedOn" value={serviceRecord.performedOn} onChange={onInputChange} />
+                            <input className="form-control" type="text" placeholder="DD/MM/YYYY" name="performedOn" value={serviceRecord.performedOn} onChange={onInputChange} />
                             {serviceRecord.performedOnError && <p className="invalid-field">{serviceRecord.performedOnError}</p>}
                         </div>
                         <div className="input-group input-group-lg">
