@@ -94,6 +94,28 @@ public class ServiceRecordsService : IServiceRecordsService
     }
 
     /// <summary>
+    /// Retrieves a user service record with details needed for editing
+    /// </summary>
+    /// <param name="serviceRecordId">The service record identifier</param>
+    /// <returns>The service record model</returns>
+    public async Task<ServiceRecordEditDetailsResponseModel> GetEditDetailsByIdAsync(string serviceRecordId)
+    {
+        return await repository.AllReadonly<ServiceRecord>()
+               .Where(sr => sr.Id == Guid.Parse(serviceRecordId))
+               .Select(sr => new ServiceRecordEditDetailsResponseModel
+               {
+                   Id = sr.Id.ToString(),
+                   Title = sr.Title,
+                   Description = sr.Description,
+                   Cost = sr.Cost,
+                   Mileage = sr.Mileage,
+                   PerformedOn = sr.PerformedOn,
+                   VehicleId = sr.VehicleId.ToString(),
+               })
+               .FirstAsync();
+    }
+
+    /// <summary>
     /// Checks if there exist a record and is not deleted 
     /// </summary>
     /// <param name="serviceRecordId">The service record identifier</param>
@@ -117,4 +139,6 @@ public class ServiceRecordsService : IServiceRecordsService
                .Where(sr => sr.OwnerId == Guid.Parse(userId) && sr.Id == Guid.Parse(serviceRecordId))
                .AnyAsync();
     }
+
+    
 }
