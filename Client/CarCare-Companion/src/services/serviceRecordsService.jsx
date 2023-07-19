@@ -24,3 +24,8 @@ export async function getServiceRecordsDetails(recordId){
     return result;
 }
 
+export async function editServiceRecord(title, description, mileage, cost, vehicleId, performedOn, recordId){
+    var result = await api.patch(`/ServiceRecords/Edit/${recordId}`, {title, description, mileage, cost, vehicleId, performedOn});
+    return result;
+}
+
