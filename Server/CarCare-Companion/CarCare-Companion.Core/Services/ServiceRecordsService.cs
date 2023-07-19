@@ -48,6 +48,27 @@ public class ServiceRecordsService : IServiceRecordsService
     }
 
     /// <summary>
+    /// Edits a  service record
+    /// </summary>
+    /// <param name="serviceRecordId">The service record identifier</param>
+    /// <param name="model">The input model containing the service record information</param>
+    public async Task EditAsync(string serviceRecordId, ServiceRecordFormRequestModel model)
+    {
+        ServiceRecord recordToEdit = await repository.GetByIdAsync<ServiceRecord>(Guid.Parse(serviceRecordId));
+
+        recordToEdit.Title = model.Title;
+        recordToEdit.Description = model.Description;
+        recordToEdit.Cost = model.Cost;
+        recordToEdit.VehicleId = Guid.Parse(model.VehicleId);
+        recordToEdit.Mileage = model.Mileage;
+        recordToEdit.PerformedOn = model.PerformedOn;
+        recordToEdit.ModifiedOn = DateTime.UtcNow;
+
+        await repository.SaveChangesAsync();   
+       
+    }
+
+    /// <summary>
     /// Retrieves all user service records ordered by date of their creation
     /// </summary>
     /// <param name="userId">The user identifier</param>
