@@ -101,14 +101,17 @@ const EditVehicle = (props) => {
     (async () => {
       try {
         var vehicleDetails = await getVehicleEditDetails(id);
-        console.log(vehicleDetails);
         setVehicleInitialDetails(vehicleDetails);
+
         var fuelTypesResult = await getFuelTypes();
         var vehicleTypesResult = await getVehicleTypes();
+
         setFuelTypes(fuelTypes => fuelTypesResult);
         setVehicleTypes(vehicleTypes => vehicleTypesResult);
+
         dispatch({ type: `SET_FUELTYPE`, payload: vehicleDetails.fuelTypeId })
         dispatch({ type: `SET_VEHICLETYPE`, payload: vehicleDetails.vehicleTypeId })
+        
         setLoading(false);
       }
       catch (error) {
@@ -121,9 +124,9 @@ const EditVehicle = (props) => {
 
   const setVehicleInitialDetails = (vehicleDetails) => {
     for (const property in vehicleDetails) {
-        dispatch({ type: `SET_${(property).toUpperCase()}`, payload: vehicleDetails[property] })
+      dispatch({ type: `SET_${(property).toUpperCase()}`, payload: vehicleDetails[property] })
     }
-}
+  }
 
 
   //Event handlers
@@ -268,8 +271,8 @@ const EditVehicle = (props) => {
       }
 
       navigate('/MyVehicles');
-    } 
-    
+    }
+
     catch (error) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       NotificationHandler(error)
@@ -314,7 +317,7 @@ const EditVehicle = (props) => {
                     <div className="input-group input-group-lg">
                       <label>Vehicle type:</label>
                       <div className="form-control select">
-                        <select className="select-group" name="vehicleType"  value={userVehicle.vehicleType} onChange={onInputChange}>
+                        <select className="select-group" name="vehicleType" value={userVehicle.vehicleType} onChange={onInputChange}>
                           {vehicleTypes.map(vt => <option key={vt.id} value={vt.id}>{vt.name}</option>)}
                         </select>
                       </div>
