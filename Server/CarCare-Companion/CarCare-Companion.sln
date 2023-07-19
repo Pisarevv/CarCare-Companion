@@ -11,7 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarCare-Companion.Api", "Ca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarCare-Companion.Common", "CarCare-Companion.Common\CarCare-Companion.Common.csproj", "{458F121D-51CF-42F3-87F1-4F46232A1524}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarCare-Companion.Tests", "CarCare-Companion.Tests\CarCare-Companion.Tests.csproj", "{B9917D2F-9DB4-4896-8A6E-525C7966D4E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarCare-Companion.Tests", "CarCare-Companion.Tests\CarCare-Companion.Tests.csproj", "{B9917D2F-9DB4-4896-8A6E-525C7966D4E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FEB29CCB-889C-41CB-B702-D51F5A6747FF}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
