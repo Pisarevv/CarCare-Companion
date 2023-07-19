@@ -12,7 +12,6 @@ using static Common.StatusResponses;
 
 
 
-
 /// <summary>
 /// The service records controller handles service records related operations
 /// </summary>
@@ -41,7 +40,7 @@ public class ServiceRecordsController : BaseController
     {
         try
         {
-            string userId = this.User.GetId();
+            string? userId = this.User.GetId();
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -77,7 +76,7 @@ public class ServiceRecordsController : BaseController
     {
         try
         {
-            string userId = this.User.GetId();
+            string? userId = this.User.GetId();
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -129,7 +128,7 @@ public class ServiceRecordsController : BaseController
     {
         try
         {
-            string userId = this.User.GetId();
+            string? userId = this.User.GetId();
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -176,7 +175,7 @@ public class ServiceRecordsController : BaseController
     {
         try
         {
-            string userId = this.User.GetId();
+            string? userId = this.User.GetId();
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -203,6 +202,48 @@ public class ServiceRecordsController : BaseController
             }
 
             await serviceRecordsService.EditAsync(recordId, model);
+
+            return StatusCode(200, new StatusInformationMessage(Success));
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
+    /// Deletes a new service records 
+    /// </summary>
+    /// <param name="model">The input data containing the service record information</param>
+    /// <returns>The Id of the created service record</returns>
+    [HttpDelete]
+    [Route("Delete/{recordId}")]
+    [Produces("application/json")]
+    public async Task<IActionResult> Delete([FromRoute] string recordId)
+    {
+        try
+        {
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            bool isUserCreator = await serviceRecordsService.IsUserCreatorOfRecordAsync(userId, recordId);
+
+            if (!isUserCreator)
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            await serviceRecordsService.DeleteAsync(recordId);
 
             return StatusCode(200, new StatusInformationMessage(Success));
         }
