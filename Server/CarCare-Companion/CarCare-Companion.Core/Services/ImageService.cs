@@ -19,7 +19,7 @@ public class ImageService : IImageService
 {
     private readonly IAmazonS3 s3Client;
 
-    public ImageService(IAmazonS3 s3Client, IRepository repository)
+    public ImageService(IAmazonS3 s3Client)
     {
         this.s3Client = s3Client;
     }
