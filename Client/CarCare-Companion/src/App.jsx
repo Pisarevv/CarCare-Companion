@@ -26,6 +26,7 @@ import EditServiceRecord from './components/ServiceRecords/EditServiceRecord/Edi
 import DeleteServiceRecord from './components/ServiceRecords/DeleteServiceRecord/DeleteServiceRecord';
 import TaxRecords from './components/TaxRecords/TaxRecords';
 import AddTaxRecord from './components/TaxRecords/AddTaxRecord/AddTaxRecord';
+import EditTaxRecord from './components/TaxRecords/EditTaxRecord/EditTaxRecord';
 
 function App() {
   return(
@@ -53,6 +54,7 @@ function App() {
           <Route path='/ServiceRecords/Delete/:id' element={<DeleteServiceRecord/>}/>
           <Route path='/TaxRecords' element={<TaxRecords/>}/>
           <Route path='/TaxRecords/Add' element={<AddTaxRecord/>}/>
+          <Route path='/TaxRecords/Edit/:id' element={<EditTaxRecord/>}/>
           </Routes>
         </main> 
       </div>
