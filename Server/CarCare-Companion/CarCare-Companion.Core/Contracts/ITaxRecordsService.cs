@@ -12,6 +12,6 @@ public interface  ITaxRecordsService
 
     public Task<bool> IsUserRecordCreatorAsync(string userId, string recordId);
 
-    public Task<TaxRecordEditDetailsResponseModel> GetTaxRecordByIdAsync(string recordId);
+    public Task<TaxRecordEditDetailsResponseModel> GetEditDetailsByIdAsync(string recordId);
 }
 

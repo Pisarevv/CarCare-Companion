@@ -101,7 +101,7 @@ public class TaxRecordsService : ITaxRecordsService
     /// </summary>
     /// <param name="recordId">The tax record identifier</param>
     /// <returns>Detailed model containing all the tax record information</returns>
-    public async Task<TaxRecordEditDetailsResponseModel> GetTaxRecordByIdAsync(string recordId)
+    public async Task<TaxRecordEditDetailsResponseModel> GetEditDetailsByIdAsync(string recordId)
     {
         return await repository.AllReadonly<TaxRecord>()
                .Where(tr => tr.Id == Guid.Parse(recordId))

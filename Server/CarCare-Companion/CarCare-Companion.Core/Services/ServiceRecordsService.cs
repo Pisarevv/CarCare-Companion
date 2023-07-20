@@ -146,7 +146,7 @@ public class ServiceRecordsService : IServiceRecordsService
     /// <param name="userId">The user identifier</param>
     /// <param name="serviceRecordId">The service record identifier</param>
     /// <returns>Boolean based on the search result</returns>
-    public async Task<bool> IsUserCreatorOfRecordAsync(string userId, string serviceRecordId)
+    public async Task<bool> IsUserRecordCreatorAsync(string userId, string serviceRecordId)
     {
         return await repository.AllReadonly<ServiceRecord>()
                .Where(sr => sr.OwnerId == Guid.Parse(userId) && sr.Id == Guid.Parse(serviceRecordId))

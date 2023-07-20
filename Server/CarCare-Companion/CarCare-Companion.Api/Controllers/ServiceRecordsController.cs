@@ -92,7 +92,7 @@ public class ServiceRecordsController : BaseController
                 return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
             }
 
-            bool isUserCreator = await serviceRecordsService.IsUserCreatorOfRecordAsync(userId, recordId);
+            bool isUserCreator = await serviceRecordsService.IsUserRecordCreatorAsync(userId, recordId);
 
             if (!isUserCreator)
             {
@@ -201,7 +201,7 @@ public class ServiceRecordsController : BaseController
                 return StatusCode(400, new StatusInformationMessage(InvalidData));
             }
 
-            bool isUserCreator = await serviceRecordsService.IsUserCreatorOfRecordAsync(userId, recordId);
+            bool isUserCreator = await serviceRecordsService.IsUserRecordCreatorAsync(userId, recordId);
 
             if (!isUserCreator)
             {
@@ -245,7 +245,7 @@ public class ServiceRecordsController : BaseController
                 return StatusCode(403, InvalidUser);
             }
 
-            bool isUserCreator = await serviceRecordsService.IsUserCreatorOfRecordAsync(userId, recordId);
+            bool isUserCreator = await serviceRecordsService.IsUserRecordCreatorAsync(userId, recordId);
 
             if (!isUserCreator)
             {
