@@ -13,7 +13,12 @@ export async function getAllTaxRecords(){
     return result;
 }
 
-export async function createTaxRecord(title, description, validFrom, validTo , cost, vehicleId){
-    var result = await api.post("/TaxRecords",{title, description, validFrom, validTo , cost, vehicleId});
+export async function createTaxRecord(title, description, validFrom, validTo, cost, vehicleId){
+    var result = await api.post("/TaxRecords",{title, description, validFrom, validTo,  cost, vehicleId});
+    return result;
+}
+
+export async function getTaxRecordDetails(recordId){
+    var result = await api.get(`/TaxRecords/Details/${recordId}`);
     return result;
 }
