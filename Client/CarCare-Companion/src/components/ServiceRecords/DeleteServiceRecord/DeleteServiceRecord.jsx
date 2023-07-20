@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { deleteServiceRecord } from '../../../services/serviceRecordsService';
 
-import { NotificationHandler, notificationMessages } from '../../../utils/NotificationHandler'
+import { NotificationHandler } from '../../../utils/NotificationHandler'
 
 import './DeleteServiceRecord.css'
 import ISODateStringToString from '../../../utils/IsoDateStringToString';
