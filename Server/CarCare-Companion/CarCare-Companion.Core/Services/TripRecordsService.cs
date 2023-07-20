@@ -73,6 +73,10 @@ public class TripRecordsService : ITripRecordsService
         await repository.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Deletes a trip record
+    /// </summary>
+    /// <param name="tripId">The trip record identifier</param>
     public async Task DeleteAsync(string tripId)
     {
         TripRecord tripToDelete = await repository.GetByIdAsync<TripRecord>(Guid.Parse(tripId));
@@ -82,7 +86,12 @@ public class TripRecordsService : ITripRecordsService
         await repository.SaveChangesAsync();
     }
 
-    public async Task<bool> DoesTripExistById(string tripId)
+    /// <summary>
+    /// Checks if a trip record exists
+    /// </summary>
+    /// <param name="tripId">The trip record identifier</param>
+    /// <returns>Boolean based on the search result</returns>
+    public async Task<bool> DoesTripExistByIdAsync(string tripId)
     {
         return await repository.AllReadonly<TripRecord>()
                      .Where(tr => tr.Id == Guid.Parse(tripId))
