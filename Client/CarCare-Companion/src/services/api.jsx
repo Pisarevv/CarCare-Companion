@@ -22,7 +22,7 @@ async function request(method, url, data) {
     try {
         let response = await fetch(target + url, options);
 
-        if (response.status === 204) {
+        if (response.status === 204 || response.status === 201) {
             return response;
         }
 
