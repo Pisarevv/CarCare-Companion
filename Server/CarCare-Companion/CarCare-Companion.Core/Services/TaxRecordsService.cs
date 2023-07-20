@@ -69,4 +69,54 @@ public class TaxRecordsService : ITaxRecordsService
 
         return recordToAdd.Id.ToString();
     }
+
+    /// <summary>
+    /// Checks if a tax record exists
+    /// </summary>
+    /// <param name="recordId">The tax record identifier</param>
+    /// <returns>Boolean based on the search result</returns>
+    public async Task<bool> DoesRecordExistByIdAsync(string recordId)
+    {
+        return await repository.AllReadonly<TaxRecord>()
+               .Where(tr => tr.IsDeleted == false && tr.Id == Guid.Parse(recordId))
+               .AnyAsync();
+               
+    }
+
+    /// <summary>
+    /// Checks if the user is the creator of the tax record
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <param name="recordId">The tax record identifier</param>
+    /// <returns>Boolean based on the search result</returns>
+    public async Task<bool> IsUserRecordCreatorAsync(string userId, string recordId)
+    {
+        return await repository.AllReadonly<TaxRecord>()
+              .Where(tr => tr.OwnerId == Guid.Parse(userId) && tr.Id == Guid.Parse(recordId))
+              .AnyAsync();
+    }
+
+    /// <summary>
+    /// Retrieves the tax record details to the user
+    /// </summary>
+    /// <param name="recordId">The tax record identifier</param>
+    /// <returns>Detailed model containing all the tax record information</returns>
+    public async Task<TaxRecordEditDetailsResponseModel> GetTaxRecordByIdAsync(string recordId)
+    {
+        return await repository.AllReadonly<TaxRecord>()
+               .Where(tr => tr.Id == Guid.Parse(recordId))
+               .Select(tr => new TaxRecordEditDetailsResponseModel
+               {
+                   Id = tr.Id.ToString(),
+                   Title = tr.Title,
+                   ValidFrom = tr.ValidFrom,
+                   ValidTo = tr.ValidTo,
+                   Cost = tr.Cost,
+                   VehicleMake = tr.Vehicle.Make,
+                   VehicleModel = tr.Vehicle.Model,
+                   VehicleId = tr.VehicleId.ToString()
+               })
+               .FirstAsync();
+
+    }
 }
