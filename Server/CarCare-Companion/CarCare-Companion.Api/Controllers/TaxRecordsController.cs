@@ -9,6 +9,8 @@ using CarCare_Companion.Core.Models.TaxRecords;
 using CarCare_Companion.Core.Services;
 
 using static Common.StatusResponses;
+using CarCare_Companion.Core.Models.ServiceRecords;
+using Microsoft.Data.SqlClient;
 
 
 /// <summary>
@@ -86,5 +88,58 @@ public class TaxRecordsController : BaseController
 
         return StatusCode(201, recordId);
 
+    }
+
+    /// <summary>
+    /// Retrieves a tax record details of an user
+    /// </summary>
+    /// <param name="recordId">The record identifier</param>
+    /// <returns>A model containing the record details </returns>
+    [HttpGet]
+    [Route("Details/{recordId}")]
+    [ProducesResponseType(200, Type = typeof(TaxRecordEditDetailsResponseModel))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> ServiceRecordDetails([FromRoute] string recordId)
+    {
+        try
+        {
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            bool doesServiceRecordExist = await taxRecordsService.DoesRecordExistByIdAsync(recordId);
+
+            if (!doesServiceRecordExist)
+            {
+                return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
+            }
+
+            bool isUserCreator = await taxRecordsService.IsUserRecordCreatorAsync(userId, recordId);
+
+            if (!isUserCreator)
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            TaxRecordEditDetailsResponseModel serviceRecord = await taxRecordsService.GetEditDetailsByIdAsync(recordId);
+
+            return StatusCode(200, serviceRecord);
+
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
     }
 }
