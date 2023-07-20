@@ -44,7 +44,7 @@ const TaxRecords = (props) => {
                     {
                         taxRecords.length > 0
                             ?
-                            taxRecords.map(sr => <TaxRecordCard key={trr.id} taxRecordDetails={tr} />)
+                            taxRecords.map(tr => <TaxRecordCard key={tr.id} taxRecordDetails={tr} />)
                             :
                             <div>You haven't added any tax records yet.</div>
                     }

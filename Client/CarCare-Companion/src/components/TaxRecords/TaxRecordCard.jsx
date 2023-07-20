@@ -11,7 +11,9 @@ const TaxRecordCard = ({ taxRecordDetails }) => {
 
         <div className="tax-record-card-container">
             <div className="tax-record-card-border"></div>
-            <div>Tax "{title}" valid from {ISODateStringToString.ddmmyyyy(validFrom)} to {ISODateStringToString.ddmmyyyy(validTo)}.</div>
+            <div>Tax: "{title}".</div>
+            <div>Valid from: {ISODateStringToString.ddmmyyyy(validFrom)}</div>
+            <div>Valid to: {ISODateStringToString.ddmmyyyy(validTo)}</div>
             <div>Vehicle: {vehicleMake} {vehicleModel}.</div>
             <div>Cost: {cost} levs.</div>
             {description && <div>Description: {description}</div>}
