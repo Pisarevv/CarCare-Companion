@@ -21,15 +21,18 @@ public class TaxRecord : BaseDeletableModel<TaxRecord>
     public string Title { get; set; } = null!;
 
     [Comment("Date of tax validity")]
+    [Required]
     public DateTime ValidFrom { get; set; }
 
     [Comment("Date of tax validity end")]
+    [Required]
     public DateTime ValidTo { get; set; }
 
     [Comment("Description of the tax")]
     public string? Description { get; set; }
 
     [Comment("Cost of the tax")]
+    [Required]
     [Range(MinCost,MaxCost)]
     [Precision(18, 2)]
     public decimal Cost { get; set; }
