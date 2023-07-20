@@ -64,7 +64,7 @@ public class Vehicle : BaseDeletableModel<Vehicle>
 
     [Comment("Type of vehicle")]
     [Required]
-    public VehicleType VehicleType { get; set; }
+    public VehicleType VehicleType { get; set; } = null!;
 
     [Comment("Image key for vehicle picture")]
     public Guid? VehicleImageKey { get; set; }
