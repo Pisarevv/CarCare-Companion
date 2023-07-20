@@ -14,6 +14,6 @@ export async function getAllTaxRecords(){
 }
 
 export async function createTaxRecord(title, description, validFrom, validTo , cost, vehicleId){
-    var result = await api.post("/TaxRecords");
+    var result = await api.post("/TaxRecords",{title, description, validFrom, validTo , cost, vehicleId});
     return result;
 }
