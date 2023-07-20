@@ -121,7 +121,7 @@ const AddTaxRecord = (props) => {
                 const { title, description, cost, vehicle } = taxRecord;
                 const validFromDate = StringToISODateString(taxRecord.validFrom);
                 const validToDate = StringToISODateString(taxRecord.validTo);
-                await createTaxRecord(title, description, validToDate,validFromDate, cost, vehicle);
+                await createTaxRecord(title, description, validFromDate, validToDate, cost, vehicle);
                 navigate('/taxRecords')
             } 
 
