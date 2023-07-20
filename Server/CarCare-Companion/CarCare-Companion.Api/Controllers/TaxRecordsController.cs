@@ -28,12 +28,33 @@ public class TaxRecordsController : BaseController
         this.logger = logger;
     }
 
+
+    [HttpGet]
+    [ProducesResponseType(200, Type = typeof(ICollection<TaxRecordResponseModel>))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> All()
+    {
+        string? userId = this.User.GetId();
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return StatusCode(403, new StatusInformationMessage(InvalidUser));
+        }
+
+        ICollection<TaxRecordResponseModel> taxRecords = await taxRecordsService.GetAllByUserIdAsync(userId);
+
+        return StatusCode(200, taxRecords);
+    }
+
     /// <summary>
     /// Creates a new tax record
     /// </summary>
     /// <param name="model">The model containing the tax record details</param>
     /// <returns>The Id of the tax record trip</returns>
     [HttpPost]
+    [ProducesResponseType(201, Type = typeof(string))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> Create([FromBody] TaxRecordFormRequestModel model)
     {
         if (!ModelState.IsValid)
