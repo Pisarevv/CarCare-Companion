@@ -103,6 +103,7 @@ namespace CarCare_Companion.Api
             services.AddScoped<IVehicleService, VehicleService>();
             services.AddScoped<ITripRecordsService, TripRecordsService>();
             services.AddScoped<IServiceRecordsService, ServiceRecordsService>();
+            services.AddScoped<ITaxRecordsService, TaxRecordsService>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
