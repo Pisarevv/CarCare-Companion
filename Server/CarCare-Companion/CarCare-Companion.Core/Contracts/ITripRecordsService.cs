@@ -12,7 +12,7 @@ public interface ITripRecordsService
 
     public Task<TripEditDetailsResponseModel> GetTripDetailsByIdAsync(string tripId);
 
-    public Task<bool> DoesTripExistById(string tripId);
+    public Task<bool> DoesTripExistByIdAsync(string tripId);
 
     public Task<bool> IsUserCreatorOfTripAsync(string userId, string tripId);
 

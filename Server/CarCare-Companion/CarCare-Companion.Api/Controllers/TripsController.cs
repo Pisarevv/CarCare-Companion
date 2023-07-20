@@ -101,7 +101,7 @@ public class TripsController : BaseController
                 return StatusCode(403, InvalidUser);
             }
 
-            bool doesTripRecordExist = await tripService.DoesTripExistById(tripId);
+            bool doesTripRecordExist = await tripService.DoesTripExistByIdAsync(tripId);
 
             if (!doesTripRecordExist)
             {
@@ -233,7 +233,7 @@ public class TripsController : BaseController
                 return StatusCode(403, InvalidUser);
             }
 
-            bool doesTripRecordExist = await tripService.DoesTripExistById(tripId);
+            bool doesTripRecordExist = await tripService.DoesTripExistByIdAsync(tripId);
 
             if(!doesTripRecordExist) 
             {
