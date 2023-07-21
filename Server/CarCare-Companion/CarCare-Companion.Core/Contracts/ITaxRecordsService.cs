@@ -6,6 +6,8 @@ public interface  ITaxRecordsService
 {
     public Task<string> CreateAsync(string userId, TaxRecordFormRequestModel model);
 
+    public Task EditAsync(string recordId,  TaxRecordFormRequestModel model);
+
     public Task<ICollection<TaxRecordResponseModel>> GetAllByUserIdAsync(string userId);
 
     public Task<bool> DoesRecordExistByIdAsync(string recordId);

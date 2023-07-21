@@ -71,6 +71,27 @@ public class TaxRecordsService : ITaxRecordsService
     }
 
     /// <summary>
+    /// Edits a tax record
+    /// </summary>
+    /// <param name="model">The input model containing the tax record information</param>
+    /// <param name="recordId">The tax record identifier</param>
+    public async Task EditAsync(string recordId, TaxRecordFormRequestModel model)
+    {
+        TaxRecord recordToEdit = await repository.GetByIdAsync<TaxRecord>(Guid.Parse(recordId));
+
+        recordToEdit.Title = model.Title;
+        recordToEdit.ValidFrom = model.ValidFrom;
+        recordToEdit.ValidTo = model.ValidTo;
+        recordToEdit.Cost = model.Cost;
+        recordToEdit.Description = model.Description;
+        recordToEdit.VehicleId = Guid.Parse(model.VehicleId);
+        recordToEdit.ModifiedOn = DateTime.UtcNow;
+
+        await repository.SaveChangesAsync();
+
+    }
+
+    /// <summary>
     /// Checks if a tax record exists
     /// </summary>
     /// <param name="recordId">The tax record identifier</param>
@@ -119,4 +140,6 @@ public class TaxRecordsService : ITaxRecordsService
                .FirstAsync();
 
     }
+
+   
 }
