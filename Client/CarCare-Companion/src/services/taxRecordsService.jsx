@@ -23,3 +23,7 @@ export async function getTaxRecordDetails(recordId){
 export async function editTaxRecord(title, description, validFrom, validTo, cost, vehicleId, recordId){
     return await api.patch(`/TaxRecords/Edit/${recordId}`,{title, description, validFrom, validTo,  cost, vehicleId});
 }
+
+export async function deleteTaxRecord(recordId){
+    return await api.delete(`/TaxRecords/Edit/${recordId}`);
+}
