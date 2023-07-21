@@ -22,7 +22,7 @@ const TaxRecordCard = ({ taxRecordDetails }) => {
                 <Link to={`/TaxRecords/Edit/${id}`}>Edit</Link>
                 <Link
                     to={`/TaxRecords/Delete/${id}`}
-                    state={{ details: { title, validFrom, vehicleMake, vehicleModel } }}
+                    state={{ details: { title, validFrom, validTo, vehicleMake, vehicleModel } }}
                 >Delete
                 </Link>
             </div>
