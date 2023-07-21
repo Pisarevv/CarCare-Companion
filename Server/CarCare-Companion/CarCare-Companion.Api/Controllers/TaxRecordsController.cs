@@ -36,16 +36,29 @@ public class TaxRecordsController : BaseController
     [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> All()
     {
-        string? userId = this.User.GetId();
-
-        if (string.IsNullOrEmpty(userId))
+        try
         {
-            return StatusCode(403, new StatusInformationMessage(InvalidUser));
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new StatusInformationMessage(InvalidUser));
+            }
+
+            ICollection<TaxRecordResponseModel> taxRecords = await taxRecordsService.GetAllByUserIdAsync(userId);
+
+            return StatusCode(200, taxRecords);
         }
-
-        ICollection<TaxRecordResponseModel> taxRecords = await taxRecordsService.GetAllByUserIdAsync(userId);
-
-        return StatusCode(200, taxRecords);
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
     }
 
     /// <summary>
@@ -59,34 +72,47 @@ public class TaxRecordsController : BaseController
     [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
     public async Task<IActionResult> Create([FromBody] TaxRecordFormRequestModel model)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            return StatusCode(400, new StatusInformationMessage(InvalidData));
-        }
-        string? userId = this.User.GetId();
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(400, new StatusInformationMessage(InvalidData));
+            }
+            string? userId = this.User.GetId();
 
-        if(string.IsNullOrEmpty(userId) )
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new StatusInformationMessage(InvalidUser));
+            }
+
+            bool doesVehicleExist = await vehicleService.DoesVehicleExistByIdAsync(model.VehicleId);
+
+            if (!doesVehicleExist)
+            {
+                return StatusCode(404, ResourceNotFound);
+            }
+
+            bool isUserVehicleOwner = await vehicleService.IsUserOwnerOfVehicleAsync(userId, model.VehicleId);
+
+            if (!isUserVehicleOwner)
+            {
+                return StatusCode(400, new StatusInformationMessage(InvalidData));
+            }
+
+            string recordId = await taxRecordsService.CreateAsync(userId, model);
+
+            return StatusCode(201, recordId);
+        }
+        catch (SqlException ex)
         {
-            return StatusCode(403, new StatusInformationMessage(InvalidUser));
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
         }
-
-        bool doesVehicleExist = await vehicleService.DoesVehicleExistByIdAsync(model.VehicleId);
-
-        if (!doesVehicleExist)
+        catch (Exception ex)
         {
-            return StatusCode(404, ResourceNotFound);
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
         }
-
-        bool isUserVehicleOwner = await vehicleService.IsUserOwnerOfVehicleAsync(userId, model.VehicleId);
-
-        if (!isUserVehicleOwner)
-        {
-            return StatusCode(400, new StatusInformationMessage(InvalidData));
-        }
-
-        string recordId = await taxRecordsService.CreateAsync(userId, model);
-
-        return StatusCode(201, recordId);
 
     }
 
@@ -111,9 +137,9 @@ public class TaxRecordsController : BaseController
                 return StatusCode(403, InvalidUser);
             }
 
-            bool doesServiceRecordExist = await taxRecordsService.DoesRecordExistByIdAsync(recordId);
+            bool doesTaxRecordExist = await taxRecordsService.DoesRecordExistByIdAsync(recordId);
 
-            if (!doesServiceRecordExist)
+            if (!doesTaxRecordExist)
             {
                 return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
             }
