@@ -142,4 +142,76 @@ public class TaxRecordsController : BaseController
             return StatusCode(403, new StatusInformationMessage(InvalidData));
         }
     }
+
+    /// <summary>
+    /// Edits a  tax record
+    /// </summary>
+    /// <param name="model">The model containing the tax record details</param>
+    /// <param name="recordId">The record identifier</param>
+    /// <returns>A status message based on the result</returns>
+    [HttpPatch]
+    [Route("Edit/{recordId}")]
+    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(401, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> Edit([FromRoute] string recordId,[FromBody] TaxRecordFormRequestModel model)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(400, new StatusInformationMessage(InvalidData));
+            }
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new StatusInformationMessage(InvalidUser));
+            }
+
+            bool doesTaxRecordExist = await taxRecordsService.DoesRecordExistByIdAsync(recordId);
+
+            if (!doesTaxRecordExist)
+            {
+                return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
+            }
+
+            bool isUserCreator = await taxRecordsService.IsUserRecordCreatorAsync(userId, recordId);
+
+            if (!isUserCreator)
+            {
+                return StatusCode(401, new StatusInformationMessage(NoPermission));
+            }
+
+            bool doesVehicleExist = await vehicleService.DoesVehicleExistByIdAsync(model.VehicleId);
+
+            if (!doesVehicleExist)
+            {
+                return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
+            }
+
+            bool isUserVehicleOwner = await vehicleService.IsUserOwnerOfVehicleAsync(userId, model.VehicleId);
+
+            if (!isUserVehicleOwner)
+            {
+                return StatusCode(401, new StatusInformationMessage(NoPermission));
+            }
+
+            await taxRecordsService.EditAsync(recordId, model);
+
+            return StatusCode(200, new StatusInformationMessage(Success));
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+
+    }
 }
