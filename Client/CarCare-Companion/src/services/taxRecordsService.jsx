@@ -9,18 +9,15 @@ import * as api from './api'
 
 
 export async function getAllTaxRecords(){
-    var result = await api.get("/TaxRecords");
-    return result;
+    return await api.get("/TaxRecords");
 }
 
 export async function createTaxRecord(title, description, validFrom, validTo, cost, vehicleId){
-    var result = await api.post("/TaxRecords",{title, description, validFrom, validTo,  cost, vehicleId});
-    return result;
+    return await api.post("/TaxRecords",{title, description, validFrom, validTo,  cost, vehicleId});
 }
 
 export async function getTaxRecordDetails(recordId){
-    return await api.get(`/TaxRecords/Details/${recordId}`);
-   
+    return await api.get(`/TaxRecords/Details/${recordId}`);  
 }
 
 export async function editTaxRecord(title, description, validFrom, validTo, cost, vehicleId, recordId){

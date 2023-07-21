@@ -2,45 +2,37 @@ import * as api from './api';
 import * as fileApi from './fileApi';
 
 export async function getFuelTypes(){
-    var result = await api.get("/Vehicles/FuelTypes")
-    return result;
+    return await api.get("/Vehicles/FuelTypes");
 }
 
 export async function getVehicleTypes(){
-    var result = await api.get("/Vehicles/Types")
-    return result;
+    return await api.get("/Vehicles/Types");
 }
 
 export async function createVehicle(make,model,mileage,year,fuelTypeId, vehicleTypeId){
-    var result = await api.post("/Vehicles",{make,model,mileage,year,fuelTypeId, vehicleTypeId})
-    return result;
+    return await api.post("/Vehicles",{make,model,mileage,year,fuelTypeId, vehicleTypeId});
 }
 
 export async function editVehicle(make,model,mileage,year,fuelTypeId, vehicleTypeId, vehicleId){
-    var result = await api.patch(`/Vehicles/Edit/${vehicleId}`,{make,model,mileage,year,fuelTypeId, vehicleTypeId})
-    return result;
+    return await api.patch(`/Vehicles/Edit/${vehicleId}`,{make,model,mileage,year,fuelTypeId, vehicleTypeId});
 }
 
 export async function uploadVehicleImage(formData,vehicleId){
-    var result = await fileApi.post("/Vehicles/ImageUpload",formData,vehicleId);
-    return result;
+    return await fileApi.post("/Vehicles/ImageUpload",formData,vehicleId);
 }
 
 export async function getUserVehicles(){
-    var result = await api.get("/Vehicles");
-    return result;
+    return await api.get("/Vehicles");
 }
 
 export async function getVehicleDetails(vehicleId){
-    var result = await api.get(`/Vehicles/Details/${vehicleId}`);
-    return result;
+    return await api.get(`/Vehicles/Details/${vehicleId}`);
 }
 
 export async function getVehicleEditDetails(vehicleId){
-    var result = await api.get(`/Vehicles/Edit/${vehicleId}`);
-    return result;
+    return await api.get(`/Vehicles/Edit/${vehicleId}`);
 }
 
 export async function deleteVehicle(vehicleId){
-    var result = await api.delete(`/Vehicles/Delete/${vehicleId}`);
+    return await api.delete(`/Vehicles/Delete/${vehicleId}`);
 }

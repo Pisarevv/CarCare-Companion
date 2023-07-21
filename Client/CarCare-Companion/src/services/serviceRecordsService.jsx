@@ -9,27 +9,22 @@ import * as api from "./api"
 
 
 export async function createServiceRecord(title, description, mileage, cost, vehicleId, performedOn){
-    var result = await api.post("/ServiceRecords", {title, description, mileage, cost, vehicleId, performedOn});
-    return result;
+    return await api.post("/ServiceRecords", {title, description, mileage, cost, vehicleId, performedOn});
 }
 
 export async function getAllServiceRecords(){
-    var result = await api.get("/ServiceRecords");
-    return result;
+    return await api.get("/ServiceRecords");
 }
 
 export async function getServiceRecordsDetails(recordId){
-    var result = await api.get(`/ServiceRecords/Details/${recordId}`);
-    return result;
+    return await api.get(`/ServiceRecords/Details/${recordId}`);
 }
 
 export async function editServiceRecord(title, description, mileage, cost, vehicleId, performedOn, recordId){
-    var result = await api.patch(`/ServiceRecords/Edit/${recordId}`, {title, description, mileage, cost, vehicleId, performedOn});
-    return result;
+    return await api.patch(`/ServiceRecords/Edit/${recordId}`, {title, description, mileage, cost, vehicleId, performedOn});
 }
 
 export async function deleteServiceRecord(recordId){
-    var result = await api.delete(`/ServiceRecords/Delete/${recordId}`);
-    return result;
+    return await api.delete(`/ServiceRecords/Delete/${recordId}`);
 }
 
