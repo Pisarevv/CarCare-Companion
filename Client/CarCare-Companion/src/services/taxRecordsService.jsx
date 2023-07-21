@@ -19,6 +19,10 @@ export async function createTaxRecord(title, description, validFrom, validTo, co
 }
 
 export async function getTaxRecordDetails(recordId){
-    var result = await api.get(`/TaxRecords/Details/${recordId}`);
-    return result;
+    return await api.get(`/TaxRecords/Details/${recordId}`);
+   
+}
+
+export async function editTaxRecord(title, description, validFrom, validTo, cost, vehicleId, recordId){
+    return await api.patch(`/TaxRecords/Edit/${recordId}`);
 }
