@@ -8,6 +8,8 @@ public interface  ITaxRecordsService
 
     public Task EditAsync(string recordId,  TaxRecordFormRequestModel model);
 
+    public Task DeleteAsync(string recordId);
+
     public Task<ICollection<TaxRecordResponseModel>> GetAllByUserIdAsync(string userId);
 
     public Task<bool> DoesRecordExistByIdAsync(string recordId);
@@ -15,5 +17,7 @@ public interface  ITaxRecordsService
     public Task<bool> IsUserRecordCreatorAsync(string userId, string recordId);
 
     public Task<TaxRecordEditDetailsResponseModel> GetEditDetailsByIdAsync(string recordId);
+
+    
 }
 

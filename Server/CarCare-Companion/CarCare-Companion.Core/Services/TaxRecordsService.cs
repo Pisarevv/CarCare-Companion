@@ -92,6 +92,20 @@ public class TaxRecordsService : ITaxRecordsService
     }
 
     /// <summary>
+    /// Deletes a tax record
+    /// </summary>
+    /// <param name="recordId">The tax record identifier</param>
+    public async Task DeleteAsync(string recordId)
+    {
+        TaxRecord taxRecordToDelete = await repository.GetByIdAsync<TaxRecord>(Guid.Parse(recordId));
+
+        repository.SoftDelete(taxRecordToDelete);
+
+        await repository.SaveChangesAsync();
+    }
+
+
+    /// <summary>
     /// Checks if a tax record exists
     /// </summary>
     /// <param name="recordId">The tax record identifier</param>
