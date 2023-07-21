@@ -43,14 +43,14 @@ const AddTaxRecord = (props) => {
         validTo: "",
         description: "",
         cost: "",
-        vehicle: "",
+        vehicleId: "",
 
         titleError: "",
         validFromError: "",
         validToError: "",
         descriptionError: "",
         costError: "",
-        vehicleError: ""
+        vehicleIdError: ""
 
     });
 
@@ -60,7 +60,7 @@ const AddTaxRecord = (props) => {
                 let userVehicleResult = await getUserVehicles()
                 setUserVehicles(userVehicles => userVehicleResult);
                 console.log(userVehicleResult);
-                dispatch({ type: `SET_VEHICLE`, payload: userVehicleResult[0].id })
+                dispatch({ type: `SET_VEHICLEID`, payload: userVehicleResult[0].id })
                 setLoading(false);
             }
             catch (error) {
@@ -111,17 +111,17 @@ const AddTaxRecord = (props) => {
             let isTitleValid = validateTextFields("title", taxRecord.title);
             let isValidFromValid = validateDateFields("validFrom", taxRecord.validFrom);
             let isValidToValid = validateDateFields("validTo", taxRecord.validTo);
-            let isVehicleValid = validateTextFields("vehicle", taxRecord.vehicle);
+            let isVehicleValid = validateTextFields("vehicleId", taxRecord.vehicleId);
             let isCostValid = validateNumberFields("cost", taxRecord.cost);
 
             if (isTitleValid && isValidFromValid &&
                 isValidToValid && isVehicleValid &&
                 isCostValid)
             {
-                const { title, description, cost, vehicle } = taxRecord;
+                const { title, description, cost, vehicleId } = taxRecord;
                 const validFromDate = StringToISODateString(taxRecord.validFrom);
                 const validToDate = StringToISODateString(taxRecord.validTo);
-                await createTaxRecord(title, description, validFromDate, validToDate, cost, vehicle);
+                await createTaxRecord(title, description, validFromDate, validToDate, cost, vehicleId);
                 navigate('/taxRecords')
             } 
 
@@ -158,11 +158,11 @@ const AddTaxRecord = (props) => {
                         <div className="input-group input-group-lg">
                             <label>Vehicle:</label>
                             <div className="form-control select">
-                                <select className="select-group" name="vehicle" onChange={onInputChange}>
+                                <select className="select-group" name="vehicleId" onChange={onInputChange}>
                                     {userVehicles.map(uv => <option key={uv.id} value={uv.id}>{`${uv.make} ${uv.model}`}</option>)}
                                 </select>
                             </div>
-                            {taxRecord.vehicle && <p className="invalid-field" >{taxRecord.vehicleError}</p>}
+                            {taxRecord.vehicleIdError && <p className="invalid-field" >{taxRecord.vehicleIdError}</p>}
                         </div>
                         <div className="input-group input-group-lg">
                             <label>Cost:</label>
