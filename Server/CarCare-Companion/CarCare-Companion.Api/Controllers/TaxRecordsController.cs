@@ -240,4 +240,56 @@ public class TaxRecordsController : BaseController
         }
 
     }
+
+    /// <summary>
+    /// Deletes a tax records 
+    /// </summary>
+    /// <param name="recordId">The tax identifier</param>
+    /// <returns>A status message based on the result</returns>
+    [HttpDelete]
+    [Route("Delete/{recordId}")]
+    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> Delete([FromRoute] string recordId)
+    {
+        try
+        {
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            bool doesTaxRecordExist = await taxRecordsService.DoesRecordExistByIdAsync(recordId);
+
+            if (!doesTaxRecordExist)
+            {
+                return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
+            }
+
+
+            bool isUserCreator = await taxRecordsService.IsUserRecordCreatorAsync(userId, recordId);
+
+            if (!isUserCreator)
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            await taxRecordsService.DeleteAsync(recordId);
+
+            return StatusCode(200, new StatusInformationMessage(Success));
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
 }
