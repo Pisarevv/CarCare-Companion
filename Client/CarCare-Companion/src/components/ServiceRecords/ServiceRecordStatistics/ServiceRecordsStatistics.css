@@ -1,0 +1,13 @@
+.service-record-statistics-list{
+    display: flex;
+    flex-direction: column;
+    padding: 10%;
+    gap: 0.5em;
+    align-items: baseline;
+}
+
+.service-record-statistics-border{
+    width: 160px;
+    height: 5px;
+    background-color: #1a18a2;
+}

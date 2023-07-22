@@ -9,8 +9,10 @@ import { getAllServiceRecords } from '../../services/serviceRecordsService';
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
 import ServiceRecordCard from './ServiceRecordCard';
+import ServiceRecordsStatistics from './ServiceRecordStatistics/ServiceRecordsStatistics';
 
 import './ServiceRecords.css'
+
 
 const ServiceRecords = (props) => {
 
@@ -38,6 +40,7 @@ const ServiceRecords = (props) => {
             <div className='service-records-container'>
                 <div className="services-statistics">
                     <Link id = "add-record" to="/ServiceRecords/Add">Add service record</Link>
+                    <div className='service-records-statistics'><ServiceRecordsStatistics/></div>
                 </div>
                 <div className="service-records-list">
                     {
