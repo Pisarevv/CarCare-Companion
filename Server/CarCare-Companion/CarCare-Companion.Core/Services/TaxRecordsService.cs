@@ -155,5 +155,27 @@ public class TaxRecordsService : ITaxRecordsService
 
     }
 
-   
+    /// <summary>
+    /// Retrieves all the user tax records count
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>An integer containing the count of user tax records</returns>
+    public async Task<int> GetAllUserTaxRecordsCountAsync(string userId)
+    {
+        return await repository.AllReadonly<TaxRecord>()
+               .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
+               .CountAsync();
+    }
+
+    /// <summary>
+    /// Retrieves all the user tax records cost
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>An decimal containing the cost of all the user tax records</returns>
+    public async Task<decimal> GetAllUserTaxRecordsCostAsync(string userId)
+    {
+        return await repository.AllReadonly<TaxRecord>()
+               .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
+               .SumAsync(tr => tr.Cost);
+    }
 }

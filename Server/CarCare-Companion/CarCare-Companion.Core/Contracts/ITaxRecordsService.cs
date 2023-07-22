@@ -18,6 +18,10 @@ public interface  ITaxRecordsService
 
     public Task<TaxRecordEditDetailsResponseModel> GetEditDetailsByIdAsync(string recordId);
 
+    public Task<int> GetAllUserTaxRecordsCountAsync(string userId);
+
+    public Task<decimal> GetAllUserTaxRecordsCostAsync (string userId);
+
     
 }
 
