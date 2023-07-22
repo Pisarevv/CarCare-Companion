@@ -9,8 +9,10 @@ import { getAllTaxRecords } from '../../services/taxRecordsService';
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
 import TaxRecordCard from './TaxRecordCard';
+import TaxRecordsStatistics from './TaxRecordsStatistics/TaxRecordsStatistics';
 
 import './TaxRecords.css'
+
 
 
 const TaxRecords = (props) => {
@@ -23,7 +25,6 @@ const TaxRecords = (props) => {
         (async () => {
             try {
                 let taxRecordsResult = await getAllTaxRecords();
-                console.log(taxRecordsResult);
                 setTaxRecords(taxRecords => taxRecordsResult);
                 setLoading(false);
             }
@@ -39,6 +40,7 @@ const TaxRecords = (props) => {
             <div className='tax-records-container'>
                 <div className="taxes-statistics">
                     <Link id = "add-tax-record" to="/TaxRecords/Add">Add tax record</Link>
+                    <div className='tax-records-statistics'><TaxRecordsStatistics/></div>
                 </div>
                 <div className="tax-records-list">
                     {
