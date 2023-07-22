@@ -27,3 +27,11 @@ export async function editTaxRecord(title, description, validFrom, validTo, cost
 export async function deleteTaxRecord(recordId){
     return await api.delete(`/TaxRecords/Delete/${recordId}`);
 }
+
+export async function getAllTaxRecordsCount(){
+    return await api.get("/TaxRecords/Count");
+}
+
+export async function getAllTaxRecordsCost(){
+    return await api.get("/TaxRecords/Cost");
+}
