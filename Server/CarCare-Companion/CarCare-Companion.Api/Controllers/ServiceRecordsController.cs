@@ -11,6 +11,7 @@ using CarCare_Companion.Core.Models.ServiceRecords;
 using static Common.StatusResponses;
 
 
+
 /// <summary>
 /// The service records controller handles service records related operations
 /// </summary>
@@ -255,6 +256,82 @@ public class ServiceRecordsController : BaseController
             await serviceRecordsService.DeleteAsync(recordId);
 
             return StatusCode(200, new StatusInformationMessage(Success));
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
+    /// Retrieves the user service records count
+    /// </summary>
+    /// <returns>A integer containing the total user service records count</returns>
+    [HttpGet]
+    [Route("Count")]
+    [ProducesResponseType(200, Type = typeof(int))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> ServiceRecordsCount()
+    {
+        try
+        {
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            int serviceRecordsCount = await serviceRecordsService.GetAllUserServiceRecordsCountAsync(userId);
+
+            return StatusCode(200, serviceRecordsCount);
+
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
+    /// Retrieves the user service records cost
+    /// </summary>
+    /// <returns>A decimal containing the total cost of the user service records</returns>
+    [HttpGet]
+    [Route("Cost")]
+    [ProducesResponseType(200, Type = typeof(decimal))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> ServiceRecordsCost()
+    {
+        try
+        {
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            decimal serviceRecordsCost = await serviceRecordsService.GetAllUserServiceRecordsCostAsync(userId);
+
+            return StatusCode(200, serviceRecordsCost);
+
+
         }
         catch (SqlException ex)
         {
