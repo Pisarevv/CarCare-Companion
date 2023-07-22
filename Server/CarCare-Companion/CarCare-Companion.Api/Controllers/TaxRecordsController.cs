@@ -126,7 +126,7 @@ public class TaxRecordsController : BaseController
     [ProducesResponseType(200, Type = typeof(TaxRecordEditDetailsResponseModel))]
     [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
     [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
-    public async Task<IActionResult> ServiceRecordDetails([FromRoute] string recordId)
+    public async Task<IActionResult> TaxRecordsDetails([FromRoute] string recordId)
     {
         try
         {
@@ -151,9 +151,9 @@ public class TaxRecordsController : BaseController
                 return StatusCode(403, InvalidUser);
             }
 
-            TaxRecordEditDetailsResponseModel serviceRecord = await taxRecordsService.GetEditDetailsByIdAsync(recordId);
+            TaxRecordEditDetailsResponseModel taxRecord = await taxRecordsService.GetEditDetailsByIdAsync(recordId);
 
-            return StatusCode(200, serviceRecord);
+            return StatusCode(200, taxRecord);
 
 
         }
@@ -280,6 +280,82 @@ public class TaxRecordsController : BaseController
             await taxRecordsService.DeleteAsync(recordId);
 
             return StatusCode(200, new StatusInformationMessage(Success));
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
+    /// Retrieves the user tax records count
+    /// </summary>
+    /// <returns>A integer containing the total user tax records count</returns>
+    [HttpGet]
+    [Route("Count")]
+    [ProducesResponseType(200, Type = typeof(int))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> TaxRecordsCount()
+    {
+        try
+        {
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            int taxRecordsCount = await taxRecordsService.GetAllUserTaxRecordsCountAsync(userId);
+
+            return StatusCode(200, taxRecordsCount);
+
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
+    /// Retrieves the user tax records cost
+    /// </summary>
+    /// <returns>A decimal containing the total cost of the user tax records</returns>
+    [HttpGet]
+    [Route("Cost")]
+    [ProducesResponseType(200, Type = typeof(decimal))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> TaxRecordsCost()
+    {
+        try
+        {
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            decimal taxRecordsCost = await taxRecordsService.GetAllUserTaxRecordsCostAsync(userId);
+
+            return StatusCode(200, taxRecordsCost);
+
+
         }
         catch (SqlException ex)
         {
