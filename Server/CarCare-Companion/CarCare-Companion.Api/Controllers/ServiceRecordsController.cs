@@ -226,7 +226,7 @@ public class ServiceRecordsController : BaseController
     }
 
     /// <summary>
-    /// Deletes a new service records 
+    /// Deletes a service records 
     /// </summary>
     /// <param name="recordId">The record identifier</param>
     /// <returns>A status message based on the result</returns>
