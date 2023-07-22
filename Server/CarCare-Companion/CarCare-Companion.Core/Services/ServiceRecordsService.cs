@@ -153,5 +153,28 @@ public class ServiceRecordsService : IServiceRecordsService
                .AnyAsync();
     }
 
-   
+    /// <summary>
+    /// Retrieves all the user service records count
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>An integer containing the count of user service records</returns>
+    public async Task<int> GetAllUserServiceRecordsCountAsync(string userId)
+    {
+        return await repository.AllReadonly<ServiceRecord>()
+               .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
+               .CountAsync();
+    }
+
+    /// <summary>
+    /// Retrieves all the user service records cost
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>An decimal containing the cost of all the user service records</returns>
+    public async Task<decimal> GetAllUserServiceRecordsCostAsync(string userId)
+    {
+        return await repository.AllReadonly<ServiceRecord>()
+               .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
+               .SumAsync(tr => tr.Cost);
+    }
+
 }

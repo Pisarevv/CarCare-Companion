@@ -17,5 +17,9 @@ public interface IServiceRecordsService
     public Task<bool> IsUserRecordCreatorAsync(string userId, string serviceRecordId);
 
     public Task<ServiceRecordEditDetailsResponseModel> GetEditDetailsByIdAsync(string serviceRecordId);
+
+    public Task<int> GetAllUserServiceRecordsCountAsync(string userId);
+
+    public Task<decimal> GetAllUserServiceRecordsCostAsync(string userId);
 }
  
