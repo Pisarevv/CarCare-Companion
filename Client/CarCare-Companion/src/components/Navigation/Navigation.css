@@ -27,12 +27,29 @@ header li, header a {
     text-decoration: none;
 }
 
-.nav_links {
-    list-style: none;
+.main_navigation {
+    width: 100%;
 }
 
-    display: inline-block;
-    padding: 0px 20px;
+.nav_links {
+    display: flex;
+    align-items: baseline;
+    width: 100%;
+    list-style: none;
+    gap: 2em;
+
+}
+
+.first_link {
+    margin-left: auto;
+}
+
+.right_link{
+    align-self: end;
+}
+
+.right_link:first-of-type{
+    margin-left: auto;
 }
 
 .nav_links li a {
