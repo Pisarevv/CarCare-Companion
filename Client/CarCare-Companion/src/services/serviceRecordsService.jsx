@@ -28,3 +28,10 @@ export async function deleteServiceRecord(recordId){
     return await api.delete(`/ServiceRecords/Delete/${recordId}`);
 }
 
+export async function getAllServiceRecordsCount(){
+    return await api.get("/ServiceRecords/Count");
+}
+
+export async function getAllServiceRecordsCost(){
+    return await api.get("/ServiceRecords/Cost");
+}
