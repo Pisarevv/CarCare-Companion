@@ -23,10 +23,7 @@ const TaxRecordsStatistics = (props) => {
                 let taxRecordsCostResult = await getAllTaxRecordsCost();
 
                 setTaxRecordsCount(userTripsCost => taxRecordsCountResult);
-                setTaxRecordsCost(userTripsCost => taxRecordsCostResult);
-
-                console.log(taxRecordsCountResult);
-                console.log(taxRecordsCostResult);
+                setTaxRecordsCost(userTripsCost => taxRecordsCostResult);  
 
                 setLoading(false);
             } catch (error) {
@@ -42,7 +39,8 @@ const TaxRecordsStatistics = (props) => {
         <div className="tax-record-statistics-list">
             <h1>Overview:</h1>
             <div className="tax-record-statistics-border"></div>
-            <div className="taxRecords-count">You have added {taxRecordsCount} so far.</div>
+            <div className="taxRecords-count">You have added {taxRecordsCount} 
+            {taxRecordsCount == 1 ? " record" : " records" } so far.</div>
             <div className="taxRecors-cost">The total cost of your tax records is: {taxRecordsCost} lv.</div>
           
         </div>   
