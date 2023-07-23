@@ -7,7 +7,6 @@ using CarCare_Companion.Core.Models.ServiceRecords;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 using Microsoft.EntityFrameworkCore;
-using static Common.GlobalConstants;
 
 /// <summary>
 /// The ServiceRecordsService is responsible for operations regarding the service records-related actions
@@ -132,7 +131,7 @@ public class ServiceRecordsService : IServiceRecordsService
     /// Checks if there exist a record and is not deleted 
     /// </summary>
     /// <param name="serviceRecordId">The service record identifier</param>
-    /// <returns>Boolen based on the search result</returns>
+    /// <returns>Boolean based on the search result</returns>
     public async Task<bool> DoesRecordExistByIdAsync(string serviceRecordId)
     {
         return await repository.AllReadonly<ServiceRecord>()
@@ -177,4 +176,29 @@ public class ServiceRecordsService : IServiceRecordsService
                .SumAsync(tr => tr.Cost);
     }
 
+    /// <summary>
+    /// Retrieves a specified count of records containing basic information about the user service records
+    /// ordered by time of creation
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <param name="count">The amount of record to be retrieved</param>
+    /// <returns>A collection of service records</returns>
+    public async Task<ICollection<ServiceRecordBasicInformationResponseModel>> GetLastNCountAsync(string userId, int count)
+    {
+        return await repository.AllReadonly<ServiceRecord>()
+               .Where(sr => sr.IsDeleted == false)
+               .Where(sr => sr.OwnerId == Guid.Parse(userId))
+               .OrderByDescending(sr => sr.CreatedOn)
+               .Take(count)
+               .Select(sr => new ServiceRecordBasicInformationResponseModel
+               {
+                  Id = sr.Id.ToString(),
+                  Title = sr.Title,
+                  PerformedOn = sr.PerformedOn,
+                  VehicleMake = sr.Vehicle.Make,
+                  VehicleModel = sr.Vehicle.Model
+
+               })
+               .ToListAsync();
+    }
 }

@@ -21,5 +21,7 @@ public interface IServiceRecordsService
     public Task<int> GetAllUserServiceRecordsCountAsync(string userId);
 
     public Task<decimal> GetAllUserServiceRecordsCostAsync(string userId);
+
+    public Task<ICollection<ServiceRecordBasicInformationResponseModel>> GetLastNCountAsync(string userId,int count);
 }
  
