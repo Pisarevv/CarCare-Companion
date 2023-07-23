@@ -35,3 +35,7 @@ export async function getAllServiceRecordsCount(){
 export async function getAllServiceRecordsCost(){
     return await api.get("/ServiceRecords/Cost");
 }
+
+export async function getLatestServiceRecords(count){
+    return await api.get(`/ServiceRecords/Last/${count}`);
+}
