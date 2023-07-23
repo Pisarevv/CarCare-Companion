@@ -42,14 +42,13 @@
 
 
 
-.user-recent-trips {
+/* .recent-trips-container {
   
     position: sticky;
     top: 0;
-    bottom: 50%;
-}
+} */
 
-.user-recent-services {
+/* .user-recent-services {
     position: sticky;
     top: 0;
 }
@@ -58,7 +57,7 @@
   
     position: sticky;
     top: 0;
-}
+} */
 
 .user-vehicles {
     grid-area: 1 / 2 / 2 / 3;
