@@ -9,6 +9,7 @@ using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.ServiceRecords;
 
 using static Common.StatusResponses;
+using CarCare_Companion.Core.Models.Trip;
 
 
 
@@ -256,6 +257,43 @@ public class ServiceRecordsController : BaseController
             await serviceRecordsService.DeleteAsync(recordId);
 
             return StatusCode(200, new StatusInformationMessage(Success));
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
+    }
+
+    /// <summary>
+    /// Retrieves a specified count of user service records
+    /// </summary>
+    /// <param name="count">The count of service records to be retrieved</param>
+    /// <returns>Collection of the user service records</returns>
+    [HttpGet]
+    [Route("Last/{count?}")]
+    [ProducesResponseType(200, Type = typeof(ICollection<ServiceRecordBasicInformationResponseModel>))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> LastNCountServiceRecordsByUserId([FromQuery] int count = 3)
+    {
+        try
+        {
+            var userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            ICollection<ServiceRecordBasicInformationResponseModel> userServiceRecords = await serviceRecordsService.GetLastNCountAsync(userId, count);
+            return StatusCode(200, userServiceRecords);
+
         }
         catch (SqlException ex)
         {
