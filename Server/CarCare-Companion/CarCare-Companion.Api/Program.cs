@@ -115,7 +115,8 @@ namespace CarCare_Companion.Api
                 options.AddDefaultPolicy(
                                    policy =>
                                   {
-                                      policy.WithOrigins("http://localhost:5173")
+                                      policy.WithOrigins("http://localhost:5173",
+                                                         "http://172.22.144.1:5173")
                                       .AllowAnyMethod()
                                       .AllowAnyHeader()
                                       .AllowCredentials();
