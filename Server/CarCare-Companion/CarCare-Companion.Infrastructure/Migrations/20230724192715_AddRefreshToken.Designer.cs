@@ -4,6 +4,7 @@ using CarCare_Companion.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarCare_Companion.Infrastructure.Migrations
 {
     [DbContext(typeof(CarCareCompanionDbContext))]
-    partial class CarCareCompanionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230724192715_AddRefreshToken")]
+    partial class AddRefreshToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,7 +68,7 @@ namespace CarCare_Companion.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("b4777780-35ec-4e30-8dfc-d644e3938ba9"),
+                            Id = new Guid("af5ddff3-f702-4beb-a498-4f287d1114ae"),
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "The car maintenance and service management website is user-friendly, offers a wide service network, effective communication, and robust record-keeping capabilities for a seamless experience.",
                             IsDeleted = false,
@@ -74,7 +77,7 @@ namespace CarCare_Companion.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("55f05ad6-430f-4895-9017-8ae1a2fc3a65"),
+                            Id = new Guid("69015006-2fdd-47a4-ac3f-8cc30d79f212"),
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "With its intuitive interface, extensive service network, detailed record-keeping the car maintenance and service management website ensures a top-notch experience for all users.",
                             IsDeleted = false,
@@ -83,7 +86,7 @@ namespace CarCare_Companion.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("cd4b6684-e07a-4391-ac4a-aafc2fabd30b"),
+                            Id = new Guid("152de202-f765-4113-b00c-aa2247a79e6d"),
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Experience exceptional car maintenance and service management with a user-friendly website interface, comprehensive service network, efficient communication, thorough record-keeping, and prompt notifications for a hassle-free experience.",
                             IsDeleted = false,
@@ -92,7 +95,7 @@ namespace CarCare_Companion.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("32edbfae-5b94-42b3-b6a2-191d20fbc82c"),
+                            Id = new Guid("3ad4564c-ac02-42cc-bdf4-5675537ce55d"),
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "The forum within the website fosters a vibrant community, enabling car owners to communicate, share valuable information, and seek advice for a collaborative and informative experience.",
                             IsDeleted = false,
@@ -101,7 +104,7 @@ namespace CarCare_Companion.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("c9b1486b-3e07-40cc-8134-98c8b2160424"),
+                            Id = new Guid("4abb8409-e764-4233-ab9a-43d82877111b"),
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "The website's interactive forum creates a dynamic space where car enthusiasts can connect, exchange valuable insights, and foster a supportive community for engaging discussions and information sharing.",
                             IsDeleted = false,
@@ -247,9 +250,6 @@ namespace CarCare_Companion.Infrastructure.Migrations
                     b.Property<string>("RefreshToken")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RefreshTokenExpiration")
-                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");

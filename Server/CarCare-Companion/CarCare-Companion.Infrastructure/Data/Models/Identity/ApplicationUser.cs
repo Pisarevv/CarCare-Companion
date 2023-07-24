@@ -39,6 +39,10 @@ public class ApplicationUser : IdentityUser<Guid>, IAuditInfo
     [Comment("Image key for user profile picture")]
     public Guid? ProfileImageKey { get; set; }
 
+    [Comment("The authentication refresh token")]
+    [Required]
+    public UserRefreshToken RefreshToken { get; set; }
+
     public ICollection<Vehicle> Vehicles { get; set; }
 
     public ICollection<TripRecord> TripRecords { get; set; }
