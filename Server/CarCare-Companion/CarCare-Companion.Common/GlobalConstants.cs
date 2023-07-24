@@ -5,6 +5,8 @@ public static class GlobalConstants
 
     public const double JWTTokenExpirationTime = 168;
 
+    public const double RefreshTokenExpirationTime = 168;
+
     public const string AWSBucket = "car-care-companion-bucket";
 
 }

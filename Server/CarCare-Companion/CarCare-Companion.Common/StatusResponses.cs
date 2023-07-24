@@ -3,6 +3,7 @@ public static class StatusResponses
 {
     public const string GenericError = "An error occurred while processing your request. Please try again later.";
     public const string NoPermission = "No permission";
+    public const string TokenExpired = "Token expired";
     public const string InvalidPassword = "Invalid password";
     public const string InvalidUser = "User does not exist";
     public const string InvalidData = "Invalid data";
