@@ -8,11 +8,10 @@ public class UserRefreshToken
     [Key]
     public Guid Id { get; set; }
 
-    [Required]
-    public string RefreshToken { get; set; } = null!;
+    public string? RefreshToken { get; set; }
 
-    [Required]
-    public DateTime RefreshTokenExpiration { get; set; }
+
+    public DateTime? RefreshTokenExpiration { get; set; }
 
     [ForeignKey(nameof(User))]
     public Guid UserId { get; set; }
