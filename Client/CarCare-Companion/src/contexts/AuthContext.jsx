@@ -8,23 +8,21 @@
  * 
  * States:
  * ----------------------
- * - auth (object): This state uses the custom UseLocalStorage hook that
- *   allows the state to persist even when the page is refreshed. 
+ * - auth (object): This state uses stores the user data
  * ---------------------
  * 
  * Functions: 
- * - userLogin, userLogout - These functions are used to update the authentication state when a user logs in or logs out.   
+ * - userLogin, userLogout, setAuth - These functions are used to update the authentication state when a user logs in or logs out.   
 **/
 
-import { createContext, useContext } from "react";
-import useLocalStorage from "../hooks/useLocalStorage";
+import { createContext, useContext, useState } from "react";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({
     children
 }) => {
-    const [auth, setAuth] = useLocalStorage('user', {});
+    const [auth, setAuth] = useState({}); 
 
     const userLogin = (userData) => {
         setAuth(userData);
@@ -35,7 +33,7 @@ export const AuthProvider = ({
     }
 
     return (
-        <AuthContext.Provider value = {{user: auth, userLogin, userLogout, isAuthenticated : !!auth.accessToken}}>
+        <AuthContext.Provider value = {{user: auth, userLogin, userLogout,setAuth, isAuthenticated : !!auth.accessToken}}>
             {children}
         </AuthContext.Provider>
     );
