@@ -14,6 +14,10 @@ using CarCare_Companion.Core.Models.Identity;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using CarCare_Companion.Common;
 
+using CarCare_Companion.Infrastructure.Data.Common;
+using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
+
 /// <summary>
 /// The IdentityService is responsible for all the operations regarding the user-related actions
 /// </summary>
@@ -21,13 +25,15 @@ public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> userManager;
     private readonly RoleManager<ApplicationRole> roleManager;
+    private readonly IRepository repository;
     private readonly IConfiguration configuration;
 
-    public IdentityService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager , IConfiguration configuration)
+    public IdentityService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager , IConfiguration configuration, IRepository repository)
     {
         this.userManager = userManager;
         this.configuration = configuration;
         this.roleManager = roleManager;
+        this.repository = repository;
     }
 
     /// <summary>
@@ -51,11 +57,11 @@ public class IdentityService : IIdentityService
     /// <summary>
     /// Logs in the user.
     /// </summary>
-    /// <param name="inputModel">The input data containg the user email and password.</param>
-    /// <returns>An object containing the user email,id and generated JWT token.</returns>
+    /// <param name="inputModel">The input data containing the user email and password.</param>
+    /// <returns>An object containing the user email and generated JWT token.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the user with the specified Email is not found.</exception>
     /// <exception cref="ArgumentException">Thrown when the user password is invalid.</exception>
-    public async Task<AuthDataModel> LoginAsync(LoginRequestModel inputModel)
+    public async Task<AuthDataInternalTransferModel> LoginAsync(LoginRequestModel inputModel)
     {
         var user = await userManager.FindByNameAsync(inputModel.Email);
 
@@ -79,13 +85,15 @@ public class IdentityService : IIdentityService
 
         var authClaims = GenerateUserAuthClaims(user,userRoles);
 
-        var token = GenerateToken(authClaims);
+        var token = GenerateJwtToken(authClaims);
 
-        return new AuthDataModel
+        var refreshToken = await UpdateRefreshToken(user);
+
+        return new AuthDataInternalTransferModel
         {
             AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
             Email = user.Email,
-
+            RefreshToken = refreshToken
         };
        
     }
@@ -95,9 +103,8 @@ public class IdentityService : IIdentityService
     /// </summary>
     /// <param name="inputModel">The input model containing the user first name, 
     /// last name, email, password and confirm password</param>
-    /// <returns>The created users data - email, id and JWT token</returns>
     /// <exception cref="Exception">Thrown when the user creating is not successful</exception>
-    public async Task<AuthDataModel> RegisterAsync(RegisterRequestModel inputModel)
+    public async Task RegisterAsync(RegisterRequestModel inputModel)
     {
      
         ApplicationUser user = new ApplicationUser()
@@ -117,21 +124,128 @@ public class IdentityService : IIdentityService
             throw new Exception(result.Errors.First().ToString());
         }
 
+
+    }
+
+    /// <summary>
+    /// Updates the user refresh token. If the user doesn't have a token - a refresh token is added.
+    /// If the user has a refresh token - the token is updated.
+    /// </summary>
+    /// <param name="user">The application user</param>
+    /// <returns></returns>
+    public async Task<string> UpdateRefreshToken(ApplicationUser user)
+    {
+        UserRefreshToken newToken = GenerateRefreshToken(user.Id.ToString());
+
+        UserRefreshToken? userRefreshToken = await repository.All<UserRefreshToken>()
+                                 .Where(urt => urt.UserId == user.Id)
+                                 .FirstOrDefaultAsync();
+
+        if(userRefreshToken == null)
+        {
+            user.RefreshToken = newToken;
+            await repository.AddAsync<UserRefreshToken>(newToken);
+            await repository.SaveChangesAsync();
+
+            return newToken.RefreshToken.ToString();
+            
+        }
+
+        userRefreshToken.RefreshToken = newToken.RefreshToken;
+        userRefreshToken.RefreshTokenExpiration = newToken.RefreshTokenExpiration;
+        await repository.SaveChangesAsync();
+
+        return userRefreshToken.RefreshToken.ToString();
+    }
+
+    /// <summary>
+    /// Updates the user JWT token
+    /// </summary>
+    /// <param name="username">The user username</param>
+    /// <returns>AuthDataModel containing the new JWT token and user claims</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public async Task<AuthDataModel> RefreshJWTToken(string username)
+    {
+        var user = await userManager.FindByNameAsync(username);
+
+        if (user == null)
+        {
+            throw new ArgumentNullException("User does not exist");
+        }
+
         var userRoles = await userManager.GetRolesAsync(user);
+
+        if (userRoles.Count == 0)
+        {
+            userRoles.Add("User");
+        }
 
         var authClaims = GenerateUserAuthClaims(user, userRoles);
 
-        var token = GenerateToken(authClaims);
+        var token = GenerateJwtToken(authClaims);
 
         return new AuthDataModel
         {
             AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
-            Email = user.Email, 
+            Email = user.Email,
         };
+    }
+
+
+    /// <summary>
+    /// Checks if the user is the refresh token owner
+    /// </summary>
+    /// <param name="username">The user identifier</param>
+    /// <param name="refreshToken">The refresh token</param>
+    /// <returns>Boolean based on the search result</returns>
+    public async Task<bool> IsUserRefreshTokenOwner(string username, string refreshToken)
+    {
+        return await repository.AllReadonly<UserRefreshToken>()
+               .Where(urt => urt.User.UserName == username && urt.RefreshToken == refreshToken)
+               .AnyAsync();
+    }
+
+    /// <summary>
+    /// Checks if the user refresh token is expired
+    /// </summary>
+    /// <param name="refreshToken">The refresh token</param>
+    /// <returns>Boolean based on the search result</returns>
+    public async Task<bool> IsUserRefreshTokenExpired(string refreshToken)
+    {
+        DateTime tokenExpirationDate = await repository.AllReadonly<UserRefreshToken>()
+            .Where(urt => urt.RefreshToken == refreshToken)
+            .Select(urt => urt.RefreshTokenExpiration)
+            .FirstAsync();
+
+        return tokenExpirationDate < DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Retrieves the claims of the JWT token
+    /// </summary>
+    /// <param name="token"></param>
+    /// <returns>ClaimsPrincipal containing the user claims</returns>
+    /// <exception cref="SecurityTokenException"></exception>
+    public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+            ValidateIssuer = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]!)),
+            ValidateLifetime = false
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+        if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            throw new SecurityTokenException("Invalid token");
+
+        return principal;
 
     }
 
-    
 
     /// <summary>
     /// Generates the authentication claims of the user for the JWT token
@@ -144,10 +258,9 @@ public class IdentityService : IIdentityService
 
         var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.UserName),
                 };
-        
+
         foreach (var userRole in userRoles)
         {
             authClaims.Add(new Claim(ClaimTypes.Role, userRole));
@@ -161,18 +274,42 @@ public class IdentityService : IIdentityService
     /// </summary>
     /// <param name="authClaims">The user authorization claims</param>
     /// <returns>A JWT token containing an issuer, audience, expiration date and user claims</returns>
-    private JwtSecurityToken GenerateToken(List<Claim> authClaims)
+    private JwtSecurityToken GenerateJwtToken(List<Claim> authClaims)
     {
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]!));
 
         var token = new JwtSecurityToken(
             issuer: configuration["JWT:Issuer"],
             audience: configuration["JWT:Audience"],
-            expires: DateTime.Now.AddHours(GlobalConstants.JWTTokenExpirationTime),
+            expires: DateTime.Now.AddMinutes(GlobalConstants.JWTTokenExpirationTime),
             claims: authClaims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
             );
 
         return token;
+    }
+
+    /// <summary>
+    /// Generates a refresh token.
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>A refresh token containing an Id, UserId, RefreshToken and RefreshTokenExpiration</returns>
+    private UserRefreshToken GenerateRefreshToken(string userId)
+    {
+        var randomNumber = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        var token = Convert.ToBase64String(randomNumber);
+
+        UserRefreshToken refreshToken = new UserRefreshToken()
+        {
+            Id = Guid.NewGuid(),
+            UserId = Guid.Parse(userId),
+            RefreshToken = token,
+            RefreshTokenExpiration = DateTime.UtcNow.AddDays(GlobalConstants.RefreshTokenExpirationTime),
+        };
+
+
+        return refreshToken;
     }
 }
