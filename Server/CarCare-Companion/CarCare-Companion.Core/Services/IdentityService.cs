@@ -191,6 +191,14 @@ public class IdentityService : IIdentityService
         };
     }
 
+    public async Task<string?> GetRefreshTokenOwner(string refreshToken)
+    {
+        return await repository.AllReadonly<UserRefreshToken>()
+               .Where(urf => urf.RefreshToken == refreshToken)
+               .Select(urf => urf.User.UserName)
+               .FirstOrDefaultAsync();
+    }
+
 
     /// <summary>
     /// Checks if the user is the refresh token owner
@@ -212,7 +220,7 @@ public class IdentityService : IIdentityService
     /// <returns>Boolean based on the search result</returns>
     public async Task<bool> IsUserRefreshTokenExpired(string refreshToken)
     {
-        DateTime tokenExpirationDate = await repository.AllReadonly<UserRefreshToken>()
+        DateTime? tokenExpirationDate = await repository.AllReadonly<UserRefreshToken>()
             .Where(urt => urt.RefreshToken == refreshToken)
             .Select(urt => urt.RefreshTokenExpiration)
             .FirstAsync();
@@ -259,6 +267,7 @@ public class IdentityService : IIdentityService
         var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 };
 
         foreach (var userRole in userRoles)
@@ -296,7 +305,7 @@ public class IdentityService : IIdentityService
     /// <returns>A refresh token containing an Id, UserId, RefreshToken and RefreshTokenExpiration</returns>
     private UserRefreshToken GenerateRefreshToken(string userId)
     {
-        var randomNumber = new byte[64];
+        var randomNumber = new byte[256];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
         var token = Convert.ToBase64String(randomNumber);
@@ -311,5 +320,17 @@ public class IdentityService : IIdentityService
 
 
         return refreshToken;
+    }
+
+    public async Task TerminateUserRefreshToken(string userId)
+    {
+        UserRefreshToken refreshToken = await repository.All<UserRefreshToken>()
+                         .Where(urt => urt.UserId == Guid.Parse(userId))
+                         .FirstAsync();
+
+        refreshToken.RefreshToken = null;
+        refreshToken.RefreshTokenExpiration = DateTime.UtcNow;
+
+        await repository.SaveChangesAsync();
     }
 }

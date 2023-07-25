@@ -22,5 +22,8 @@ public interface IIdentityService
 
     public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
 
+    public Task<string?> GetRefreshTokenOwner(string refreshToken);
+
+    public Task TerminateUserRefreshToken(string userId);
 
 }
