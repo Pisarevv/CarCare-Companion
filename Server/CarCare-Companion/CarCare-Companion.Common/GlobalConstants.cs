@@ -3,8 +3,10 @@ public static class GlobalConstants
 {
     public const string AdministratorRoleName = "Administrator";
 
-    public const double JWTTokenExpirationTime = 168;
+    //Minutes
+    public const double JWTTokenExpirationTime = 15;
 
+    //Hours
     public const double RefreshTokenExpirationTime = 168;
 
     public const string AWSBucket = "car-care-companion-bucket";
