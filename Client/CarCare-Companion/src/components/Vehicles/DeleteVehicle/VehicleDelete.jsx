@@ -1,11 +1,17 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import './VehicleDelete.css'
-import { deleteVehicle } from '../../../services/vehicleService';
+
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
+
 import { NotificationHandler } from '../../../utils/NotificationHandler'
+
+import './VehicleDelete.css'
+
 
 const VehicleDelete = () => {
     const location = useLocation();
     const { id } = useParams();
+
+    const axiosPrivate = useAxiosPrivate();
 
     const details = location.state.details;
     const { make, model } = details;
@@ -17,7 +23,7 @@ const VehicleDelete = () => {
     const onClickHander = async (e) => {
       e.preventDefault();
       try {
-        await deleteVehicle(id);
+        await axiosPrivate.delete(`/Vehicles/Delete/${id}`);
         navigate("/MyVehicles")
       } 
       catch (error) {

@@ -5,13 +5,16 @@ import { NotificationHandler } from '../../../utils/NotificationHandler'
 
 import IsLoadingHOC from '../../Common/IsLoadingHoc';
 
-import { getVehicleDetails } from '../../../services/vehicleService';
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 
 import './VehicleDetails.css'
+
 
 const VehicleDetails = (props) => {
 
     const { setLoading } = props;
+
+    const axiosPrivate = useAxiosPrivate();
 
     const { id } = useParams();
 
@@ -19,20 +22,33 @@ const VehicleDetails = (props) => {
 
 
     useEffect(() => {
-        (async () => {
+        let isMounted = true;
+        const controller = new AbortController();
+
+        const getVehicleDetails= async () => {
             try {
-                var vehicleDetailsResult = await getVehicleDetails(id);
-                setVehicleDetails(vehicleDetails => vehicleDetailsResult);
+                const response = await axiosPrivate.get(`/Vehicles/Details/${id}`, {
+                    signal: controller.signal
+                });
+                isMounted && setVehicleDetails(vehicleDetails => response.data);
+            } catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
+            }
+            finally{
                 setLoading(false);
             }
-            catch (error) {
-                NotificationHandler(error);
-                setLoading(false);
-            }
-        })()
+        }
+
+        getVehicleDetails();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
     }, [])
 
-
+    
     return (
         <section className="vehicle-details">
             <div className="vehicle-details-container">
