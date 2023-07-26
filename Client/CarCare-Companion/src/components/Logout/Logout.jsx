@@ -22,7 +22,7 @@ const Logout = (props) => {
                 const response = await axiosPrivate.post('/Logout');
             } catch (err) {
                 NotificationHandler(err);
-                navigate('/login', { state: { from: location }, replace: true });
+                navigate('/', { state: { from: location }, replace: true });
             }
             finally{
                 userLogout();
