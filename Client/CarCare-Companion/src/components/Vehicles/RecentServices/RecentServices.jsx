@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { getLatestServiceRecords } from '../../../services/serviceRecordsService';
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 
 import RecentServiceCard from './RecentServiceCard';
 
@@ -11,26 +11,42 @@ import IsLoadingHOC from '../../Common/IsLoadingHoc';
 import './RecentServices.css'
 
 
-const RecentServices = (props) => {
 
+const RecentServices = (props) => {
+ 
     const { setLoading } = props;
 
+    const axiosPrivate = useAxiosPrivate();
     const [recentServiceRecords, setRecentServiceRecords] = useState([]);
 
     useEffect(() => {
-        (async () => {
+        let isMounted = true;
+        const controller = new AbortController();
+
+        const getRecentServices = async () => {
             try {
-                const serviceRecords = await getLatestServiceRecords(3);
-                setRecentServiceRecords(recentServiceRecords => serviceRecords);
+                const response = await axiosPrivate.get(`/ServiceRecords/Last/${3}`, {
+                    signal: controller.signal
+                });
+                isMounted && setRecentServiceRecords(recentServiceRecords => response.data);
+            } catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
+            }
+            finally{
                 setLoading(false);
             }
-            catch (error) {
-                NotificationHandler(error)
-                setLoading(false);
-            }
-        })()
+        }
+
+        getRecentServices();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
     }, [])
 
+    
     return (
         <div className="recent-trips-container">
             <div className="trips-header">Recently added service records</div>

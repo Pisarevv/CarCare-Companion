@@ -1,39 +1,54 @@
 import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
-
-import { getUserVehicles } from '../../services/vehicleService';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import VehicleCard from './VehicleCard';
-
+import RecentTrips from './RecentTrips/RecentTrips';
+import RecentServices from './RecentServices/RecentServices';
 
 import { NotificationHandler } from '../../utils/NotificationHandler'
 
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
 import './Vehicles.css';
 
-import RecentTrips from './RecentTrips/RecentTrips';
-import RecentServices from './RecentServices/RecentServices';
+
 
 const Vehicles = (props) => {
+
+    const axiosPrivate = useAxiosPrivate();
 
     const { setLoading } = props;
 
     const [userVehicles, setUserVehicles] = useState([]);
-
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
-        (async () => {
+        let isMounted = true;
+        const controller = new AbortController();
+
+        const getUserVehicles = async () => {
             try {
-                const vehicles = await getUserVehicles();
-                setUserVehicles(userVehicles => vehicles);
+                const response = await axiosPrivate.get('/Vehicles', {
+                    signal: controller.signal
+                });
+                isMounted && setUserVehicles(response.data);
+            } catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
+            }
+            finally{
                 setLoading(false);
             }
-            catch (error) {
-                NotificationHandler(error)
-                setLoading(false);
-            }
-        })()
+        }
+
+        getUserVehicles();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
     }, [])
 
 
