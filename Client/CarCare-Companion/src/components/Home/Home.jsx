@@ -37,11 +37,9 @@ const Home = (props) => {
 
     return (
         <section className="home">
-
             <div className="container">
                 {isAuthenticated ? <AuthenticatedHomePage /> : <UnauthenticatedHomePage />}
             </div>
-
         </section>
     )
 }
