@@ -285,7 +285,7 @@ public class IdentityController : BaseController
 
             if (refreshTokenOwnerUsername == null)
             {
-                return StatusCode(204, new StatusInformationMessage(TokenExpired));
+                return StatusCode(403, new StatusInformationMessage(TokenExpired));
             }
 
             bool isTokenExpired = await identityService.IsUserRefreshTokenExpired(refreshToken);
@@ -325,6 +325,7 @@ public class IdentityController : BaseController
         cookieOptions.Secure = true;
         cookieOptions.HttpOnly = true;
         cookieOptions.Path = "/";
+        //Change to SameSite.Strict in production
         cookieOptions.SameSite = (Microsoft.AspNetCore.Http.SameSiteMode)SameSiteMode.None;
 
         return cookieOptions;
