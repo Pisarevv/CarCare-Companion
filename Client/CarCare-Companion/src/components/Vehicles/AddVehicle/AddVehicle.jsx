@@ -141,8 +141,6 @@ const AddVehicle = (props) => {
     }
   }, [])
 
-  console.log(fuelTypes);
-  console.log(vehicleTypes);
 
   //Event handlers
   const handleImageUpload = (e) => {
