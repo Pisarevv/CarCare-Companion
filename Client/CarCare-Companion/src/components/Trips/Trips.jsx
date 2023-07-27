@@ -1,34 +1,50 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { getAllUserTrips} from '../../services/tripService';
-
-import UserTripCard from './UserTripCard';
-
 import { NotificationHandler } from '../../utils/NotificationHandler'
 
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
-import './Trips.css'
 import TripsStatistics from './TripsStatistics/TripsStatistics';
+import UserTripCard from './UserTripCard';
+
+import './Trips.css'
+
 
 const Trips = (props) => {
+
+    const axiosPrivate = useAxiosPrivate();
 
     const [userTrips, setUserTrips] = useState([]);
    
     const { setLoading } = props;
 
     useEffect(() => {
-        (async () => {
+        let isMounted = true;
+        const controller = new AbortController();
+
+        const getTrips = async () => {
             try {
-                let userTripsResult = await getAllUserTrips();               
-                setUserTrips(userTrips => userTripsResult);            
-                setLoading(false);
-            } catch (error) {
-              NotificationHandler(error);
-              setLoading(false);
+                const response = await axiosPrivate.get('/Trips', {
+                    signal: controller.signal
+                });
+                isMounted && setUserTrips(userTrips => response.data);
+            } catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
             }
-        })()
+            finally{
+                setLoading(false);
+            }
+        }
+
+        getTrips();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
     }, [])
 
     return (

@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 
-import { getUserTripsCost, getUserTripsCount } from "../../../services/tripService";
-
 import IsLoadingHOC from "../../Common/IsLoadingHoc";
 
 import { NotificationHandler } from "../../../utils/NotificationHandler";
 
 import './TripsStatistics.css'
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 
 const TripsStatistics = (props) => {
+
+    const axiosPrivate = useAxiosPrivate();
 
     const { setLoading } = props;
 
@@ -16,25 +17,47 @@ const TripsStatistics = (props) => {
     const [userTripsCost, setUserTripsCost] = useState(null);
 
     useEffect(() => {
-        (async () => {
-            try {
-                let userTripsCountResult = await getUserTripsCount();
-                let userTripsCostResult = await getUserTripsCost();
+        let isMounted = true;
+        const controller = new AbortController();
+    
+        const getTripStatistics = async () => {
+          try {
+            const requests = [
+              axiosPrivate.get('/Trips/Count', {
+                signal: controller.signal
+              }),
+              axiosPrivate.get('/Trips/Cost', {
+                signal: controller.signal
+              })
+            ]
+            Promise.all(requests)
+            .then(responses => {
+    
+              const tripsCount = responses[0].data;
+              const tripsCost = responses[1].data;
 
-                setUserTripsCount(userTripsCost => userTripsCountResult);
-                setUserTripsCost(userTripsCost => userTripsCostResult);
-
-                console.log(userTripsCountResult);
-                console.log(userTripsCostResult);
-
-                setLoading(false);
-            } catch (error) {
-                NotificationHandler(error);
-                setLoading(false);
-            }
-        })()
-    }, [])
-
+              if(isMounted){
+                setUserTripsCount(userTripsCount => tripsCount);
+                setUserTripsCost(userTripsCost => tripsCost);
+              }        
+            })
+          } catch (err) {
+            NotificationHandler(err);
+            navigate('/login', { state: { from: location }, replace: true });
+          }
+          finally {
+            setLoading(false);
+          }
+        }
+    
+        getTripStatistics();
+    
+        return () => {
+          isMounted = false;
+          controller.abort();
+        }
+      }, [])
+    
 
     return (
 
