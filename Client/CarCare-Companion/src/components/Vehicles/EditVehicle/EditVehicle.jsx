@@ -40,15 +40,13 @@ import { NavLink, useNavigate, useParams } from "react-router-dom";
 
 import { NotificationHandler } from "../../../utils/NotificationHandler";
 
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import IsLoadingHOC from '../../Common/IsLoadingHoc';
 
 import userVehicleReducer from "../../../reducers/userVehicleReducer";
 import dataURLtoFile from "../../../utils/URLtoFileConverter";
 
 import './EditVehicle.css'
-
-import { editVehicle, getFuelTypes, getVehicleEditDetails, getVehicleTypes, uploadVehicleImage } from "../../../services/vehicleService";
-
 
 
 const ValidationErrors = {
@@ -72,55 +70,107 @@ const EditVehicle = (props) => {
 
   const { setLoading } = props;
 
+  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivateFile = useAxiosPrivate();
+
   const { id } = useParams();
 
   const [vehicleImage, setVehicleImage] = useState(null);
   const [vehicleImageError, setVehicleImageError] = useState("");
 
-  const [fuelTypes, setFuelTypes] = useState([]);
-  const [vehicleTypes, setVehicleTypes] = useState([]);
+  const [fuelType, setFuelTypes] = useState([]);
+  const [vehicleType, setVehicleTypes] = useState([]);
   const [stepOneFinished, setStepOneFinished] = useState(false);
 
   const [userVehicle, dispatch] = useReducer(userVehicleReducer, {
     make: "",
     mileage: "",
-    fuelType: "",
+    fuelTypeId: "",
     model: "",
-    vehicleType: "",
+    vehicleTypeId: "",
     year: "",
 
     makeError: "",
     mileageError: "",
-    fuelTypeError: "",
+    fuelTypeIdError: "",
     modelError: "",
-    vehicleTypeError: "",
+    vehicleTypeIdError: "",
     yearError: ""
   })
 
   useEffect(() => {
-    (async () => {
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const getDetails = async () => {
       try {
-        var vehicleDetails = await getVehicleEditDetails(id);
-        setVehicleInitialDetails(vehicleDetails);
-
-        var fuelTypesResult = await getFuelTypes();
-        var vehicleTypesResult = await getVehicleTypes();
-
-        setFuelTypes(fuelTypes => fuelTypesResult);
-        setVehicleTypes(vehicleTypes => vehicleTypesResult);
-
-        dispatch({ type: `SET_FUELTYPE`, payload: vehicleDetails.fuelTypeId })
-        dispatch({ type: `SET_VEHICLETYPE`, payload: vehicleDetails.vehicleTypeId })
+        const requests = [
+          axiosPrivate.get(`/Vehicles/Details/${id}`, {
+            signal: controller.signal
+          }),
+          axiosPrivate.get('/Vehicles/FuelTypes', {
+            signal: controller.signal
+          }),
+          axiosPrivate.get('/Vehicles/Types', {
+            signal: controller.signal
+          })
+        ]
+        Promise.all(requests)
+        .then(responses => {
+          const vehicleDetails = responses[0].data;
+          const fuelTypesResult = responses[1].data;
+          const vehicleTypesResult = responses[2].data;
         
+          setVehicleInitialDetails(vehicleDetails);
+          dispatch({ type: `SET_FUELTYPEID`, payload: fuelTypesResult[0].id })
+          dispatch({ type: `SET_VEHICLETYPEID`, payload: vehicleTypesResult[0].id })
+          if(isMounted){
+            setFuelTypes(fuelTypes => fuelTypesResult);
+            setVehicleTypes(vehicleTypes => vehicleTypesResult);
+          }        
+        })
+      } catch (err) {
+        NotificationHandler(err);
+        navigate('/login', { state: { from: location }, replace: true });
+      }
+      finally {
         setLoading(false);
       }
-      catch (error) {
-        NotificationHandler(error);
-        setLoading(false);
-      }
+    }
 
-    })()
-  }, []);
+    getDetails();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    }
+  }, [])
+
+
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       var vehicleDetails = await getVehicleEditDetails(id);
+  //       setVehicleInitialDetails(vehicleDetails);
+
+  //       var fuelTypeIdsResult = await getfuelTypeIds();
+  //       var vehicleTypeIdsResult = await getvehicleTypeIds();
+
+  //       setfuelType(fuelTypeIds => fuelTypeIdsResult);
+  //       setvehicleType(vehicleTypeIds => vehicleTypeIdsResult);
+
+  //       dispatch({ type: `SET_FUELTYPEID`, payload: vehicleDetails.fuelTypeIdId })
+  //       dispatch({ type: `SET_VEHICLETYPEID`, payload: vehicleDetails.vehicleTypeIdId })
+        
+  //       setLoading(false);
+  //     }
+  //     catch (error) {
+  //       NotificationHandler(error);
+  //       setLoading(false);
+  //     }
+
+  //   })()
+  // }, []);
 
   const setVehicleInitialDetails = (vehicleDetails) => {
     for (const property in vehicleDetails) {
@@ -223,14 +273,14 @@ const EditVehicle = (props) => {
     e.preventDefault()
     let isMakeValid = validateTextFields("make", userVehicle.make);
     let isModelValid = validateTextFields("model", userVehicle.model);
-    let isFuelTypeValid = validateSelectFields("fuelType", userVehicle.fuelType);
+    let isfuelTypeIdValid = validateSelectFields("fuelTypeId", userVehicle.fuelTypeId);
     let isMileageValid = validateNumberFields("mileage", userVehicle.mileage);
-    let isVehicleTypeValid = validateSelectFields("vehicletype", userVehicle.vehicleType);
+    let isvehicleTypeIdValid = validateSelectFields("vehicleTypeId", userVehicle.vehicleTypeId);
     let isYearValid = validateNumberFields("year", userVehicle.year);
 
     if (isMakeValid && isMileageValid &&
-      isFuelTypeValid && isModelValid &&
-      isVehicleTypeValid && isYearValid
+      isfuelTypeIdValid && isModelValid &&
+      isvehicleTypeIdValid && isYearValid
     ) {
       setStepOneFinished(stepOneFinished => true)
     }
@@ -246,17 +296,18 @@ const EditVehicle = (props) => {
     try {
       let isMakeValid = validateTextFields("make", userVehicle.make);
       let isModelValid = validateTextFields("model", userVehicle.model);
-      let isFuelTypeValid = validateSelectFields("fuelType", userVehicle.fuelType);
+      let isfuelTypeIdValid = validateSelectFields("fuelTypeId", userVehicle.fuelTypeId);
       let isMileageValid = validateNumberFields("mileage", userVehicle.mileage);
-      let isVehicleTypeValid = validateSelectFields("vehicletype", userVehicle.vehicleType);
+      let isvehicleTypeIdValid = validateSelectFields("vehicleTypeId", userVehicle.vehicleTypeId);
       let isYearValid = validateNumberFields("year", userVehicle.year);
 
       if (isMakeValid && isMileageValid &&
-        isFuelTypeValid && isModelValid &&
-        isVehicleTypeValid && isYearValid
+        isfuelTypeIdValid && isModelValid &&
+        isvehicleTypeIdValid && isYearValid
       ) {
-        const { make, model, mileage, year, fuelType, vehicleType } = userVehicle;
-        await editVehicle(make, model, mileage, year, fuelType, vehicleType, id);
+        const { make, model, mileage, year, fuelTypeId, vehicleTypeId} = userVehicle;
+        await axiosPrivate.patch(`/Vehicles/Edit/${id}`,{ make, model, mileage, year, fuelTypeId, vehicleTypeId});
+        // await editVehicle(make, model, mileage, year, fuelTypeId, vehicleTypeId, id);
       }
 
       else {
@@ -265,9 +316,17 @@ const EditVehicle = (props) => {
 
       if (vehicleImage && !vehicleImageError) {
 
-        const formData = new FormData();
-        formData.append("file", dataURLtoFile(vehicleImage, "inputImage"));
-        await uploadVehicleImage(formData, id);
+        const file = new FormData();
+        file.append("file", dataURLtoFile(vehicleImage, "inputImage"));
+        await axiosPrivateFile.post("/Vehicles/ImageUpload",file, {
+          headers : {
+            "VehicleId" : `${id}`,
+            "Content-Type": "multipart/form-data" 
+          }
+        })
+        // const file = new file();
+        // file.append("file", dataURLtoFile(vehicleImage, "inputImage"));
+        // await uploadVehicleImage(file, id);
       }
 
       navigate('/MyVehicles');
@@ -303,11 +362,11 @@ const EditVehicle = (props) => {
                     <div className="input-group input-group-lg">
                       <label>Fuel type:</label>
                       <div className="form-control select">
-                        <select className="select-group" name="fueltype" value={userVehicle.fuelType} onChange={onInputChange}>
-                          {fuelTypes.map(ft => <option key={ft.id} value={ft.id}>{ft.name}</option>)}
+                        <select className="select-group" name="fuelTypeId" value={userVehicle.fuelTypeId} onChange={onInputChange}>
+                          {fuelType.map(ft => <option key={ft.id} value={ft.id}>{ft.name}</option>)}
                         </select>
                       </div>
-                      {userVehicle.fuelType && <p className="invalid-field" >{userVehicle.fuelTypeError}</p>}
+                      {userVehicle.fuelTypeId && <p className="invalid-field" >{userVehicle.fuelTypeIdError}</p>}
                     </div>
                     <div className="input-group input-group-lg">
                       <label>Mileage:</label>
@@ -317,11 +376,11 @@ const EditVehicle = (props) => {
                     <div className="input-group input-group-lg">
                       <label>Vehicle type:</label>
                       <div className="form-control select">
-                        <select className="select-group" name="vehicleType" value={userVehicle.vehicleType} onChange={onInputChange}>
-                          {vehicleTypes.map(vt => <option key={vt.id} value={vt.id}>{vt.name}</option>)}
+                        <select className="select-group" name="vehicleTypeId" value={userVehicle.vehicleTypeId} onChange={onInputChange}>
+                          {vehicleType.map(vt => <option key={vt.id} value={vt.id}>{vt.name}</option>)}
                         </select>
                       </div>
-                      {userVehicle.vehicleTypeError && <p className="invalid-field">{userVehicle.vehicleTypeError}</p>}
+                      {userVehicle.vehicleTypeIdError && <p className="invalid-field">{userVehicle.vehicleTypeIdError}</p>}
                     </div>
                     <div className="input-group input-group-lg">
                       <label>Year:</label>
