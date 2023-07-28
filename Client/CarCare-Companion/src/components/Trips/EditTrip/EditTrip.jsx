@@ -1,14 +1,15 @@
-import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useReducer, useState } from 'react'
+
+import { NavLink, useNavigate, useParams } from 'react-router-dom'
 
 import tripReducer from '../../../reducers/tripReducer'
 
-import './EditTrip.css'
-import { getUserVehicles } from '../../../services/vehicleService'
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
 import IsLoadingHOC from '../../Common/IsLoadingHoc'
 
-import { editTrip, getTripDetails } from '../../../services/tripService'
 import { NotificationHandler } from '../../../utils/NotificationHandler'
+
+import './EditTrip.css'
 
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
@@ -25,6 +26,8 @@ const EditTrip = (props) => {
 
     const navigate = useNavigate();
 
+    const axiosPrivate = useAxiosPrivate()
+
     const { setLoading } = props;
 
     const { id } = useParams();
@@ -39,34 +42,58 @@ const EditTrip = (props) => {
         mileageTravelled: "",
         fuelPrice: "",
         usedFuel: "",
-        vehicle: "",
+        vehicleId: "",
 
         startDestinationError: "",
         endDestinationError: "",
         mileageTravelledError: "",
         fuelPriceError: "",
         usedFuelError: "",
-        vehicleError: ""
+        vehicleIdError: ""
 
     });
 
     useEffect(() => {
-        (async () => {
-            try {
-                let userVehicleResult = await getUserVehicles()
-                setUserVehicles(userVehicles => userVehicleResult);
+        let isMounted = true;
+        const controller = new AbortController();
 
-                let userTripDetails = await getTripDetails(id);
-                console.table(userTripDetails);
-                setTripInitialDetails(userTripDetails);
+        const getTripDetails = async () => {
+            try {
+                const requests = [
+                    axiosPrivate.get('/Vehicles', {
+                        signal: controller.signal
+                    }),
+                    axiosPrivate.get(`/Trips/Details/${id}`, {
+                        signal: controller.signal
+                    })
+                ]
+
+                Promise.all(requests)
+                .then(responses => {
+                    const userVehiclesResult = responses[0].data;
+                    const userTripDetails = responses[1].data;
+
+                    setTripInitialDetails(userTripDetails);
+                    dispatch({ type: `SET_VEHICLEID`, payload: userVehiclesResult[0].id })
+                    isMounted && setUserVehicles(userVehicles => userVehiclesResult);
+                })             
+            } catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
+            }
+            finally{
                 setLoading(false);
             }
-            catch (error) {
-                NotificationHandler(error)
-                setLoading(false);
-            }
-        })()
+        }
+
+        getTripDetails();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
     }, [])
+
 
     const setTripInitialDetails = (userTripDetails) => {
         for (const property in userTripDetails) {
@@ -100,10 +127,10 @@ const EditTrip = (props) => {
         let isStartDestinationValid = validateTextFields("startDestination", trip.startDestination);
         let isEndDestinationValid = validateTextFields("endDestination", trip.endDestination);
         let isMileageValid = validateNumberFields("mileageTravelled", trip.mileageTravelled);
-        let isVehicleValid = validateTextFields("vehicle", trip.vehicle);
+        let isvehicleIdValid = validateTextFields("vehicleId", trip.vehicleId);
 
         if (isStartDestinationValid && isEndDestinationValid &&
-            isMileageValid && isVehicleValid) {
+            isMileageValid && isvehicleIdValid) {
             setStepOneFinished(stepOneFinished => true)
         }
         else {
@@ -123,12 +150,14 @@ const EditTrip = (props) => {
             let isStartDestinationValid = validateTextFields("startDestination", trip.startDestination);
             let isEndDestinationValid = validateTextFields("endDestination", trip.endDestination);
             let isMileageValid = validateNumberFields("mileageTravelled", trip.mileageTravelled);
-            let isVehicleValid = validateTextFields("vehicle", trip.vehicle);
+            let isvehicleIdValid = validateTextFields("vehicleId", trip.vehicleId);
             if (!trip.usedFuel || !trip.fuelPrice) {
                 if (isStartDestinationValid && isEndDestinationValid &&
-                    isMileageValid && isVehicleValid) {
-                    const { startDestination, endDestination, mileageTravelled, vehicle } = trip;
-                    await editTrip(startDestination, endDestination, mileageTravelled, null, null, vehicle , id);
+                    isMileageValid && isvehicleIdValid) {
+                    const { startDestination, endDestination, mileageTravelled, vehicleId } = trip;
+                    const usedFuel = null;
+                    const fuelPrice = null;
+                    await axiosPrivate.patch(`/Trips/Edit/${id}`,{startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId})
                 }
             }
             else {
@@ -136,9 +165,9 @@ const EditTrip = (props) => {
                 let isUsedFuelValid = validateNumberFields("usedFuel", trip.usedFuel);
                 if (isStartDestinationValid && isEndDestinationValid &&
                     isMileageValid && isFuelPriceValid &&
-                    isUsedFuelValid && isVehicleValid) {
-                    const { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicle } = trip;
-                    await editTrip(startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicle , id);
+                    isUsedFuelValid && isvehicleIdValid) {
+                    const { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId } = trip;
+                    await axiosPrivate.patch(`/Trips/Edit/${id}`,{startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId})
                 }
             }
 
@@ -180,13 +209,13 @@ const EditTrip = (props) => {
                                         {trip.mileageTravelledError && <p className="invalid-field" >{trip.mileageTravelledError}</p>}
                                     </div>
                                     <div className="input-group input-group-lg">
-                                        <label>Vehicle:</label>
+                                        <label>vehicleId:</label>
                                         <div className="form-control select">
-                                            <select className="select-group" name="vehicle" value={trip.vehicle} onChange={onInputChange}>
+                                            <select className="select-group" name="vehicleId" value={trip.vehicleId} onChange={onInputChange}>
                                                 {userVehicles.map(uv => <option key={uv.id} value={uv.id}>{`${uv.make} ${uv.model}`}</option>)}
                                             </select>
                                         </div>
-                                        {trip.vehicle && <p className="invalid-field" >{trip.vehicleError}</p>}
+                                        {trip.vehicleId && <p className="invalid-field" >{trip.vehicleIdError}</p>}
                                     </div>
                                     <NavLink className="float" to={`/Trips`}>Cancel</NavLink>
                                     <button type="submit" className="float">Next step</button>

@@ -1,12 +1,18 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import './DeleteTrip.css'
-import { deleteTrip } from '../../../services/tripService';
+
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
+
 import { NotificationHandler } from '../../../utils/NotificationHandler'
+
+import './DeleteTrip.css'
+
 
 const DeleteTrip = () => {
 
     const location = useLocation();
     const { id } = useParams();
+
+    const axiosPrivate = useAxiosPrivate();
 
     const details = location.state.details;
     const { startDestination, endDestination, vehicleMake, vehicleModel } = details;
@@ -17,7 +23,7 @@ const DeleteTrip = () => {
     const onClickHander = async (e) => {
       e.preventDefault();
       try {
-        await deleteTrip(id); 
+        await axiosPrivate.delete(`/Trips/Delete/${id}`)
       } 
       catch (error) {
         NotificationHandler(error)
