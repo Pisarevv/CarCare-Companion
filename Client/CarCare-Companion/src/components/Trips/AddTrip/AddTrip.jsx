@@ -3,12 +3,12 @@ import { useEffect, useReducer, useState } from 'react'
 
 import tripReducer from '../../../reducers/tripReducer'
 
-import './AddTrip.css'
-import { getUserVehicles } from '../../../services/vehicleService'
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import IsLoadingHOC from '../../Common/IsLoadingHoc'
 
-import { createTrip } from '../../../services/tripService'
 import { NotificationHandler } from '../../../utils/NotificationHandler'
+
+import './AddTrip.css'
 
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
@@ -25,9 +25,11 @@ const AddTrip = (props) => {
 
     const navigate = useNavigate();
 
+    const axiosPrivate = useAxiosPrivate();
+
     const { setLoading } = props;
 
-    const [userVehicles, setUserVehicles] = useState([]);
+    const [userVehicles, setUservehicles] = useState([]);
 
     const [stepOneFinished, setStepOneFinished] = useState(false);
 
@@ -38,30 +40,45 @@ const AddTrip = (props) => {
         mileageTravelled: "",
         fuelPrice: "",
         usedFuel: "",
-        vehicle: "",
+        vehicleId: "",
 
         startDestinationError: "",
         endDestinationError: "",
         mileageTravelledError: "",
         fuelPriceError: "",
         usedFuelError: "",
-        vehicleError: ""
+        vehicleIdError: ""
 
     });
 
     useEffect(() => {
-        (async () => {
+        let isMounted = true;
+        const controller = new AbortController();
+
+        const getUservehicleIds = async () => {
             try {
-                let userVehicleResult = await getUserVehicles()
-                setUserVehicles(userVehicles => userVehicleResult);
-                dispatch({ type: `SET_VEHICLE`, payload: userVehicleResult[0].id })
+                const response = await axiosPrivate.get('/Vehicles', {
+                    signal: controller.signal
+                });
+
+                dispatch({ type: `SET_VEHICLEID`, payload: response.data[0].id })
+
+                isMounted && setUservehicles(uservehicleIds => response.data);
+            } catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
+            }
+            finally{
                 setLoading(false);
             }
-            catch (error) {
-                NotificationHandler(error)
-                setLoading(false);
-            }
-        })()
+        }
+
+        getUservehicleIds();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
     }, [])
 
     const onInputChange = (e) => {
@@ -90,10 +107,10 @@ const AddTrip = (props) => {
         let isStartDestinationValid = validateTextFields("startDestination", trip.startDestination);
         let isEndDestinationValid = validateTextFields("endDestination", trip.endDestination);
         let isMileageValid = validateNumberFields("mileageTravelled", trip.mileageTravelled);
-        let isVehicleValid = validateTextFields("vehicle", trip.vehicle);
+        let isVehicleIdValid = validateTextFields("vehicleId", trip.vehicleId);
 
         if (isStartDestinationValid && isEndDestinationValid &&
-            isMileageValid && isVehicleValid) {
+            isMileageValid && isVehicleIdValid) {
             setStepOneFinished(stepOneFinished => true)
         }
         else {
@@ -113,12 +130,14 @@ const AddTrip = (props) => {
             let isStartDestinationValid = validateTextFields("startDestination", trip.startDestination);
             let isEndDestinationValid = validateTextFields("endDestination", trip.endDestination);
             let isMileageValid = validateNumberFields("mileageTravelled", trip.mileageTravelled);
-            let isVehicleValid = validateTextFields("vehicle", trip.vehicle);
+            let isVehicleIdValid = validateTextFields("vehicleId", trip.vehicleId);
             if (!trip.usedFuel || !trip.fuelPrice) {
                 if (isStartDestinationValid && isEndDestinationValid &&
-                    isMileageValid && isVehicleValid) {
-                    const { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicle } = trip;
-                    await createTrip(startDestination, endDestination, mileageTravelled, null, null, vehicle);
+                    isMileageValid && isVehicleIdValid) {
+                    const { startDestination, endDestination, mileageTravelled, vehicleId } = trip;
+                    const usedFuel = null;
+                    const fuelPrice = null;
+                    await axiosPrivate.post("/Trips", { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId})
                 }
             }
             else {
@@ -126,9 +145,9 @@ const AddTrip = (props) => {
                 let isUsedFuelValid = validateNumberFields("usedFuel", trip.usedFuel);
                 if (isStartDestinationValid && isEndDestinationValid &&
                     isMileageValid && isFuelPriceValid &&
-                    isUsedFuelValid && isVehicleValid) {
-                    const { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicle } = trip;
-                    await createTrip(startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicle);
+                    isUsedFuelValid && isVehicleIdValid) {
+                    const { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId } = trip;
+                    await axiosPrivate.post("/Trips", { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId})
                 }
             }
 
@@ -170,13 +189,13 @@ const AddTrip = (props) => {
                                         {trip.mileageTravelledError && <p className="invalid-field" >{trip.mileageTravelledError}</p>}
                                     </div>
                                     <div className="input-group input-group-lg">
-                                        <label>Vehicle:</label>
+                                        <label>vehicleId:</label>
                                         <div className="form-control select">
-                                            <select className="select-group" name="vehicle" onChange={onInputChange}>
+                                            <select className="select-group" name="vehicleId" onChange={onInputChange}>
                                                 {userVehicles.map(uv => <option key={uv.id} value={uv.id}>{`${uv.make} ${uv.model}`}</option>)}
                                             </select>
                                         </div>
-                                        {trip.vehicle && <p className="invalid-field" >{trip.vehicleError}</p>}
+                                        {trip.vehicleId && <p className="invalid-field" >{trip.vehicleIdError}</p>}
                                     </div>
                                     <NavLink className="float" to={`/Trips`}>Cancel</NavLink>
                                     <button type="submit" className="float">Next step</button>
