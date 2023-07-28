@@ -18,8 +18,8 @@ const tripReducer = (state, action) => {
             return { ...state, usedFuel: action.payload, usedFuelError: "" };
         case "SET_FUELPRICE":
             return { ...state, fuelPrice: action.payload, fuelPriceError: "" };
-        case "SET_VEHICLE":
-            return {...state, vehicle : action.payload, vehicleError: ""};
+        case "SET_VEHICLEID":
+            return {...state, vehicleId : action.payload, vehicleIdError: ""};
         case "SET_STARTDESTINATION_ERROR":
             return { ...state, startDestinationError: action.payload };
         case "SET_ENDDESTINATION_ERROR":
@@ -30,8 +30,8 @@ const tripReducer = (state, action) => {
             return { ...state, usedFuelError: action.payload };
         case "SET_FUELPRICE_ERROR":
             return { ...state, fuelPriceError: action.payload };
-        case "SET_VEHICLE_ERROR":
-            return {...state, vehicleError : action.payload};
+        case "SET_VEHICLEID_ERROR":
+            return {...state, vehicleIdError : action.payload};
         default:    
             return state;
         }
