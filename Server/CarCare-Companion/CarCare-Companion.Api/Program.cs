@@ -147,7 +147,6 @@ namespace CarCare_Companion.Api
             using (var serviceScope = app.Services.CreateScope())
             {
                 var dbContext = serviceScope.ServiceProvider.GetRequiredService<CarCareCompanionDbContext>();
-                dbContext.Database.Migrate();
                 new CarCareCompanionDbContextSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
             }
 
