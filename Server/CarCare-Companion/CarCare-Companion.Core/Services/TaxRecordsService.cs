@@ -40,6 +40,7 @@ public class TaxRecordsService : ITaxRecordsService
                    Cost = tr.Cost,
                    VehicleMake = tr.Vehicle.Make,
                    VehicleModel = tr.Vehicle.Model,
+                   Description = tr.Description
                })
                .ToListAsync();
     }
@@ -149,7 +150,8 @@ public class TaxRecordsService : ITaxRecordsService
                    Cost = tr.Cost,
                    VehicleMake = tr.Vehicle.Make,
                    VehicleModel = tr.Vehicle.Model,
-                   VehicleId = tr.VehicleId.ToString()
+                   VehicleId = tr.VehicleId.ToString(),
+                   Description = tr.Description
                })
                .FirstAsync();
 

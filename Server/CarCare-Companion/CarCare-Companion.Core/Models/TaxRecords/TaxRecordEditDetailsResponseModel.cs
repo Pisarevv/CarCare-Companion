@@ -19,4 +19,6 @@ public class TaxRecordEditDetailsResponseModel
 
     public string VehicleId { get; set; } = null!;
 
+    public string? Description { get; set; }
+
 }

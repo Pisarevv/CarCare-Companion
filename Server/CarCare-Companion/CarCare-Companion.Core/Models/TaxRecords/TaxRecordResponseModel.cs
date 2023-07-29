@@ -17,4 +17,6 @@ public class TaxRecordResponseModel
 
     public string VehicleModel { get; set;} = null!;
 
+    public string? Description { get; set; }
+
 }
