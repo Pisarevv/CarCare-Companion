@@ -2,18 +2,18 @@ import { useEffect, useReducer, useState } from 'react'
 
 import { NavLink, useNavigate, useParams } from 'react-router-dom'
 
-import { getUserVehicles } from '../../../services/vehicleService'
-import { createTaxRecord, editTaxRecord, getTaxRecordDetails } from '../../../services/taxRecordsService'
-
 import taxRecordReducer from '../../../reducers/taxRecordReducer'
 
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
+import IsLoadingHOC from '../../Common/IsLoadingHoc'
+
 import { NotificationHandler } from '../../../utils/NotificationHandler'
+
 import StringToISODateString from '../../../utils/StringToISODateString'
 import ISODateStringToString from '../../../utils/IsoDateStringToString'
 
-import IsLoadingHOC from '../../Common/IsLoadingHoc'
-
 import './EditTaxRecord.css'
+
 
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
@@ -38,6 +38,8 @@ const EditTaxRecord = (props) => {
 
     const { setLoading } = props;
 
+    const axiosPrivate = useAxiosPrivate();
+
     const [userVehicles, setUserVehicles] = useState([]);
 
     const [taxRecord, dispatch] = useReducer(taxRecordReducer, {
@@ -58,22 +60,47 @@ const EditTaxRecord = (props) => {
     });
 
     useEffect(() => {
-        (async () => {
-            try {
-                let userVehicleResult = await getUserVehicles();
-                setUserVehicles(userVehicles => userVehicleResult);
+        let isMounted = true;
+        const controller = new AbortController();
 
-                let taxRecordDetails = await getTaxRecordDetails(id);
-                setTaxRecordInitialDetails(taxRecordDetails);
-                
-                setLoading(false);
+        const getVehicles = async () => {
+            try {
+                const requests = [
+                    axiosPrivate.get("/Vehicles",{
+                        signal : controller.signal
+                    }),
+                    axiosPrivate.get(`/TaxRecords/Details/${id}`,{
+                        signal : controller.signal
+                    })
+                ];
+
+                Promise.all(requests)
+                .then(responses => {
+                    const userVehicleResult = responses[0].data;
+                    const taxRecordDetails = responses[1].data;
+
+                    if(isMounted){
+                        setUserVehicles(userVehicles => userVehicleResult);
+                        setTaxRecordInitialDetails(taxRecordDetails);
+                    }
+                })          
+            } 
+            catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
             }
-            catch (error) {
-                NotificationHandler(error)
-                setLoading(false);
+            finally {
+               setLoading(false);
             }
-        })()
-    }, [])
+        }
+
+        getVehicles();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
+    },[])
 
     const setTaxRecordInitialDetails = (vehicleDetails) => {
         for (const property in vehicleDetails) {
@@ -136,7 +163,7 @@ const EditTaxRecord = (props) => {
                 const { title, description, cost, vehicleId } = taxRecord;
                 const validFromDate = StringToISODateString(taxRecord.validFrom);
                 const validToDate = StringToISODateString(taxRecord.validTo);
-                await editTaxRecord(title, description, validToDate,validFromDate, cost, vehicleId, id);
+                await axiosPrivate.patch(`/TaxRecords/Edit/${id}`, {title, description, validToDate,validFromDate, cost, vehicleId})
                 navigate('/taxRecords')
             } 
 
