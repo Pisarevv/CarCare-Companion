@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import { NotificationHandler } from '../../utils/NotificationHandler';
 
-import { getAllTaxRecords } from '../../services/taxRecordsService';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
@@ -14,26 +14,42 @@ import TaxRecordsStatistics from './TaxRecordsStatistics/TaxRecordsStatistics';
 import './TaxRecords.css'
 
 
-
 const TaxRecords = (props) => {
 
     const { setLoading } = props;
 
+    const axiosPrivate = useAxiosPrivate();
+
     const [taxRecords, setTaxRecords] = useState([]);
 
+
     useEffect(() => {
-        (async () => {
+        let isMounted = true;
+        const controller = new AbortController();
+
+        const getRecords = async () => {
             try {
-                let taxRecordsResult = await getAllTaxRecords();
-                setTaxRecords(taxRecords => taxRecordsResult);
+                const response = await axiosPrivate.get('/TaxRecords', {
+                    signal: controller.signal
+                });
+                isMounted && setTaxRecords(taxRecords => response.data);
+            } catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
+            }
+            finally{
                 setLoading(false);
             }
-            catch (error) {
-                NotificationHandler(error);
-                setLoading(false);
-            }
-        })()
+        }
+
+        getRecords();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
     }, [])
+
 
     return (
         <section className='tax-records-section'>

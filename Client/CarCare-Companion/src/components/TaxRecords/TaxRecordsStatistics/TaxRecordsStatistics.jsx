@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { getAllTaxRecordsCost, getAllTaxRecordsCount } from "../../../services/taxRecordsService";
+import { useNavigate } from "react-router-dom";
 
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import IsLoadingHOC from "../../Common/IsLoadingHoc";
 
 import { NotificationHandler } from "../../../utils/NotificationHandler";
@@ -9,28 +10,58 @@ import { NotificationHandler } from "../../../utils/NotificationHandler";
 import './TaxRecordsStatistics.css'
 
 
+
 const TaxRecordsStatistics = (props) => {
 
     const { setLoading } = props;
 
+    const navigate = useNavigate();
+
+    const axiosPrivate = useAxiosPrivate();
+
     const [taxRecordsCount, setTaxRecordsCount] = useState(null);
     const [taxRecordsCost, setTaxRecordsCost] = useState(null);
 
+
     useEffect(() => {
-        (async () => {
+        let isMounted = true;
+        const controller = new AbortController();
+
+        const getRecordsStatistics = async () => {
             try {
-                let taxRecordsCountResult = await getAllTaxRecordsCount();
-                let taxRecordsCostResult = await getAllTaxRecordsCost();
+                const requests = [
+                    axiosPrivate.get('/TaxRecords/Count', {
+                        signal: controller.signal
+                    }),
+                    axiosPrivate.get('/TaxRecords/Cost', {
+                        signal: controller.signal
+                    })
+                ];
+                Promise.all(requests)
+                .then(responses => {
+                    const taxRecordsCountResult = responses[0].data;
+                    const taxRecordsCostResult = responses[1].data;
 
-                setTaxRecordsCount(userTripsCost => taxRecordsCountResult);
-                setTaxRecordsCost(userTripsCost => taxRecordsCostResult);  
-
-                setLoading(false);
-            } catch (error) {
-                NotificationHandler(error);
+                    if(isMounted){
+                        setTaxRecordsCount(taxRecordsCount => taxRecordsCountResult);
+                        setTaxRecordsCost(taxRecordsCost => taxRecordsCostResult);
+                    }
+                })
+            } catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
+            }
+            finally{
                 setLoading(false);
             }
-        })()
+        }
+
+        getRecordsStatistics();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
     }, [])
 
 
