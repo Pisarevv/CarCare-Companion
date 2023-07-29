@@ -2,9 +2,7 @@ import { useEffect, useReducer, useState } from 'react'
 
 import { NavLink, useNavigate } from 'react-router-dom'
 
-import { getUserVehicles } from '../../../services/vehicleService'
-import { createTaxRecord } from '../../../services/taxRecordsService'
-
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
 import taxRecordReducer from '../../../reducers/taxRecordReducer'
 
 import { NotificationHandler } from '../../../utils/NotificationHandler'
@@ -13,6 +11,7 @@ import StringToISODateString from '../../../utils/StringToISODateString'
 import IsLoadingHOC from '../../Common/IsLoadingHoc'
 
 import './AddTaxRecord.css'
+
 
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
@@ -35,6 +34,8 @@ const AddTaxRecord = (props) => {
 
     const { setLoading } = props;
 
+    const axiosPrivate = useAxiosPrivate();
+
     const [userVehicles, setUserVehicles] = useState([]);
 
     const [taxRecord, dispatch] = useReducer(taxRecordReducer, {
@@ -55,20 +56,37 @@ const AddTaxRecord = (props) => {
     });
 
     useEffect(() => {
-        (async () => {
+        let isMounted = true;
+        const controller = new AbortController();
+
+        const getVehicles = async () => {
             try {
-                let userVehicleResult = await getUserVehicles()
-                setUserVehicles(userVehicles => userVehicleResult);
-                console.log(userVehicleResult);
-                dispatch({ type: `SET_VEHICLEID`, payload: userVehicleResult[0].id })
-                setLoading(false);
+                const response = await axiosPrivate.get("/Vehicles",{
+                    signal : controller.signal
+                });
+
+                if(isMounted){
+                    setUserVehicles(userVehicles => response.data);
+                    dispatch({ type: `SET_VEHICLEID`, payload: response.data[0].id })
+                }
+            } 
+            catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
             }
-            catch (error) {
-                NotificationHandler(error)
-                setLoading(false);
+            finally {
+               setLoading(false);
             }
-        })()
-    }, [])
+        }
+
+        getVehicles();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
+    },[])
+
 
     const onInputChange = (e) => {
         dispatch({ type: `SET_${(e.target.name).toUpperCase()}`, payload: e.target.value })
@@ -121,7 +139,7 @@ const AddTaxRecord = (props) => {
                 const { title, description, cost, vehicleId } = taxRecord;
                 const validFromDate = StringToISODateString(taxRecord.validFrom);
                 const validToDate = StringToISODateString(taxRecord.validTo);
-                await createTaxRecord(title, description, validFromDate, validToDate, cost, vehicleId);
+                await axiosPrivate.post("/TaxRecords", {title, description, validFromDate, validToDate, cost, vehicleId})
                 navigate('/taxRecords')
             } 
 
