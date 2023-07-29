@@ -1,15 +1,20 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { deleteTaxRecord } from '../../../services/taxRecordsService';
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 
 import { NotificationHandler } from '../../../utils/NotificationHandler'
 import ISODateStringToString from '../../../utils/IsoDateStringToString';
 
 import './DeleteTaxRecord.css'
 
+
 const DeleteTaxRecord = () => {
+  
     const location = useLocation();
+
     const { id } = useParams();
+
+    const axiosPrivate = useAxiosPrivate();
 
     const details = location.state.details;
     const { title, validFrom, validTo, vehicleMake, vehicleModel  } = details;
@@ -19,7 +24,7 @@ const DeleteTaxRecord = () => {
     const onClickHander = async (e) => {
       e.preventDefault();
       try {
-        await deleteTaxRecord(id);
+        await axiosPrivate.delete(`/TaxRecords/Delete/${id}`);
         navigate("/TaxRecords")
         NotificationHandler('Successful record removal');
       } 
