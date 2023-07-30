@@ -46,7 +46,7 @@
 import { useContext, useState } from "react";
 import { NavLink, useNavigate } from 'react-router-dom';
 
-import { login } from "../../services/authService";
+import axios from "../../api/axios/axios";
 
 import { NotificationHandler } from '../../utils/NotificationHandler'
 
@@ -59,6 +59,7 @@ import './Login.css';
 const Login = () => {
     
     const {userLogin} = useContext(AuthContext);
+
     const navigate = useNavigate();
 
     //States
@@ -79,8 +80,8 @@ const Login = () => {
     const loginHandler = async (e) => {
         e.preventDefault();
         try {
-            let returnedUserData = await login(email,password);
-            userLogin(returnedUserData);
+            const returnedUserData = await axios.post("/Login", {email,password});
+            userLogin(returnedUserData.data);
             navigate("/");
             
         } 

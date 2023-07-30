@@ -5,9 +5,10 @@ import { NavLink, useNavigate } from 'react-router-dom';
 
 import { AuthContext } from '../../contexts/AuthContext';
 
-import { register } from '../../services/authService';  
 
 import { NotificationHandler } from '../../utils/NotificationHandler'
+import axios from '../../api/axios/axios';
+
 
 const ValidationRegexes = {
     //The current regex validates that the input email address 
@@ -25,13 +26,11 @@ const ValidationErrors = {
     firstName : "First name cannot be less than two symbols",
     lastName : "Last name cannot be less than two symbols",
     password: "Password must contain minimum eight characters and at least one letter.",
-    rePassword: "Passwords do not match"
+    confirmPassword: "Passwords do not match"
 }
 
 const Register = () => {
 
-
-    const {userLogin} = useContext(AuthContext);
     const navigate = useNavigate();
 
     //States
@@ -48,8 +47,8 @@ const Register = () => {
     const [password,setPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
-    const [rePassword,setRepassword] = useState("");
-    const [rePasswordError, setRePasswordError] = useState("");
+    const [confirmPassword,setConfirmPassword] = useState("");
+    const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
  
     //Event handlers
@@ -69,8 +68,8 @@ const Register = () => {
         setPassword(password => e.target.value);
     }
 
-    const onRePasswordChange = (e) => {
-        setRepassword(rePassword => e.target.value)
+    const onConfirmPasswordChange = (e) => {
+        setConfirmPassword(confirmPassword => e.target.value)
     }
 
     const validateEmailInput = () => {   
@@ -110,12 +109,12 @@ const Register = () => {
         return true;
     }
 
-    const validateRePasswordInput = () => {
-        if(rePassword !== password){
-            setRePasswordError(rePasswordError => ValidationErrors.rePassword);
+    const validateConfirmPasswordInput = () => {
+        if(confirmPassword !== password){
+            setConfirmPasswordError(confirmPassword => ValidationErrors.confirmPassword);
             return false;
         }
-        setRePasswordError(rePasswordError => "");
+        setConfirmPasswordError(confirmPassword => "");
         return true;
     }
 
@@ -126,12 +125,11 @@ const Register = () => {
             let isFirstNameValid = validateFirstNameInput(firstName);
             let isLastNameValid = validateLastNameInput(lastName);
             let isPasswordValid = validatePasswordInput(password);
-            let isRePasswordValid = validateRePasswordInput(rePassword);
+            let isConfirmPasswordValid = validateConfirmPasswordInput(confirmPassword);
 
-            if(isEmailValid && isPasswordValid && isRePasswordValid && isFirstNameValid && isLastNameValid){
-                let returnedUserData = await register(email,firstName,lastName,password,rePassword);
-                userLogin(returnedUserData);
-                navigate('/');
+            if(isEmailValid && isPasswordValid && isConfirmPasswordValid && isFirstNameValid && isLastNameValid){
+                await axios.post("/Register", {email,firstName,lastName,password, confirmPassword});
+                navigate('/Login');
             }
             else{
                 throw("Invalid input fields")
@@ -172,8 +170,8 @@ const Register = () => {
                 </div>
 
                 <div className="form__group">
-                    <input type="password" placeholder="Repeat password" className="form__input" value={rePassword} onChange={onRePasswordChange} />
-                    {rePasswordError && <p className='input__error'>{rePasswordError}</p>}
+                    <input type="password" placeholder="Repeat password" className="form__input" value={confirmPassword} onChange={onConfirmPasswordChange} />
+                    {confirmPasswordError && <p className='input__error'>{confirmPasswordError}</p>}
                 </div>
 
                 <button className="btn" type="submit">Register</button>
