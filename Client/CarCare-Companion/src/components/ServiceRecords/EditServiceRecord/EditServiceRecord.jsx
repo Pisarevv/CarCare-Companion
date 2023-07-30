@@ -1,16 +1,15 @@
 import { useEffect, useReducer, useState } from 'react'
 
-import { NavLink, useNavigate, useParams } from 'react-router-dom'
-
-import { getUserVehicles } from '../../../services/vehicleService'
-import { editServiceRecord, getServiceRecordsDetails } from '../../../services/serviceRecordsService'
+import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import serviceRecordReducer from '../../../reducers/serviceRecordReducer'
 
 import { NotificationHandler } from '../../../utils/NotificationHandler'
+
 import StringToISODateString from '../../../utils/StringToISODateString'
 import ISODateStringToString from '../../../utils/IsoDateStringToString'
 
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
 import IsLoadingHOC from '../../Common/IsLoadingHoc'
 
 import './EditServiceRecord.css'
@@ -18,7 +17,7 @@ import './EditServiceRecord.css'
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
     inputNotNumber: "This field accepts only valid numbers",
-    invalidDate : "The provided date is invalid - correct format example 25/03/2023"
+    invalidDate: "The provided date is invalid - correct format example 25/03/2023"
 }
 
 const ValidationRegexes = {
@@ -34,7 +33,11 @@ const EditServiceRecord = (props) => {
 
     const navigate = useNavigate();
 
+    const location = useLocation();
+
     const { setLoading } = props;
+
+    const axiosPrivate = useAxiosPrivate();
 
     const { id } = useParams();
 
@@ -46,45 +49,72 @@ const EditServiceRecord = (props) => {
         description: "",
         mileage: "",
         cost: "",
-        vehicle: "",
+        vehicleId: "",
 
         titleError: "",
         performedOnError: "",
         descriptionError: "",
         mileageError: "",
         costError: "",
-        vehicleError: ""
+        vehicleIdError: ""
 
     });
 
     useEffect(() => {
-        (async () => {
-            try {
-                let userVehicleResult = await getUserVehicles()
-                setUserVehicles(userVehicles => userVehicleResult);
-                
-                let serviceRecordDetails = await getServiceRecordsDetails(id);
-                setServiceRecordInitialDetails(serviceRecordDetails)
+        let isMounted = true;
+        const controller = new AbortController();
 
-                dispatch({ type: `SET_VEHICLE`, payload: serviceRecordDetails.vehicleId })
-                dispatch({ type: `SET_PERFORMEDON`, payload: ISODateStringToString.ddmmyyyy(serviceRecordDetails.performedOn) })
+        const getDetails = async () => {
+            try {
+                const requests = [
+                    axiosPrivate.get('/Vehicles', {
+                        signal: controller.signal
+                    }),
+                    axiosPrivate.get(`/ServiceRecords/Details/${id}`, {
+                        signal: controller.signal
+                    })
+                ];
+
+                Promise.all(requests)
+                    .then(responses => {
+                        const userVehiclesResult = responses[0].data;
+                        const serviceRecordDetails = responses[1].data;
+
+                        if (isMounted) {
+                            setUserVehicles(userVehicles => userVehiclesResult);
+                            setServiceRecordInitialDetails(serviceRecordDetails)
+
+                            dispatch({ type: `SET_VEHICLEID`, payload: serviceRecordDetails.vehicleId })
+                            dispatch({ type: `SET_PERFORMEDON`, payload: ISODateStringToString.ddmmyyyy(serviceRecordDetails.performedOn) })
+                        }
+                    });
+
+            } catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
+            }
+            finally {
                 setLoading(false);
             }
-            catch (error) {
-                NotificationHandler(error)
-                setLoading(false);
-            }
-        })()
+        }
+
+        getDetails();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
     }, [])
 
-    const setServiceRecordInitialDetails = (vehicleDetails) => {
-        for (const property in vehicleDetails) {
-          if(property == "performedOn"){
-            continue;
-          }
-          dispatch({ type: `SET_${(property).toUpperCase()}`, payload: vehicleDetails[property] })
+
+    const setServiceRecordInitialDetails = (vehicleIdDetails) => {
+        for (const property in vehicleIdDetails) {
+            if (property == "performedOn") {
+                continue;
+            }
+            dispatch({ type: `SET_${(property).toUpperCase()}`, payload: vehicleIdDetails[property] })
         }
-      }
+    }
 
     const onInputChange = (e) => {
         dispatch({ type: `SET_${(e.target.name).toUpperCase()}`, payload: e.target.value })
@@ -117,7 +147,7 @@ const EditServiceRecord = (props) => {
             dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput });
             return false;
         }
-        if(!ValidationRegexes.floatNumbersRegex.test(value)){
+        if (!ValidationRegexes.floatNumbersRegex.test(value)) {
             dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.inputNotNumber });
             return false;
         }
@@ -131,18 +161,17 @@ const EditServiceRecord = (props) => {
             let isTitleValid = validateTextFields("title", serviceRecord.title);
             let isPerformedOnValid = validateDateFields("performedOn", serviceRecord.performedOn);
             let isMileageValid = validateNumberFields("mileage", serviceRecord.mileage);
-            let isVehicleValid = validateTextFields("vehicle", serviceRecord.vehicle);
+            let isvehicleIdValid = validateTextFields("vehicleId", serviceRecord.vehicleId);
             let isCostValid = validateNumberFields("cost", serviceRecord.cost);
 
             if (isTitleValid && isPerformedOnValid &&
-                isMileageValid && isVehicleValid &&
-                isCostValid)
-            {
-                const { title, description, mileage, cost, vehicle } = serviceRecord;
-                const performedOnDate = StringToISODateString(serviceRecord.performedOn);
-                await editServiceRecord(title, description, mileage, cost, vehicle, performedOnDate, id);
+                isMileageValid && isvehicleIdValid &&
+                isCostValid) {
+                const { title, description, mileage, cost, vehicleId } = serviceRecord;
+                const performedOn = StringToISODateString(serviceRecord.performedOn);
+                await axiosPrivate.patch(`/ServiceRecords/Edit/${id}`, {title, description, mileage, cost, vehicleId, performedOn})
                 navigate('/ServiceRecords')
-            } 
+            }
 
         }
         catch (error) {
@@ -175,13 +204,13 @@ const EditServiceRecord = (props) => {
                             {serviceRecord.mileageError && <p className="invalid-field" >{serviceRecord.mileageError}</p>}
                         </div>
                         <div className="input-group input-group-lg">
-                            <label>Vehicle:</label>
+                            <label>vehicleId:</label>
                             <div className="form-control select">
-                                <select className="select-group" name="vehicle" onChange={onInputChange}>
+                                <select className="select-group" name="vehicleId" onChange={onInputChange}>
                                     {userVehicles.map(uv => <option key={uv.id} value={uv.id}>{`${uv.make} ${uv.model}`}</option>)}
                                 </select>
                             </div>
-                            {serviceRecord.vehicle && <p className="invalid-field" >{serviceRecord.vehicleError}</p>}
+                            {serviceRecord.vehicleId && <p className="invalid-field" >{serviceRecord.vehicleIdError}</p>}
                         </div>
                         <div className="input-group input-group-lg">
                             <label>Cost:</label>
