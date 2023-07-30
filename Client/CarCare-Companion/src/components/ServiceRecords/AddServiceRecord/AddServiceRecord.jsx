@@ -2,17 +2,16 @@ import { useEffect, useReducer, useState } from 'react'
 
 import { NavLink, useNavigate } from 'react-router-dom'
 
-import { getUserVehicles } from '../../../services/vehicleService'
-import { createServiceRecord } from '../../../services/serviceRecordsService'
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
+import IsLoadingHOC from '../../Common/IsLoadingHoc'
 
 import serviceRecordReducer from '../../../reducers/serviceRecordReducer'
 
 import { NotificationHandler } from '../../../utils/NotificationHandler'
 import StringToISODateString from '../../../utils/StringToISODateString'
 
-import IsLoadingHOC from '../../Common/IsLoadingHoc'
-
 import './AddServiceRecord.css'
+
 
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
@@ -26,8 +25,7 @@ const ValidationRegexes = {
 
     //Validates that the time format is dd/MM/yyyy
     timeFormatRegex: new RegExp(/^(0[1-9]|[1-2]\d|3[0-1])\/(0[1-9]|1[0-2])\/(\d{4})$/)
-    //Validates that the time format is MM/dd/yyyy
-    // timeFormatRegex: new RegExp(/^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/\d{4}$/)
+
 }
 
 const AddServiceRecord = (props) => {
@@ -35,6 +33,8 @@ const AddServiceRecord = (props) => {
     const navigate = useNavigate();
 
     const { setLoading } = props;
+
+    const axiosPrivate = useAxiosPrivate();
 
     const [userVehicles, setUserVehicles] = useState([]);
 
@@ -44,32 +44,48 @@ const AddServiceRecord = (props) => {
         description: "",
         mileage: "",
         cost: "",
-        vehicle: "",
+        vehicleId: "",
 
         titleError: "",
         performedOnError: "",
         descriptionError: "",
         mileageError: "",
         costError: "",
-        vehicleError: ""
+        vehicleIdError: ""
 
     });
 
-    useEffect(() => {
-        (async () => {
+  useEffect(() => {
+        let isMounted = true;
+        const controller = new AbortController();
+
+        const getVehicles = async () => {
             try {
-                let userVehicleResult = await getUserVehicles()
-                setUserVehicles(userVehicles => userVehicleResult);
-                console.log(userVehicleResult);
-                dispatch({ type: `SET_VEHICLE`, payload: userVehicleResult[0].id })
-                setLoading(false);
+                const response = await axiosPrivate.get("/Vehicles",{
+                    signal : controller.signal
+                });
+
+                if(isMounted){
+                    setUserVehicles(userVehicles => response.data);
+                    dispatch({ type: `SET_VEHICLEID`, payload: response.data[0].id })
+                }
+            } 
+            catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
             }
-            catch (error) {
-                NotificationHandler(error)
-                setLoading(false);
+            finally {
+               setLoading(false);
             }
-        })()
-    }, [])
+        }
+
+        getVehicles();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
+    },[])
 
     const onInputChange = (e) => {
         dispatch({ type: `SET_${(e.target.name).toUpperCase()}`, payload: e.target.value })
@@ -112,17 +128,17 @@ const AddServiceRecord = (props) => {
             let isTitleValid = validateTextFields("title", serviceRecord.title);
             let isPerformedOnValid = validateDateFields("performedOn", serviceRecord.performedOn);
             let isMileageValid = validateNumberFields("mileage", serviceRecord.mileage);
-            let isVehicleValid = validateTextFields("vehicle", serviceRecord.vehicle);
+            let isVehicleIdValid = validateTextFields("vehicleId", serviceRecord.vehicleId);
             let isCostValid = validateNumberFields("cost", serviceRecord.cost);
 
             if (isTitleValid && isPerformedOnValid &&
-                isMileageValid && isVehicleValid &&
+                isMileageValid && isVehicleIdValid &&
                 isCostValid)
             {
-                const { title, description, mileage, cost, vehicle } = serviceRecord;
-                const performedOnDate = StringToISODateString(serviceRecord.performedOn);
-                await createServiceRecord(title, description, mileage, cost, vehicle, performedOnDate);
-                navigate('/ServiceRecords')
+                const { title, description, mileage, cost, vehicleId } = serviceRecord;
+                const performedOn = StringToISODateString(serviceRecord.performedOn);
+                await axiosPrivate.post("/ServiceRecords", {title, description, mileage, cost, vehicleId, performedOn});
+                navigate('/ServiceRecords');
             } 
 
         }
@@ -156,13 +172,13 @@ const AddServiceRecord = (props) => {
                             {serviceRecord.mileageError && <p className="invalid-field" >{serviceRecord.mileageError}</p>}
                         </div>
                         <div className="input-group input-group-lg">
-                            <label>Vehicle:</label>
+                            <label>vehicleId:</label>
                             <div className="form-control select">
-                                <select className="select-group" name="vehicle" onChange={onInputChange}>
+                                <select className="select-group" name="vehicleId" onChange={onInputChange}>
                                     {userVehicles.map(uv => <option key={uv.id} value={uv.id}>{`${uv.make} ${uv.model}`}</option>)}
                                 </select>
                             </div>
-                            {serviceRecord.vehicle && <p className="invalid-field" >{serviceRecord.vehicleError}</p>}
+                            {serviceRecord.vehicleId && <p className="invalid-field" >{serviceRecord.vehicleIdError}</p>}
                         </div>
                         <div className="input-group input-group-lg">
                             <label>Cost:</label>
