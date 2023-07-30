@@ -102,7 +102,7 @@ const EditServiceRecord = (props) => {
 
         return () => {
             isMounted = false;
-            controller.abort();
+            isMounted && controller.abort();
         }
     }, [])
 

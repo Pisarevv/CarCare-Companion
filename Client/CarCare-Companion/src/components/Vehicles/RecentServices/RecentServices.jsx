@@ -42,7 +42,7 @@ const RecentServices = (props) => {
 
         return () => {
             isMounted = false;
-            controller.abort();
+            isMounted && controller.abort();
         }
     }, [])
 

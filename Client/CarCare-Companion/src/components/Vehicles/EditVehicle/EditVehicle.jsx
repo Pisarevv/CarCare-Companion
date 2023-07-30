@@ -142,35 +142,9 @@ const EditVehicle = (props) => {
 
     return () => {
       isMounted = false;
-      controller.abort();
+      isMounted && controller.abort();
     }
   }, [])
-
-
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       var vehicleDetails = await getVehicleEditDetails(id);
-  //       setVehicleInitialDetails(vehicleDetails);
-
-  //       var fuelTypeIdsResult = await getfuelTypeIds();
-  //       var vehicleTypeIdsResult = await getvehicleTypeIds();
-
-  //       setfuelType(fuelTypeIds => fuelTypeIdsResult);
-  //       setvehicleType(vehicleTypeIds => vehicleTypeIdsResult);
-
-  //       dispatch({ type: `SET_FUELTYPEID`, payload: vehicleDetails.fuelTypeIdId })
-  //       dispatch({ type: `SET_VEHICLETYPEID`, payload: vehicleDetails.vehicleTypeIdId })
-        
-  //       setLoading(false);
-  //     }
-  //     catch (error) {
-  //       NotificationHandler(error);
-  //       setLoading(false);
-  //     }
-
-  //   })()
-  // }, []);
 
   const setVehicleInitialDetails = (vehicleDetails) => {
     for (const property in vehicleDetails) {

@@ -137,7 +137,7 @@ const AddVehicle = (props) => {
 
     return () => {
       isMounted = false;
-      controller.abort();
+      isMounted && controller.abort();
     }
   }, [])
 

@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useState } from 'react'
 
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
 import IsLoadingHOC from '../../Common/IsLoadingHoc'
@@ -31,6 +31,8 @@ const ValidationRegexes = {
 const AddServiceRecord = (props) => {
 
     const navigate = useNavigate();
+
+    const location = useLocation();
 
     const { setLoading } = props;
 
@@ -83,7 +85,7 @@ const AddServiceRecord = (props) => {
 
         return () => {
             isMounted = false;
-            controller.abort();
+            isMounted && controller.abort();
         }
     },[])
 

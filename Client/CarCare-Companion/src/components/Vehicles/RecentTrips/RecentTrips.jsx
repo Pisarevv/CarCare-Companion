@@ -39,7 +39,7 @@ const RecentTrips = (props) => {
 
         return () => {
             isMounted = false;
-            controller.abort();
+            isMounted && controller.abort()
         }
     }, [])
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import { NotificationHandler } from '../../utils/NotificationHandler'
 
@@ -15,6 +15,10 @@ import './Trips.css'
 const Trips = (props) => {
 
     const axiosPrivate = useAxiosPrivate();
+
+    const navigate = useNavigate();
+
+    const location = useLocation();
 
     const [userTrips, setUserTrips] = useState([]);
    
@@ -43,7 +47,7 @@ const Trips = (props) => {
 
         return () => {
             isMounted = false;
-            controller.abort();
+            isMounted && controller.abort();
         }
     }, [])
 
