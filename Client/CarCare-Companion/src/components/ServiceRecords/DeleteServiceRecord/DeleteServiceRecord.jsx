@@ -1,16 +1,21 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { deleteServiceRecord } from '../../../services/serviceRecordsService';
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 
 import { NotificationHandler } from '../../../utils/NotificationHandler'
 
-import './DeleteServiceRecord.css'
 import ISODateStringToString from '../../../utils/IsoDateStringToString';
+
+import './DeleteServiceRecord.css'
 
 
 const DeleteServiceRecord = () => {
+
     const location = useLocation();
+
     const { id } = useParams();
+
+    const axiosPrivate = useAxiosPrivate();
 
     const details = location.state.details;
     const { title, performedOn, vehicleMake, vehicleModel  } = details;
@@ -20,7 +25,7 @@ const DeleteServiceRecord = () => {
     const onClickHander = async (e) => {
       e.preventDefault();
       try {
-        await deleteServiceRecord(id);
+        await axiosPrivate.delete(`/ServiceRecords/Delete/${id}`)
         navigate("/ServiceRecords")
         NotificationHandler('Successful record removal');
       } 
