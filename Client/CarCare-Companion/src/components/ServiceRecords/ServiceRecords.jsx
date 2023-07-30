@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 
 import { NotificationHandler } from '../../utils/NotificationHandler';
 
-import { getAllServiceRecords } from '../../services/serviceRecordsService';
-
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import IsLoadingHOC from '../Common/IsLoadingHoc';
 
 import ServiceRecordCard from './ServiceRecordCard';
@@ -14,27 +13,44 @@ import ServiceRecordsStatistics from './ServiceRecordStatistics/ServiceRecordsSt
 import './ServiceRecords.css'
 
 
+
 const ServiceRecords = (props) => {
 
     const { setLoading } = props;
 
+    const axiosPrivate = useAxiosPrivate();
+
     const [serviceRecords, setServiceRecords] = useState([]);
 
     useEffect(() => {
-        (async () => {
+        let isMounted = true;
+        const controller = new AbortController();
+
+        const getServiceRecords = async () => {
             try {
-                let serviceRecordsResult = await getAllServiceRecords();
-                console.log(serviceRecordsResult);
-                setServiceRecords(serviceRecords => serviceRecordsResult);
+                const response = await axiosPrivate.get('/ServiceRecords', {
+                    signal: controller.signal
+                });
+                isMounted && setServiceRecords(serviceRecords => response.data);
+            } catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
+            }
+            finally{
                 setLoading(false);
             }
-            catch (error) {
-                NotificationHandler(error);
-                setLoading(false);
-            }
-        })()
+        }
+
+        getServiceRecords();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
     }, [])
 
+
+    
     return (
         <section className='service-records-section'>
             <div className='service-records-container'>

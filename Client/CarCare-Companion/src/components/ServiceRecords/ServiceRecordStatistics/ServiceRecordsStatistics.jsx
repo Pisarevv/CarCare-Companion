@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { getAllServiceRecordsCost, getAllServiceRecordsCount } from "../../../services/serviceRecordsService";
+import { useNavigate } from "react-router-dom";
 
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import IsLoadingHOC from "../../Common/IsLoadingHoc";
 
 import { NotificationHandler } from "../../../utils/NotificationHandler";
@@ -9,30 +10,60 @@ import { NotificationHandler } from "../../../utils/NotificationHandler";
 import './ServiceRecordsStatistics.css'
 
 
-
 const ServiceRecordsStatistics = (props) => {
 
     const { setLoading } = props;
+
+    const axiosPrivate = useAxiosPrivate();
+
+    const navigate = useNavigate();
 
     const [serviceRecordsCount, setServiceRecordsCount] = useState(null);
     const [serviceRecordsCost, setServiceRecordsCost] = useState(null);
 
     useEffect(() => {
-        (async () => {
+        let isMounted = true;
+        const controller = new AbortController();
+
+        const getServiceRecordsStatistics = async () => {
             try {
-                let serviceRecordsCountResult = await getAllServiceRecordsCount();
-                let serviceRecordsCostResult = await getAllServiceRecordsCost();
+                const requests = [
+                    axiosPrivate.get('/ServiceRecords/Count', {
+                        signal: controller.signal
+                    }),
+                    axiosPrivate.get('/ServiceRecords/Cost', {
+                        signal: controller.signal
+                    })
+                ];
 
-                setServiceRecordsCount(serviceRecordsCount => serviceRecordsCountResult);
-                setServiceRecordsCost(serviceRecordsCost => serviceRecordsCostResult);
+                Promise.all(requests)
+                .then(responses => {
+                    const serviceRecordsCountResult = responses[0].data;
+                    const serviceRecordsCostResult = responses[1].data;
 
-                setLoading(false);
-            } catch (error) {
-                NotificationHandler(error);
+                    if(isMounted){
+                        setServiceRecordsCount(serviceRecordsCount => serviceRecordsCountResult);
+                        setServiceRecordsCost(serviceRecordsCost => serviceRecordsCostResult);
+                    }
+                });
+
+            } catch (err) {
+                NotificationHandler(err);
+                navigate('/login', { state: { from: location }, replace: true });
+            }
+            finally{
                 setLoading(false);
             }
-        })()
+        }
+
+        getServiceRecordsStatistics();
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
     }, [])
+
 
 
     return (
