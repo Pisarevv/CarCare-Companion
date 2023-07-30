@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import { Link } from "react-router-dom";
 
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate'; 
+
 import { getAllCarouselAds } from "../../../services/adService";
 
 import { NotificationHandler } from '../../../utils/NotificationHandler'
@@ -11,6 +13,7 @@ import IsLoadingHOC from "../../Common/IsLoadingHoc"
 import ReviewCard from "../ReviewCard";
 
 import "./UnauthenticatedHomePage.css"
+import axios from "../../../api/axios/axios";
 
 const UnauthenticatedHomePage = (props) => {
 
@@ -19,20 +22,30 @@ const UnauthenticatedHomePage = (props) => {
     const { setLoading } = props;
 
     useEffect(() => {
-        (async () => {
-            try {
-                window.scrollTo(0, 0);
-                const result = await getAllCarouselAds();
-                setLoading(false);
-            }
-            catch (error) {
-                NotificationHandler(error);
-                setLoading(false);
+        let isMounted = true;
+        const controller = new AbortController();
 
-            }
+        const loadCarouselAds = async () => {
+           try {
+            const response = await axios.get("/Home",{
+                signal : controller.signal
+            });
+            isMounted && setCarouselAds(carouselAds => response.data);
+           } catch (error) {
+            NotificationHandler(error);
+           }
+           finally{
+            setLoading(false);
+           }
         }
-        )()
-    }, [])
+
+        loadCarouselAds();
+
+        return () => {
+            isMounted = false;
+            isMounted && controller.abort();
+        }
+    },[])
 
 
     return (
