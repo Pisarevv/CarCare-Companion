@@ -18,8 +18,8 @@ const serviceRecordReducer = (state, action) => {
             return { ...state, mileage: action.payload, mileageError: "" };
         case "SET_COST":
             return { ...state, cost: action.payload, costError: "" };
-        case "SET_VEHICLE":
-            return {...state, vehicle : action.payload, vehicleError: ""};
+        case "SET_VEHICLEID":
+            return {...state, vehicleId : action.payload, vehicleIdError: ""};
         case "SET_TITLE_ERROR":
             return { ...state, titleError: action.payload };
         case "SET_PERFORMEDON_ERROR":
@@ -30,8 +30,8 @@ const serviceRecordReducer = (state, action) => {
             return { ...state, mileageError: action.payload };
         case "SET_COST_ERROR":
             return { ...state, costError: action.payload };
-        case "SET_VEHICLE_ERROR":
-            return {...state, vehicleError : action.payload};
+        case "SET_VEHICLEID_ERROR":
+            return {...state, vehicleIdError : action.payload};
         default:    
             return state;
         }
