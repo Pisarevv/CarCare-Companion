@@ -11,6 +11,7 @@ using CarCare_Companion.Core.Services;
 using static Common.StatusResponses;
 using CarCare_Companion.Core.Models.ServiceRecords;
 using Microsoft.Data.SqlClient;
+using CarCare_Companion.Core.Models.Trip;
 
 
 /// <summary>
@@ -239,6 +240,44 @@ public class TaxRecordsController : BaseController
             return StatusCode(403, new StatusInformationMessage(InvalidData));
         }
 
+    }
+
+
+    /// <summary>
+    /// Retrieves a specified count of user upcoming user taxes
+    /// </summary>
+    /// <param name="count">The count of records to be retrieved</param>
+    /// <returns>Collection of the user upcoming Taxes</returns>
+    [HttpGet]
+    [Route("Upcoming/{count?}")]
+    [ProducesResponseType(200, Type = typeof(ICollection<UpcomingTaxRecordResponseModel>))]
+    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    public async Task<IActionResult> UpcomingNCountTaxesByUserId([FromQuery] int count = 3)
+    {
+        try
+        {
+            var userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, InvalidUser);
+            }
+
+            ICollection<UpcomingTaxRecordResponseModel> userTrips = await taxRecordsService.GetUpcomingTaxesAsync(userId, count);
+            return StatusCode(200, userTrips);
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new StatusInformationMessage(GenericError));
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(403, new StatusInformationMessage(InvalidData));
+        }
     }
 
     /// <summary>
