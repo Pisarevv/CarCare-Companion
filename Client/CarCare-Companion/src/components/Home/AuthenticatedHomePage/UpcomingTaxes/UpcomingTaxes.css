@@ -1,0 +1,36 @@
+.upcoming-taxes-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    opacity: 70%;
+    border-radius: 40px;
+    width: 100%;
+    opacity: 0;
+    transform: translate3d(0, 300px, 0);
+    animation: arrive 500ms ease-in-out 0.2s forwards;
+}
+
+.upcoming-taxes-header {
+    padding-bottom: 30px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 30px;
+}
+
+.upcoming-taxes-list{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2em;
+    width: 100%;
+
+}
+
+/* .trip {
+    background-color: rgb(49, 23, 71);
+    opacity: 70%;
+    border-radius: 40px;
+    padding: 10% 0px;
+    width: 100%;
+    text-align: center;
+} */
