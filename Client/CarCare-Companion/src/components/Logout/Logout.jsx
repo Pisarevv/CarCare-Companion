@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/AuthContext";
 
@@ -12,9 +12,15 @@ import { NotificationHandler } from "../../utils/NotificationHandler";
 const Logout = (props) => {
 
     const {userLogout} = useAuthContext();
+
     const {setLoading} = props;
+
     const navigate = useNavigate();
+
+    const location = useLocation();
+
     const axiosPrivate = useAxiosPrivate();
+
 
     useEffect(() => {
         const logoutUser = async () => {
