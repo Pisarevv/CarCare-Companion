@@ -1,40 +1,44 @@
-import { useEffect } from "react";
 import { useAuthContext } from "../../../contexts/AuthContext";
 
 import IsLoadingHOC from "../../Common/IsLoadingHoc";
-import { NotificationHandler } from "../../../utils/NotificationHandler";
+
+import ServiceRecordsStatistics from "./ServiceRecordsStatistics/ServiceRecordsStatistics";
+import TaxRecordsStatistics from "./TaxRecordsStatistics/TaxRecordsStatistics";
+import TripStatiscis from "./TripsStatistics/TripsStatistics";
+import LatestTrips from "./LatestTrips/LatestTrips";
+import UpcomingTaxes from "./UpcomingTaxes/UpcomingTaxes";
+
+import './AuthenticatedHomePage.css';
 
 const AuthenticatedHomePage = (props) => {
 
-    const { userLogout } = useAuthContext();
+    const { user } = useAuthContext();
 
     const { setLoading } = props;
 
-    useEffect(() => {
-        (async () => {
-            try {
-                window.scrollTo(0, 0);
+    setLoading(false);
 
-                setLoading(false);
-            }
-            catch (error) {
-                if (error === "Invalid access token") {
-                    NotificationHandler(error);
-                    userLogout();
-                    setLoading(false);
-
-                };
-            }
-        }
-        )()
-    }, [])
-
-   
+    console.log(user);
     return (
-        <>
-         <div className="greeting-container"></div>
-            Welcome back!
-        </>
+        <section className="authenticated-home-container">
+            <div className="user-overview-container">
+                <div className="user-welcoming">
+                    <div>Hello, {user.email}.</div>
+                    <div>Nice to see you again.</div>
+                </div>
+                <div className="all-user-statistics-container">
+                    <h1>Overview of your records:</h1>
+                    <ServiceRecordsStatistics />
+                    <TaxRecordsStatistics />
+                    <TripStatiscis/>
+                </div>
+            </div>
+            <div className="user-recent-activites">
+                <UpcomingTaxes/>
+                <LatestTrips/>
+            </div>
+
+        </section>
     );
 
 }
