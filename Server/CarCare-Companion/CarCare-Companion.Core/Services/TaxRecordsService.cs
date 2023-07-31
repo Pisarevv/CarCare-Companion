@@ -30,7 +30,7 @@ public class TaxRecordsService : ITaxRecordsService
         return await repository.AllReadonly<TaxRecord>()
                .Where(tr => tr.IsDeleted == false)
                .Where(tr => tr.OwnerId == Guid.Parse(userId))
-               .OrderBy(tr => tr.CreatedOn) 
+               .OrderByDescending(tr => tr.CreatedOn) 
                .Select(tr => new TaxRecordResponseModel()
                {
                    Id = tr.Id.ToString(),

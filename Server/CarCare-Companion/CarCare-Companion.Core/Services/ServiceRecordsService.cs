@@ -90,7 +90,7 @@ public class ServiceRecordsService : IServiceRecordsService
     {
         return await repository.AllReadonly<ServiceRecord>()
                .Where(sr => sr.IsDeleted == false)
-               .OrderBy(sr => sr.PerformedOn)
+               .OrderByDescending(sr => sr.CreatedOn)
                .Select(sr => new ServiceRecordResponseModel
                {
                    Id = sr.Id.ToString(),
