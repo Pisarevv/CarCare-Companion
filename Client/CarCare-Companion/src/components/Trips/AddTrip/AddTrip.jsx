@@ -77,7 +77,7 @@ const AddTrip = (props) => {
 
         return () => {
             isMounted = false;
-            controller.abort();
+            isMounted && controller.abort();
         }
     }, [])
 
