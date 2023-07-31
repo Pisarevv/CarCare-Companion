@@ -2,18 +2,15 @@ import { useEffect, useState } from "react";
 
 import { Link } from "react-router-dom";
 
-import useAxiosPrivate from '../../../hooks/useAxiosPrivate'; 
-
-import { getAllCarouselAds } from "../../../services/adService";
-
 import { NotificationHandler } from '../../../utils/NotificationHandler'
 
+import axios from "../../../api/axios/axios";
 import IsLoadingHOC from "../../Common/IsLoadingHoc"
 
 import ReviewCard from "../ReviewCard";
 
 import "./UnauthenticatedHomePage.css"
-import axios from "../../../api/axios/axios";
+
 
 const UnauthenticatedHomePage = (props) => {
 
