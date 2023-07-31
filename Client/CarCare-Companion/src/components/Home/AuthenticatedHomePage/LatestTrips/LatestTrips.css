@@ -1,0 +1,28 @@
+.home-latest-trips-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 70%;
+    border-radius: 40px;
+    width: 100%;
+    opacity: 0;
+    transform: translate3d(0, 300px, 0);
+    animation: arrive 500ms ease-in-out 0.2s forwards;
+}
+
+.home-latest-trips-header {
+    padding-bottom: 30px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 30px;
+}
+
+.home-latest-trips-list{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2em;
+    width: 100%;
+
+}
