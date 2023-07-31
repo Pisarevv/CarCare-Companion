@@ -204,7 +204,7 @@ const EditServiceRecord = (props) => {
                             {serviceRecord.mileageError && <p className="invalid-field" >{serviceRecord.mileageError}</p>}
                         </div>
                         <div className="input-group input-group-lg">
-                            <label>vehicleId:</label>
+                            <label>Vehicle:</label>
                             <div className="form-control select">
                                 <select className="select-group" name="vehicleId" onChange={onInputChange}>
                                     {userVehicles.map(uv => <option key={uv.id} value={uv.id}>{`${uv.make} ${uv.model}`}</option>)}

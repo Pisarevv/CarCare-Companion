@@ -209,7 +209,7 @@ const EditTrip = (props) => {
                                         {trip.mileageTravelledError && <p className="invalid-field" >{trip.mileageTravelledError}</p>}
                                     </div>
                                     <div className="input-group input-group-lg">
-                                        <label>vehicleId:</label>
+                                        <label>Vehicle:</label>
                                         <div className="form-control select">
                                             <select className="select-group" name="vehicleId" value={trip.vehicleId} onChange={onInputChange}>
                                                 {userVehicles.map(uv => <option key={uv.id} value={uv.id}>{`${uv.make} ${uv.model}`}</option>)}
