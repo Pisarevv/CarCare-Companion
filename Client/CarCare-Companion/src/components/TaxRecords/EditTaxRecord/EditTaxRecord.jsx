@@ -161,9 +161,9 @@ const EditTaxRecord = (props) => {
                 isCostValid)
             {
                 const { title, description, cost, vehicleId } = taxRecord;
-                const validFromDate = StringToISODateString(taxRecord.validFrom);
-                const validToDate = StringToISODateString(taxRecord.validTo);
-                await axiosPrivate.patch(`/TaxRecords/Edit/${id}`, {title, description, validToDate,validFromDate, cost, vehicleId})
+                const validFrom = StringToISODateString(taxRecord.validFrom);
+                const validTo = StringToISODateString(taxRecord.validTo);
+                await axiosPrivate.patch(`/TaxRecords/Edit/${id}`, {title, description, validTo,validFrom, cost, vehicleId});
                 navigate('/taxRecords')
             } 
 

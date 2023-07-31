@@ -137,9 +137,9 @@ const AddTaxRecord = (props) => {
                 isCostValid)
             {
                 const { title, description, cost, vehicleId } = taxRecord;
-                const validFromDate = StringToISODateString(taxRecord.validFrom);
-                const validToDate = StringToISODateString(taxRecord.validTo);
-                await axiosPrivate.post("/TaxRecords", {title, description, validFromDate, validToDate, cost, vehicleId})
+                const validFrom = StringToISODateString(taxRecord.validFrom);
+                const validTo = StringToISODateString(taxRecord.validTo);
+                await axiosPrivate.post("/TaxRecords", {title, description, validFrom, validTo, cost, vehicleId})
                 navigate('/taxRecords')
             } 
 
