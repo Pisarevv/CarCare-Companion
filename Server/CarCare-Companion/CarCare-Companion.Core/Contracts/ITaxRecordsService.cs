@@ -22,6 +22,6 @@ public interface  ITaxRecordsService
 
     public Task<decimal> GetAllUserTaxRecordsCostAsync (string userId);
 
-    
+    public Task<ICollection<UpcomingTaxRecordResponseModel>> GetUpcomingTaxesAsync(string userId, int count);
 }
 

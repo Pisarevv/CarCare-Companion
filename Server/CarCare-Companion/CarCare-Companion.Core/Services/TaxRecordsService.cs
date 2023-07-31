@@ -180,4 +180,31 @@ public class TaxRecordsService : ITaxRecordsService
                .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
                .SumAsync(tr => tr.Cost);
     }
+
+    /// <summary>
+    /// Retrieves a specified count of user upcoming taxes based on a time period
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <param name="count">The amount of records to be retrieved</param>
+    /// <returns>Collection of upcoming taxes</returns>
+    public async Task<ICollection<UpcomingTaxRecordResponseModel>> GetUpcomingTaxesAsync(string userId, int count)
+    {
+        DateTime dateFilterStart = DateTime.UtcNow;
+        DateTime dateFilterEnd = dateFilterStart.AddMonths(2);
+
+        return await repository.AllReadonly<TaxRecord>()
+               .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
+               .Where(tr => tr.ValidTo >= dateFilterStart && tr.ValidTo <= dateFilterEnd )
+               .Take(count)
+               .Select(tr => new UpcomingTaxRecordResponseModel
+               {
+                   Id = tr.Id.ToString(),
+                   Title = tr.Title,
+                   ValidTo = tr.ValidTo,
+                   VehicleMake = tr.Vehicle.Make,
+                   VehicleModel = tr.Vehicle.Model
+               })
+               .ToListAsync();
+
+    }
 }
