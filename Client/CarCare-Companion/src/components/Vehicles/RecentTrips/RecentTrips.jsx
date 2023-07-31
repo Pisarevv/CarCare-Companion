@@ -22,7 +22,7 @@ const RecentTrips = (props) => {
 
         const getRecentTrips = async () => {
             try {
-                const response = await axiosPrivate.get(`/ServiceRecords/Last/${3}`, {
+                const response = await axiosPrivate.get(`/Trips/Last/${3}`, {
                     signal: controller.signal
                 });
                 isMounted && setRecentUserTrips(recentUserTrips => response.data);
