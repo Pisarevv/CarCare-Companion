@@ -46,13 +46,12 @@
 import { useContext, useState } from "react";
 import { NavLink, useNavigate } from 'react-router-dom';
 
-import axios from "../../api/axios/axios";
-
 import { NotificationHandler } from '../../utils/NotificationHandler'
 
 import { AuthContext } from "../../contexts/AuthContext";
 
 import './Login.css';
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 
 
@@ -61,6 +60,8 @@ const Login = () => {
     const {userLogin} = useContext(AuthContext);
 
     const navigate = useNavigate();
+
+    const axiosPrivate = useAxiosPrivate();
 
     //States
 
@@ -80,7 +81,7 @@ const Login = () => {
     const loginHandler = async (e) => {
         e.preventDefault();
         try {
-            const returnedUserData = await axios.post("/Login", {email,password});
+            const returnedUserData = await axiosPrivate.post("/Login", {email,password});
             userLogin(returnedUserData.data);
             navigate("/");
             
