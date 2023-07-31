@@ -1,5 +1,4 @@
-import ISODateStringToString from "../../../utils/ISODateStringToString";
-
+import ISODateStringToString from '../../../utils/IsoDateStringToString';
 import './RecentServiceCard.css'
 
 const RecentServiceCard = ({details}) => {
