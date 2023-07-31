@@ -10,7 +10,7 @@ export async function getVehicleTypes(){
 }
 
 export async function createVehicle(make,model,mileage,year,fuelTypeId, vehicleTypeId){
-    return await api.post("/Vehicles",{make,model,mileage,year,fuelTypeId, vehicleTypeId});
+    return await axiosApi.post("/Vehicles",{make,model,mileage,year,fuelTypeId, vehicleTypeId});
 }
 
 export async function editVehicle(make,model,mileage,year,fuelTypeId, vehicleTypeId, vehicleId){
@@ -22,7 +22,7 @@ export async function uploadVehicleImage(formData,vehicleId){
 }
 
 export async function getUserVehicles(){
-    return await api.get("/Vehicles");
+    return await axiosApi.get("/Vehicles");
 }
 
 export async function getVehicleDetails(vehicleId){

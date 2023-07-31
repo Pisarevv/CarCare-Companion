@@ -3,7 +3,8 @@ let target = "https://localhost:7152"
 async function request(method, url, data) {
     let options = {
         method,
-        headers: {}
+        headers: {},
+        credentials: 'include'
     }
 
     if (data){
