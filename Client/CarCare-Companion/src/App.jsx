@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import Navigation  from './components/Navigation/Navigation';
+import Navigation from './components/Navigation/Navigation';
 
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -9,8 +9,6 @@ import Login from './components/Login/Login';
 import Logout from './components/Logout/Logout';
 import Vehicles from './components/Vehicles/Vehicles';
 import AddVehicle from './components/Vehicles/AddVehicle/AddVehicle';
-
-
 import VehicleDetails from './components/Vehicles/VehicleDetails/VehicleDetails';
 import AddTrip from './components/Trips/AddTrip/AddTrip';
 import Trips from './components/Trips/Trips';
@@ -19,8 +17,6 @@ import EditVehicle from './components/Vehicles/EditVehicle/EditVehicle';
 import EditTrip from './components/Trips/EditTrip/EditTrip';
 import DeleteTrip from './components/Trips/DeleteTrip/DeleteTrip';
 import ServiceRecords from './components/ServiceRecords/ServiceRecords';
-
-import './App.css'
 import AddServiceRecord from './components/ServiceRecords/AddServiceRecord/AddServiceRecord';
 import EditServiceRecord from './components/ServiceRecords/EditServiceRecord/EditServiceRecord';
 import DeleteServiceRecord from './components/ServiceRecords/DeleteServiceRecord/DeleteServiceRecord';
@@ -28,37 +24,54 @@ import TaxRecords from './components/TaxRecords/TaxRecords';
 import AddTaxRecord from './components/TaxRecords/AddTaxRecord/AddTaxRecord';
 import EditTaxRecord from './components/TaxRecords/EditTaxRecord/EditTaxRecord';
 import DeleteTaxRecord from './components/TaxRecords/DeleteTaxRecord/DeleteTaxRecord';
+import PrivateGuard from './components/Common/PrivateGuard';
+import AdminHomePage from './components/Admin/Home/AdminHomePage';
+import PersistLogin from './components/Common/PersistLogin';
+
+import './App.css'
+
 
 function App() {
-  return(
+  return (
     <AuthProvider>
       <div className='App'>
-        <Navigation/>
+        <Navigation />
         <main>
+
           <Routes>
-          <Route path='/' element={<Home/>}/>
-          <Route path='/Register' element={<Register/>}/>
-          <Route path='/Login' element={<Login/>}/>
-          <Route path='/Logout' element={<Logout/>}/>
-          <Route path='/MyVehicles' element={<Vehicles/>}/>
-          <Route path='/Vehicle/Create' element={<AddVehicle/>}/>
-          <Route path='/Vehicle/Edit/:id' element={<EditVehicle/>}/>
-          <Route path='/Vehicle/Details/:id' element={<VehicleDetails/>}/>
-          <Route path='/Vehicle/Delete/:id' element={<VehicleDelete/>}/>
-          <Route path='/Trips' element={<Trips/>}/>
-          <Route path='/Trips/Add' element={<AddTrip/>}/>
-          <Route path='/Trips/Edit/:id' element={<EditTrip/>}/>
-          <Route path='/Trips/Delete/:id' element={<DeleteTrip/>}/>
-          <Route path='/ServiceRecords' element={<ServiceRecords/>}/>
-          <Route path='/ServiceRecords/Add' element={<AddServiceRecord/>}/>
-          <Route path='/ServiceRecords/Edit/:id' element={<EditServiceRecord/>}/>
-          <Route path='/ServiceRecords/Delete/:id' element={<DeleteServiceRecord/>}/>
-          <Route path='/TaxRecords' element={<TaxRecords/>}/>
-          <Route path='/TaxRecords/Add' element={<AddTaxRecord/>}/>
-          <Route path='/TaxRecords/Edit/:id' element={<EditTaxRecord/>}/>
-          <Route path='/TaxRecords/Delete/:id' element={<DeleteTaxRecord/>}/>
+            <Route path='/' element={<Home />} />
+            <Route path='/Register' element={<Register />} />
+            <Route path='/Login' element={<Login />} />
+            <Route path='/Logout' element={<Logout />} />
+
+            <Route element={<PersistLogin/>}>
+              <Route element={<PrivateGuard allowedRoles={["User"]} />}>
+                <Route path='/MyVehicles' element={<Vehicles />} />
+                <Route path='/Vehicle/Create' element={<AddVehicle />} />
+                <Route path='/Vehicle/Edit/:id' element={<EditVehicle />} />
+                <Route path='/Vehicle/Details/:id' element={<VehicleDetails />} />
+                <Route path='/Vehicle/Delete/:id' element={<VehicleDelete />} />
+                <Route path='/Trips' element={<Trips />} />
+                <Route path='/Trips/Add' element={<AddTrip />} />
+                <Route path='/Trips/Edit/:id' element={<EditTrip />} />
+                <Route path='/Trips/Delete/:id' element={<DeleteTrip />} />
+                <Route path='/ServiceRecords' element={<ServiceRecords />} />
+                <Route path='/ServiceRecords/Add' element={<AddServiceRecord />} />
+                <Route path='/ServiceRecords/Edit/:id' element={<EditServiceRecord />} />
+                <Route path='/ServiceRecords/Delete/:id' element={<DeleteServiceRecord />} />
+                <Route path='/TaxRecords' element={<TaxRecords />} />
+                <Route path='/TaxRecords/Add' element={<AddTaxRecord />} />
+                <Route path='/TaxRecords/Edit/:id' element={<EditTaxRecord />} />
+                <Route path='/TaxRecords/Delete/:id' element={<DeleteTaxRecord />} />
+              </Route>
+
+              <Route element={<PrivateGuard allowedRoles={["Administrator"]} />}>
+                <Route path='/Administrator/' element={<AdminHomePage />} />
+              </Route>
+            </Route>
+
           </Routes>
-        </main> 
+        </main>
       </div>
     </AuthProvider>
   )
