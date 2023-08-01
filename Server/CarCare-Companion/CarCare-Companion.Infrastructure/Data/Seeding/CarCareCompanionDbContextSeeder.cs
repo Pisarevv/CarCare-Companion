@@ -22,6 +22,7 @@ public class CarCareCompanionDbContextSeeder : ISeeder
         var seeders = new List<ISeeder>
                           {
                               new RoleSeeder(),
+                              new AdminSeeder(),
                           };
 
         foreach (var seeder in seeders)
