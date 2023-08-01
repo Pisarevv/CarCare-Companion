@@ -11,4 +11,6 @@ public static class GlobalConstants
 
     public const string AWSBucket = "car-care-companion-bucket";
 
+    public const int RecentlyJoinedUsersDaysLookback = 7;
+
 }
