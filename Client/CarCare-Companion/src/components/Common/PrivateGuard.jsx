@@ -14,18 +14,22 @@
  * ---------------------- 
  * 
  **/
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/AuthContext";
 
-const PrivateGuard = ({children}) => {
-    const {isAuthenticated} = useAuthContext();
-   
-    if (!isAuthenticated) {
-        return <Navigate to='/login' replace/>
-    } 
+const PrivateGuard = ({allowedRoles}) => {
+    const { user } = useAuthContext();
+    const location = useLocation();
 
-    return children ? children : <Outlet/>
+    return (
+        allowedRoles?.includes(user?.role)
+        ? <Outlet/> 
+        : user?.accessToken
+          ? <Navigate to ="/Unauthorized" state={{from : location}} replace/>
+          : <Navigate to='/Login' state={{from : location}} replace/>
+    )
+
 }
 
 export default PrivateGuard;
