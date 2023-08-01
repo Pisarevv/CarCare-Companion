@@ -27,8 +27,10 @@ import DeleteTaxRecord from './components/TaxRecords/DeleteTaxRecord/DeleteTaxRe
 import PrivateGuard from './components/Common/PrivateGuard';
 import AdminHomePage from './components/Admin/Home/AdminHomePage';
 import PersistLogin from './components/Common/PersistLogin';
+import ApplicationUsers from './components/Admin/ApplicationUsers/ApplicationUsers';
 
 import './App.css'
+
 
 
 function App() {
@@ -67,6 +69,7 @@ function App() {
 
               <Route element={<PrivateGuard allowedRoles={["Administrator"]} />}>
                 <Route path='/Administrator/' element={<AdminHomePage />} />
+                <Route path='/Administrator/ApplicationUsers' element={<ApplicationUsers/>}/>
               </Route>
             </Route>
 

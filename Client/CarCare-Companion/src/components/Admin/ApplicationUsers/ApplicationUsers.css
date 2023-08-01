@@ -1,0 +1,20 @@
+.application-users-section {
+    padding: 50px 10%;
+    display: flex;
+    justify-content: center; 
+    align-items: baseline; 
+    height: 70vh; 
+}
+
+
+.application-users-container {    
+   background-color: rgb(19, 24, 24);
+   padding: 5% 20%;
+   border-radius: 30px;
+   display: flex;
+   flex-direction: column;
+   align-items: baseline;
+   width: 100%;
+   justify-content: space-between;
+   gap: 10em;
+}
