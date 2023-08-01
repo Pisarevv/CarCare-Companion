@@ -1,0 +1,10 @@
+.application-user-card{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1em;
+    background-color: rgb(121, 121, 121);
+    padding: 5% 10%;
+    border-radius: 20px;
+    width: 100%;
+}
