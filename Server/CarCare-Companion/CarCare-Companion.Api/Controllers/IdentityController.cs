@@ -107,6 +107,7 @@ public class IdentityController : BaseController
             {
                 AccessToken = userData.AccessToken,
                 Email = userData.Email,
+                Role = userData.Role
             });
            
             
@@ -135,10 +136,9 @@ public class IdentityController : BaseController
 
 
     /// <summary>
-    /// Logs in the user if the credentials are valid.
+    /// Logs out the user by terminating the refresh token
     /// </summary>
-    /// <param name="loginData">The input data containing the user email and password</param>
-    /// <returns>The logged in user with his email,id and JWT token</returns>
+    /// <returns>A status message based on the result</returns>
     [HttpPost]
     [Route("/Logout")]
     [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
@@ -183,82 +183,6 @@ public class IdentityController : BaseController
         }
     }
 
-    ///// <summary>
-    ///// Refreshes the user JWT token
-    ///// </summary>
-    ///// <param name="jwtToken">The user JWT token</param>
-    ///// <returns>AuthData model containing the new refresh JWT token</returns>
-    //[HttpPost]
-    //[Route("/Refresh")]
-    //[AllowAnonymous]
-    //[ProducesResponseType(200, Type = typeof(AuthDataModel))]
-    //[ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    //[ProducesResponseType(401, Type = typeof(StatusInformationMessage))]
-    //public async Task<IActionResult> RefreshUserToken([FromBody] string jwtToken)
-    //{
-    //    try
-    //    {
-    //        if (string.IsNullOrEmpty(jwtToken))
-    //        {
-    //            return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
-    //        }
-
-    //        var refreshToken = Request.Cookies["refreshToken"];
-
-    //        if(refreshToken == null)
-    //        {
-    //            return StatusCode(400, new StatusInformationMessage(InvalidData));
-    //        }
-
-    //        var principal = identityService.GetPrincipalFromExpiredToken(jwtToken);
-
-    //        if (principal == null)
-    //        {
-    //            return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
-    //        }
-
-    //        string username = principal.Identity.Name;
-
-    //        bool isUserRefreshTokenOwner = await identityService.IsUserRefreshTokenOwner(username, refreshToken);
-
-    //        if (!isUserRefreshTokenOwner)
-    //        {
-    //            return StatusCode(401, new StatusInformationMessage(NoPermission));
-    //        }
-
-    //        bool isTokenExpired = await identityService.IsUserRefreshTokenExpired(refreshToken);
-
-    //        if (isTokenExpired)
-    //        {
-    //            return StatusCode(401, new StatusInformationMessage(TokenExpired));
-    //        }
-
-    //        AuthDataModel authData = await identityService.RefreshJWTToken(username);
-
-    //        return StatusCode(200, authData);
-
-    //    }
-    //    catch (ArgumentNullException ex)
-    //    {
-    //        logger.LogInformation(ex.Message);
-    //        return StatusCode(401, new StatusInformationMessage(InvalidCredentials));
-    //    }
-    //    catch (ArgumentException ex)
-    //    {
-    //        logger.LogInformation(ex.Message);
-    //        return StatusCode(401, new StatusInformationMessage(InvalidCredentials));
-    //    }
-    //    catch (SqlException ex)
-    //    {
-    //        logger.LogWarning(ex.Message);
-    //        return StatusCode(400, new StatusInformationMessage(GenericError));
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        logger.LogWarning(ex.Message);
-    //        return StatusCode(400, new StatusInformationMessage(GenericError));
-    //    }
-    //}
 
     /// <summary>
     /// Refreshes the user JWT token

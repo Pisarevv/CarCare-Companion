@@ -6,4 +6,6 @@ public class AuthDataModel
 
     public string Email { init; get; } = null!;
 
+    public string Role { init; get; } = null!;
+
 }

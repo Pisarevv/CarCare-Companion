@@ -93,6 +93,7 @@ public class IdentityService : IIdentityService
         {
             AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
             Email = user.Email,
+            Role = userRoles.First(),
             RefreshToken = refreshToken
         };
        
@@ -188,6 +189,7 @@ public class IdentityService : IIdentityService
         {
             AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
             Email = user.Email,
+            Role = userRoles.First()
         };
     }
 
@@ -333,4 +335,6 @@ public class IdentityService : IIdentityService
 
         await repository.SaveChangesAsync();
     }
+
+   
 }

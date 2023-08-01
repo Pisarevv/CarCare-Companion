@@ -7,4 +7,6 @@ public class AuthDataInternalTransferModel
     public string RefreshToken { init; get; } = null!;
 
     public string Email { init; get; } = null!;
+
+    public string Role { init; get; } = null!;
 }
