@@ -129,6 +129,25 @@ public class IdentityService : IIdentityService
     }
 
     /// <summary>
+    /// Validates if a user is in a specific role
+    /// </summary>
+    /// <param name="userId">The user identifier </param>
+    /// <param name="role">The role name</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException">Thrown when the user does not exist</exception>
+    public async Task<bool> IsUserInRole(string userId, string role)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+
+        if (user == null)
+        {
+            throw new ArgumentNullException("User does not exist");
+        }
+
+        return await userManager.IsInRoleAsync(user, role);
+    }
+
+    /// <summary>
     /// Updates the user refresh token. If the user doesn't have a token - a refresh token is added.
     /// If the user has a refresh token - the token is updated.
     /// </summary>
@@ -335,6 +354,5 @@ public class IdentityService : IIdentityService
 
         await repository.SaveChangesAsync();
     }
-
-   
+    
 }

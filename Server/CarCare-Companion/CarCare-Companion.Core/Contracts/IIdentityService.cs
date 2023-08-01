@@ -10,6 +10,8 @@ public interface IIdentityService
 
     public Task RegisterAsync(RegisterRequestModel model);
 
+    public Task<bool> IsUserInRole(string username, string role);
+
     public Task<AuthDataInternalTransferModel> LoginAsync(LoginRequestModel model);
 
     public Task<string> UpdateRefreshToken(ApplicationUser user);
@@ -25,5 +27,7 @@ public interface IIdentityService
     public Task<string?> GetRefreshTokenOwner(string refreshToken);
 
     public Task TerminateUserRefreshToken(string userId);
+
+
 
 }
