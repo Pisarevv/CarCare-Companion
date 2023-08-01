@@ -13,6 +13,11 @@
  *   - TaxRecords
  *   - Profile
  *   There is no Login or Register links. Instead there is a Logout link.
+ * 
+ * - For logged in users (administrator users):
+ *   This user can navigate to the following links:
+ *   - Home
+ *   There is no Login or Register links. Instead there is a Logout link.
  * ---------------------- 
  * 
  * Contexts:
@@ -24,7 +29,7 @@
  * -----------------
 **/
 
-import { Link  } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { useAuthContext } from '../../contexts/AuthContext';
 
@@ -33,32 +38,38 @@ import './Navigation.css'
 
 const Navigation = () => {
 
-    const { isAuthenticated } = useAuthContext();
- 
+    const { user } = useAuthContext();
+
     return (
         <header>
             {/* <img className="logo" src="/images/fhlogo.png" alt="image" /> */}
             <nav className='main_navigation'>
                 <ul className="nav_links">
-                   
+
                     {
-                         isAuthenticated
-                         ?
-                         <> 
-                          <li><Link to="/">Home</Link></li>
-                          <li><Link to="/MyVehicles">My vehicles</Link></li>
-                          <li><Link to="/Trips">Trips manager</Link></li>
-                          <li><Link to="/ServiceRecords">Services manager</Link></li>
-                          <li><Link to="/TaxRecords">Taxes manager</Link></li>
-                          <li className="right_link first_link"><Link to="/Profile">Profile</Link></li>      
-                          <li className="right_link"><Link to="/Logout">Logout</Link></li>                   
-                         </>
-                         :
-                         <>
-                          <li><Link to="/">Home</Link></li>
-                          <li className="right_link first_link"><Link to="/Register">Register</Link></li>
-                          <li className="right_link"><Link to="/Login">Login</Link></li>
-                         </>
+                        user?.role == "Administrator"
+                            ?
+                            <>
+                                <li><Link to="/">Home</Link></li>
+                                <li className="right_link first_link"><Link to="/Logout">Logout</Link></li>
+                            </>
+                            :
+                            user?.role == "User" ?
+                                <>
+                                    <li><Link to="/">Home</Link></li>
+                                    <li><Link to="/MyVehicles">My vehicles</Link></li>
+                                    <li><Link to="/Trips">Trips manager</Link></li>
+                                    <li><Link to="/ServiceRecords">Services manager</Link></li>
+                                    <li><Link to="/TaxRecords">Taxes manager</Link></li>
+                                    <li className="right_link first_link"><Link to="/Profile">Profile</Link></li>
+                                    <li className="right_link"><Link to="/Logout">Logout</Link></li>
+                                </>
+                                :
+                                <>
+                                    <li><Link to="/">Home</Link></li>
+                                    <li className="right_link first_link"><Link to="/Register">Register</Link></li>
+                                    <li className="right_link"><Link to="/Login">Login</Link></li>
+                                </>
                     }
                 </ul>
             </nav>

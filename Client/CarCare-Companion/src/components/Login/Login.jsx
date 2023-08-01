@@ -83,7 +83,13 @@ const Login = () => {
         try {
             const returnedUserData = await axiosPrivate.post("/Login", {email,password});
             userLogin(returnedUserData.data);
-            navigate("/");
+            if(returnedUserData.data.role == "Administrator"){
+                navigate("/Administrator/");
+            }
+            else{
+                navigate("/");
+            }
+         
             
         } 
         catch (error) {
