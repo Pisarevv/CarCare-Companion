@@ -26,16 +26,40 @@ public class UserService : IUserService
         return await repository.AllReadonly<ApplicationUser>()
             .Select(au => new UserInformationResponseModel()
             {
-                UserId = au.Id.ToString(),
-                FirstName = au.FirstName,
-                LastName = au.LastName,
+                UserId = au.Id.ToString(),            
                 Username = au.UserName,
-                VehiclesCount = au.Vehicles.Count(),
-                ServiceRecordsCount = au.ServiceRecords.Count(),
-                TaxRecordsCount = au.TaxRecords.Count(),
-                TripsCount = au.TripRecords.Count()
             })
             .ToListAsync();
+    }
+
+    /// <summary>
+    ///  Retrieve details about a user
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>A model containing the user details</returns>
+    public async Task<UserDetailsResponseModel?> GetUserDetailsByIdAsync(string userId)
+    {
+        return await repository.AllReadonly<ApplicationUser>()
+               .Where(au => au.Id == Guid.Parse(userId))
+               .Select(au => new UserDetailsResponseModel()
+               {
+                   UserId = userId,
+                   FirstName = au.FirstName,
+                   LastName = au.LastName,
+                   Username = au.UserName,
+                   ServiceRecordsCount = au.ServiceRecords
+                                         .Where(sr => sr.IsDeleted == false)
+                                         .Count(),
+                   TaxRecordsCount = au.TaxRecords
+                                     .Where(tr => tr.IsDeleted == false)
+                                     .Count(),
+                   TripsCount = au.TripRecords
+                                .Where(tr => tr.IsDeleted == false)
+                                .Count(),
+                   VehiclesCount = au.Vehicles
+                                   .Where(v => v.IsDeleted == false).Count()
+               })
+               .FirstOrDefaultAsync();
     }
 
     /// <summary>

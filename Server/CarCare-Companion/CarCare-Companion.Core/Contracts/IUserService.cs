@@ -6,5 +6,7 @@ public interface IUserService
 {
     public Task<ICollection<UserInformationResponseModel>> GetAllUsersAsync();
 
+    public Task<UserDetailsResponseModel?> GetUserDetailsByIdAsync(string userId);
+
     public Task<int> GetRecentlyJoinedUsersCountAsync(int days);
 }
