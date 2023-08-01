@@ -1,10 +1,8 @@
 ﻿namespace CarCare_Companion.Core.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-internal class IUserService
+using CarCare_Companion.Core.Models.Admin.Users;
+
+public interface IUserService
 {
+    public Task<ICollection<UserInformationResponseModel>> GetAllUsersAsync();
 }
