@@ -43,6 +43,19 @@ public class AdService : IAdService
     }
 
     /// <summary>
+    /// Checks if an ad exists
+    /// </summary>
+    /// <param name="carouselAdId">The carousel ad identifier</param>
+    /// <returns>A model containing the ad information</returns>
+    public async Task<bool> DoesAdExistAsync(string carouselAdId)
+    {
+        return await repository.AllReadonly<CarouselAdModel>()
+                             .Where(c => c.Id == Guid.Parse(carouselAdId))
+                             .AnyAsync();
+    }
+
+
+    /// <summary>
     /// Retrieves the details about a carousel ad 
     /// </summary>
     /// <param name="carouselAdId">The carousel ad identifier</param>

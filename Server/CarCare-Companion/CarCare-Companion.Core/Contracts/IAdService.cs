@@ -8,5 +8,7 @@ public interface IAdService
 
     public Task<ICollection<CarouselAdResponseModel>> GetAllAsync();
 
+    public Task<bool> DoesAdExistAsync(string carouselAdId);
+
     public Task<CarouselAdResponseModel> GetDetailsAsync(string carouselAdId);
 }
