@@ -14,6 +14,7 @@ public static class StatusResponses
     public const string FileSizeTooBig = "The size of the file is too big";
     public const string ResourceNotFound = "The resource does not exist";
     public const string Success = "Success";
+    public const string AlreadyAdmin = "The user is already an administrator";
 
 
 }
