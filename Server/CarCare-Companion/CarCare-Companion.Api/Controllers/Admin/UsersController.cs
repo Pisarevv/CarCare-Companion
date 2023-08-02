@@ -24,6 +24,12 @@ public class UsersController : BaseAdminController
         this.logger = logger;
     }
 
+
+    /// <summary>
+    /// Retrieves a user with all of his details
+    /// </summary>
+    /// <param name="id">the user identifier</param>
+    /// <returns>A model containing the user details</returns>
     [HttpGet]
     [Route("ApplicationUsers/{id}")]
     [ProducesResponseType(200, Type = typeof(UserDetailsResponseModel))]
