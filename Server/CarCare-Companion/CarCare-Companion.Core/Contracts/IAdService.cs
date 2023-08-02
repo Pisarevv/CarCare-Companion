@@ -7,4 +7,6 @@ public interface IAdService
     public Task<ICollection<CarouselAdResponseModel>> GetFiveAsync();
 
     public Task<ICollection<CarouselAdResponseModel>> GetAllAsync();
+
+    public Task<CarouselAdResponseModel> GetDetailsAsync(string carouselAdId);
 }

@@ -42,6 +42,25 @@ public class AdService : IAdService
 
     }
 
+    /// <summary>
+    /// Retrieves the details about a carousel ad 
+    /// </summary>
+    /// <param name="carouselAdId">The carousel ad identifier</param>
+    /// <returns>A model containing the ad information</returns>
+    public async Task<CarouselAdResponseModel> GetDetailsAsync(string carouselAdId)
+    {
+        return await repository.AllReadonly<CarouselAdModel>()
+                             .Where(c => c.Id == Guid.Parse(carouselAdId))
+                             .Select(c => new CarouselAdResponseModel
+                             {
+                                 Id = c.Id.ToString(),
+                                 UserFirstName = c.UserFirstName,
+                                 Description = c.Description,
+                                 ReviewStars = c.StarsRating,
+                             })
+                             .FirstAsync();
+    }
+
 
     /// <summary>
     /// Retrieves the carousel ads data
