@@ -89,7 +89,7 @@ public class ServiceRecordsService : IServiceRecordsService
     public async Task<ICollection<ServiceRecordResponseModel>> GetAllByUserIdAsync(string userId)
     {
         return await repository.AllReadonly<ServiceRecord>()
-               .Where(sr => sr.IsDeleted == false)
+               .Where(sr => sr.IsDeleted == false && sr.OwnerId == Guid.Parse(userId))
                .OrderByDescending(sr => sr.CreatedOn)
                .Select(sr => new ServiceRecordResponseModel
                {
