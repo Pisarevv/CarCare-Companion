@@ -8,6 +8,8 @@ public interface IIdentityService
 {
     public Task<bool> DoesUserExistByUsernameAsync(string username);
 
+    public Task<bool> DoesUserExistByIdAsync(string userId);
+
     public Task RegisterAsync(RegisterRequestModel model);
 
     public Task<bool> IsUserInRole(string username, string role);

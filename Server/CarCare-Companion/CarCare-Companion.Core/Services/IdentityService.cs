@@ -53,6 +53,23 @@ public class IdentityService : IIdentityService
         return true;
     }
 
+    /// <summary>
+    /// Checks if an user exists by his identifier.
+    /// </summary>
+    /// <param name="userId">The user identifier used for the searching.</param>
+    /// <returns>A boolean if the user exists.</returns>
+    public async Task<bool> DoesUserExistByIdAsync(string userId)
+    {
+        var userExists = await userManager.FindByIdAsync(userId);
+
+        if (userExists == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
 
     /// <summary>
     /// Logs in the user.
