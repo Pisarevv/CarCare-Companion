@@ -170,6 +170,29 @@ public class IdentityService : IIdentityService
 
     }
 
+
+    /// <summary>
+    /// Removes an user from the Administrator role
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>A boolen based on the result</returns>
+    /// <exception cref="Exception">Exception thrown if an error occurs during the adding to role of the user</exception>
+    public async Task<bool> RemoveAdmin(string userId)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+
+        var result = await userManager.RemoveFromRoleAsync(user, AdministratorRoleName);
+
+        if (!result.Succeeded)
+        {
+            throw new Exception(result.Errors.First().ToString());
+        }
+
+        await TerminateUserRefreshToken(userId);
+
+        return result.Succeeded;
+    }
+
     /// <summary>
     /// Validates if a user is in a specific role
     /// </summary>
@@ -396,5 +419,6 @@ public class IdentityService : IIdentityService
 
         await repository.SaveChangesAsync();
     }
- 
+
+   
 }

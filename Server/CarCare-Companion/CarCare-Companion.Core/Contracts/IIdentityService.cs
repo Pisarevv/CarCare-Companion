@@ -12,6 +12,8 @@ public interface IIdentityService
 
     public Task<bool> AddAdmin(string userId);
 
+    public Task<bool> RemoveAdmin(string userId);
+
     public Task RegisterAsync(RegisterRequestModel model);
 
     public Task<bool> IsUserInRole(string username, string role);
