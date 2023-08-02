@@ -1,0 +1,26 @@
+.admin-home {
+    padding: 50px 10%;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    height: 70vh; 
+}
+
+
+.admin-home-container {    
+   background-color: rgb(19, 24, 24);
+   padding: 5% 20%;
+   border-radius: 30px;
+   display: flex;
+   align-items: center;
+   flex-direction: column;
+   justify-content: space-between;
+   gap: 10em;
+}
+
+.admin-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 5em;
+}
