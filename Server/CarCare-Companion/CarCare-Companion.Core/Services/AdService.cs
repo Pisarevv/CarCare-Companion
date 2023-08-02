@@ -35,7 +35,7 @@ public class AdService : IAdService
                                    Id = c.Id.ToString(),
                                    UserFirstName = c.UserFirstName,
                                    Description = c.Description,
-                                   ReviewStars = c.StarsRating,
+                                   StarsRating = c.StarsRating,
                                })
                                .ToListAsync();
 
@@ -69,7 +69,7 @@ public class AdService : IAdService
                                  Id = c.Id.ToString(),
                                  UserFirstName = c.UserFirstName,
                                  Description = c.Description,
-                                 ReviewStars = c.StarsRating,
+                                 StarsRating = c.StarsRating,
                              })
                              .FirstAsync();
     }
@@ -87,7 +87,7 @@ public class AdService : IAdService
                                    Id = c.Id.ToString(),
                                    UserFirstName = c.UserFirstName,
                                    Description = c.Description,
-                                   ReviewStars = c.StarsRating,
+                                   StarsRating = c.StarsRating,
                                })
                                .Take(5)
                                .ToListAsync();

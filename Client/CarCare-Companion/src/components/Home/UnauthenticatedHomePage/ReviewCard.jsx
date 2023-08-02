@@ -4,8 +4,8 @@ import './ReviewCard.css';
 
 
 const ReviewCard = ({reviewInfo}) => {
-    const {userFirstName, description, reviewStars} = reviewInfo;
-    const starsCountArray = [...Array(reviewStars).keys()];
+    const {userFirstName, description, starsRating} = reviewInfo;
+    const starsCountArray = [...Array(starsRating).keys()];
     return (
         <div className="review-card">
             <div className="name">{userFirstName}</div>
