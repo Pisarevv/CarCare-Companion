@@ -8,5 +8,5 @@ public class CarouselAdResponseModel
       
     public string Description { get; set; } = null!;
 
-    public int ReviewStars { get; set; }
+    public int StarsRating { get; set; }
 }
