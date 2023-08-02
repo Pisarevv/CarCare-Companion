@@ -42,9 +42,9 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="userId">The user identifier</param>
     /// <returns>A model containing the user details</returns>
-    public async Task<UserDetailsResponseModel?> GetUserDetailsByIdAsync(string userId)
+    public async Task<UserDetailsResponseModel> GetUserDetailsByIdAsync(string userId)
     {
-        UserDetailsResponseModel? user = await repository.AllReadonly<ApplicationUser>()
+        UserDetailsResponseModel user = await repository.AllReadonly<ApplicationUser>()
                .Where(au => au.Id == Guid.Parse(userId))
                .Select(au => new UserDetailsResponseModel()
                {
@@ -64,12 +64,8 @@ public class UserService : IUserService
                    VehiclesCount = au.Vehicles
                                    .Where(v => v.IsDeleted == false).Count()
                })
-               .FirstOrDefaultAsync();
+               .FirstAsync();
 
-        if(user == null)
-        {
-            return null;
-        }
         user.IsAdmin = await identityService.IsUserInRole(userId, AdministratorRoleName);
 
         return user;
