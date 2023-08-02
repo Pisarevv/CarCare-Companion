@@ -83,7 +83,7 @@ const Login = () => {
         try {
             const returnedUserData = await axiosPrivate.post("/Login", {email,password});
             userLogin(returnedUserData.data);
-            navigate("/");
+            navigate("/Home");      
         } 
         catch (error) {
             NotificationHandler(error);

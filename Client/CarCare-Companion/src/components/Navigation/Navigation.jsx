@@ -46,7 +46,7 @@ const Navigation = () => {
                         user?.accessToken
                             ?
                             <>
-                                <li><Link to="/">Home</Link></li>
+                                <li><Link to="/Home">Home</Link></li>
                                 {user?.role == "Administrator" &&  <li><Link to="/AdministratorDashboard">Dashboard</Link></li>}
                                 <li><Link to="/MyVehicles">My vehicles</Link></li>
                                 <li><Link to="/Trips">Trips manager</Link></li>
