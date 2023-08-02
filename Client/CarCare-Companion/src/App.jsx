@@ -3,7 +3,8 @@ import Navigation from './components/Navigation/Navigation';
 
 import { AuthProvider } from './contexts/AuthContext';
 
-import Home from './components/Home/Home';
+import AuthenticatedHomePage from './components/Home/AuthenticatedHomePage/AuthenticatedHomePage';
+import UnauthenticatedHomePage from './components/Home/UnauthenticatedHomePage/UnauthenticatedHomePage';
 import Register from './components/Register/Register';
 import Login from './components/Login/Login';
 import Logout from './components/Logout/Logout';
@@ -33,6 +34,7 @@ import AdminDashboard from './components/Admin/AdminDashboard/AdminDashboard';
 import './App.css'
 
 
+
 function App() {
   return (
     <AuthProvider>
@@ -41,13 +43,14 @@ function App() {
         <main>
 
           <Routes>
-            <Route path='/' element={<Home />} />
+            <Route path='/' element={<UnauthenticatedHomePage />} />
             <Route path='/Register' element={<Register />} />
             <Route path='/Login' element={<Login />} />
             <Route path='/Logout' element={<Logout />} />
 
             <Route element={<PersistLogin/>}>
-              <Route element={<PrivateGuard allowedRoles={["User", "Administrator"]} />}>
+                <Route element={<PrivateGuard allowedRoles={["User", "Administrator"]} />}>
+                <Route path='/Home' element={<AuthenticatedHomePage />} />
                 <Route path='/MyVehicles' element={<Vehicles />} />
                 <Route path='/Vehicle/Create' element={<AddVehicle />} />
                 <Route path='/Vehicle/Edit/:id' element={<EditVehicle />} />
