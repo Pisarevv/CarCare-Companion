@@ -1,0 +1,32 @@
+.user-details-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 90vh;
+}
+
+.user-details-card{
+    background-color: rgb(58, 58, 58);
+    width: 30%;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3em;
+    border-radius: 20px;
+}
+
+.user-details-row{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+}
+
+.admin-button{
+    padding: 10px;
+    font-size: 20px;
+}
