@@ -173,6 +173,16 @@ public class UsersController : BaseAdminController
                 });
             }
 
+            bool isIncomingUserAdmin = await identityService.IsUserInRole(id, AdministratorRoleName);
+
+            if (isIncomingUserAdmin)
+            {
+                return StatusCode(400, new ProblemDetails()
+                {
+                    Detail = StatusResponses.AlreadyAdmin,
+                });
+            }
+
             bool isAddedToAdminRole = await identityService.AddAdmin(id);
 
 
@@ -181,11 +191,93 @@ public class UsersController : BaseAdminController
                 return StatusCode(400, new ProblemDetails()
                 {
                     Detail = StatusResponses.BadRequest,
-
                 });
             }
 
             return StatusCode(200, isAddedToAdminRole);
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new ProblemDetails()
+            {
+                Detail = StatusResponses.BadRequest,
+
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(400, new ProblemDetails()
+            {
+                Detail = InvalidData,
+
+            });
+        }
+    }
+
+    /// <summary>
+    /// Removes an user from administrator role
+    /// </summary>
+    /// <param name="id">The user identifier</param>
+    /// <returns>A boolean based on the removing result/returns>
+    [HttpPatch]
+    [Route("ApplicationUsers/RemoveAdmin/{id}")]
+    [ProducesResponseType(200, Type = typeof(bool))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> RemoveAdminByUserId([FromRoute] string id)
+    {
+        try
+        {
+            string userId = User.GetId()!;
+
+            bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
+
+            if (!isUserAdministrator)
+            {
+                return StatusCode(400, new ProblemDetails()
+                {
+                    Detail = StatusResponses.BadRequest,
+
+                });
+            }
+
+            bool incomingUserExist = await identityService.DoesUserExistByIdAsync(id);
+
+            if (!incomingUserExist)
+            {
+                return StatusCode(400, new ProblemDetails()
+                {
+                    Detail = InvalidData,
+
+                });
+            }
+
+            bool isIncomingUserAdmin = await identityService.IsUserInRole(id, AdministratorRoleName);
+
+            if (!isIncomingUserAdmin)
+            {
+                return StatusCode(400, new ProblemDetails()
+                {
+                    Detail = StatusResponses.BadRequest,
+
+                });
+            }
+
+            bool isRemovedFromAdminRole = await identityService.RemoveAdmin(id);
+
+
+            if (!isRemovedFromAdminRole)
+            {
+                return StatusCode(400, new ProblemDetails()
+                {
+                    Detail = StatusResponses.BadRequest,
+
+                });
+            }
+
+            return StatusCode(200, isRemovedFromAdminRole);
 
         }
         catch (SqlException ex)
