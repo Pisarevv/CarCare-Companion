@@ -24,6 +24,26 @@ public class AdService : IAdService
     }
 
     /// <summary>
+    /// Retrieves all the carousel ads 
+    /// </summary>
+    /// <returns>Collection of carousel ad models</returns>
+    public async Task<ICollection<CarouselAdResponseModel>> GetAllAsync()
+    {
+        return await repository.AllReadonly<CarouselAdModel>()
+                               .Select(c => new CarouselAdResponseModel
+                               {
+                                   Id = c.Id.ToString(),
+                                   UserFirstName = c.UserFirstName,
+                                   Description = c.Description,
+                                   ReviewStars = c.StarsRating,
+                               })
+                               .ToListAsync();
+
+
+    }
+
+
+    /// <summary>
     /// Retrieves the carousel ads data
     /// </summary>
     /// <returns>Collection of carousel ad models</returns>
