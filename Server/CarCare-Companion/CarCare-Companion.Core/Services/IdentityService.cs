@@ -410,9 +410,14 @@ public class IdentityService : IIdentityService
 
     public async Task TerminateUserRefreshToken(string userId)
     {
-        UserRefreshToken refreshToken = await repository.All<UserRefreshToken>()
+        UserRefreshToken? refreshToken = await repository.All<UserRefreshToken>()
                          .Where(urt => urt.UserId == Guid.Parse(userId))
-                         .FirstAsync();
+                         .FirstOrDefaultAsync();
+
+        if(refreshToken == null)
+        {
+            return;
+        }
 
         refreshToken.RefreshToken = null;
         refreshToken.RefreshTokenExpiration = DateTime.UtcNow;
