@@ -25,12 +25,12 @@ import AddTaxRecord from './components/TaxRecords/AddTaxRecord/AddTaxRecord';
 import EditTaxRecord from './components/TaxRecords/EditTaxRecord/EditTaxRecord';
 import DeleteTaxRecord from './components/TaxRecords/DeleteTaxRecord/DeleteTaxRecord';
 import PrivateGuard from './components/Common/PrivateGuard';
-import AdminHomePage from './components/Admin/Home/AdminHomePage';
 import PersistLogin from './components/Common/PersistLogin';
 import ApplicationUsers from './components/Admin/ApplicationUsers/ApplicationUsers';
+import ApplicationUserDetails from './components/Admin/ApplicationUsers/ApplicationUserDetails/ApplicationUserDetails';
+import AdminDashboard from './components/Admin/AdminDashboard/AdminDashboard';
 
 import './App.css'
-
 
 
 function App() {
@@ -47,7 +47,7 @@ function App() {
             <Route path='/Logout' element={<Logout />} />
 
             <Route element={<PersistLogin/>}>
-              <Route element={<PrivateGuard allowedRoles={["User"]} />}>
+              <Route element={<PrivateGuard allowedRoles={["User", "Administrator"]} />}>
                 <Route path='/MyVehicles' element={<Vehicles />} />
                 <Route path='/Vehicle/Create' element={<AddVehicle />} />
                 <Route path='/Vehicle/Edit/:id' element={<EditVehicle />} />
@@ -68,8 +68,9 @@ function App() {
               </Route>
 
               <Route element={<PrivateGuard allowedRoles={["Administrator"]} />}>
-                <Route path='/Administrator/' element={<AdminHomePage />} />
+                <Route path='/AdministratorDashboard/' element={<AdminDashboard />} />
                 <Route path='/Administrator/ApplicationUsers' element={<ApplicationUsers/>}/>
+                <Route path='/Administrator/ApplicationUsers/:id' element={<ApplicationUserDetails/>}/>
               </Route>
             </Route>
 
