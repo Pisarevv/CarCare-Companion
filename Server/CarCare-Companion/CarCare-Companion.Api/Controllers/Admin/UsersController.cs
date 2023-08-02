@@ -12,13 +12,13 @@ using static Common.StatusResponses;
 using static Common.GlobalConstants;
 
 [Route("[controller]")]
-public class UserController : BaseAdminController
+public class UsersController : BaseAdminController
 {
     private readonly IIdentityService identityService;
     private readonly IUserService userService;
-    private readonly ILogger<UserController> logger;
+    private readonly ILogger<UsersController> logger;
 
-    public UserController(IIdentityService identityService, IUserService userService, ILogger<UserController> logger)
+    public UsersController(IIdentityService identityService, IUserService userService, ILogger<UsersController> logger)
     {
         this.identityService = identityService;
         this.userService = userService;
@@ -56,10 +56,6 @@ public class UserController : BaseAdminController
 
                 });
             }
-
-            bool isSearchedUserAdministrator = await identityService.IsUserInRole(id, AdministratorRoleName);
-
-            user.IsAdmin = isSearchedUserAdministrator;
 
             return StatusCode(200, user);
 

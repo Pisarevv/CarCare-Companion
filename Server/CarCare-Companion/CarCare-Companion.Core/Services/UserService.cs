@@ -7,15 +7,20 @@ using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static Common.GlobalConstants;
 
 public class UserService : IUserService
 {
     private readonly IRepository repository;
+    private readonly IIdentityService identityService;
 
-    public UserService(IRepository repository)
+    public UserService(IRepository repository, IIdentityService identityService)
     {
         this.repository = repository;
+        this.identityService = identityService;
     }
+
+
 
     /// <summary>
     /// Retrieve all the users of the application
@@ -39,7 +44,7 @@ public class UserService : IUserService
     /// <returns>A model containing the user details</returns>
     public async Task<UserDetailsResponseModel?> GetUserDetailsByIdAsync(string userId)
     {
-        return await repository.AllReadonly<ApplicationUser>()
+        UserDetailsResponseModel? user = await repository.AllReadonly<ApplicationUser>()
                .Where(au => au.Id == Guid.Parse(userId))
                .Select(au => new UserDetailsResponseModel()
                {
@@ -60,6 +65,14 @@ public class UserService : IUserService
                                    .Where(v => v.IsDeleted == false).Count()
                })
                .FirstOrDefaultAsync();
+
+        if(user == null)
+        {
+            return null;
+        }
+        user.IsAdmin = await identityService.IsUserInRole(userId, AdministratorRoleName);
+
+        return user;
     }
 
     /// <summary>
