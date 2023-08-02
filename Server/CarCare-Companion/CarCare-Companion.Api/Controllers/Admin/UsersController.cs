@@ -6,7 +6,6 @@ using Microsoft.Data.SqlClient;
 using CarCare_Companion.Common;
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Admin.Users;
-using CarCare_Companion.Core.Models.Status;
 
 using static Common.StatusResponses;
 using static Common.GlobalConstants;
@@ -46,9 +45,9 @@ public class UsersController : BaseAdminController
                 });
             }
 
-            UserDetailsResponseModel? user = await userService.GetUserDetailsByIdAsync(id);
+            bool incomingUserExist = await identityService.DoesUserExistByIdAsync(userId);
 
-            if (user == null)
+            if (!incomingUserExist)
             {
                 return StatusCode(400, new ProblemDetails()
                 {
@@ -57,6 +56,9 @@ public class UsersController : BaseAdminController
                 });
             }
 
+            UserDetailsResponseModel user = await userService.GetUserDetailsByIdAsync(id);
+
+    
             return StatusCode(200, user);
 
         }
@@ -126,7 +128,78 @@ public class UsersController : BaseAdminController
 
             });
         }
-
-
     }
+
+    /// <summary>
+    /// Adds an user to the administrator role
+    /// </summary>
+    /// <param name="id">The user identifier</param>
+    /// <returns>A boolen based on the adding result/returns>
+    [HttpPatch]
+    [Route("ApplicationUsers/AddAdmin/{id}")]
+    [ProducesResponseType(200, Type = typeof(bool))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> AddAdminByUserId([FromRoute] string id)
+    {
+        try
+        {
+            string userId = User.GetId()!;
+
+            bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
+
+            if (!isUserAdministrator)
+            {
+                return StatusCode(400, new ProblemDetails()
+                {
+                    Detail = StatusResponses.BadRequest,
+
+                });
+            }
+
+            bool incomingUserExist = await identityService.DoesUserExistByIdAsync(id);
+
+            if (!incomingUserExist)
+            {
+                return StatusCode(400, new ProblemDetails()
+                {
+                    Detail = InvalidData,
+
+                });
+            }
+
+            bool isAddedToAdminRole = await identityService.AddAdmin(id);
+
+
+            if (!isAddedToAdminRole)
+            {
+                return StatusCode(400, new ProblemDetails()
+                {
+                    Detail = StatusResponses.BadRequest,
+
+                });
+            }
+
+            return StatusCode(200, isAddedToAdminRole);
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new ProblemDetails()
+            {
+                Detail = StatusResponses.BadRequest,
+
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(400, new ProblemDetails()
+            {
+                Detail = InvalidData,
+
+            });
+        }
+    }
+
 }
