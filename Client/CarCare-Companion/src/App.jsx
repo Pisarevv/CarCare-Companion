@@ -32,6 +32,7 @@ import ApplicationUserDetails from './components/Admin/ApplicationUsers/Applicat
 import AdminDashboard from './components/Admin/AdminDashboard/AdminDashboard';
 
 import './App.css'
+import CarouselAds from './components/Admin/Ads/CarouselAds/CarouselAds';
 
 
 
@@ -43,12 +44,13 @@ function App() {
         <main>
 
           <Routes>
+          <Route element={<PersistLogin/>}>
             <Route path='/' element={<UnauthenticatedHomePage />} />
             <Route path='/Register' element={<Register />} />
             <Route path='/Login' element={<Login />} />
             <Route path='/Logout' element={<Logout />} />
 
-            <Route element={<PersistLogin/>}>
+           
                 <Route element={<PrivateGuard allowedRoles={["User", "Administrator"]} />}>
                 <Route path='/Home' element={<AuthenticatedHomePage />} />
                 <Route path='/MyVehicles' element={<Vehicles />} />
@@ -74,6 +76,8 @@ function App() {
                 <Route path='/AdministratorDashboard/' element={<AdminDashboard />} />
                 <Route path='/Administrator/ApplicationUsers' element={<ApplicationUsers/>}/>
                 <Route path='/Administrator/ApplicationUsers/:id' element={<ApplicationUserDetails/>}/>
+                <Route path='/Administrator/CarouselAds' element={<CarouselAds/>}/>
+                
               </Route>
             </Route>
 
