@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { NotificationHandler } from '../../../utils/NotificationHandler'
+
+import { useAuthContext } from "../../../contexts/AuthContext";
 
 import axios from "../../../api/axios/axios";
 import IsLoadingHOC from "../../Common/IsLoadingHoc"
 
-import ReviewCard from "../ReviewCard";
+import ReviewCard from "./ReviewCard";
 
 import "./UnauthenticatedHomePage.css"
-
 
 const UnauthenticatedHomePage = (props) => {
 
@@ -18,7 +19,14 @@ const UnauthenticatedHomePage = (props) => {
 
     const { setLoading } = props;
 
+    const {user} = useAuthContext();
+
+    const navigate = useNavigate();
+
     useEffect(() => {
+        if(user.accessToken){
+            navigate("/Home")
+        }
         let isMounted = true;
         const controller = new AbortController();
 
@@ -46,7 +54,8 @@ const UnauthenticatedHomePage = (props) => {
 
 
     return (
-        <>
+        <section className="home">
+        <div className="container">
             <div className="introduction-container">
                 <p>Welcome to CarCare Companion — your ultimate destination for all your car repair,trips and service management needs.</p>
                 <p>Discover expert advice, valuable resources, and a vibrant community of automotive enthusiasts. Start exploring now!</p>
@@ -79,7 +88,8 @@ const UnauthenticatedHomePage = (props) => {
                 </div>
             </div>
 
-        </>
+       </div>
+     </section>
     );
 
 }

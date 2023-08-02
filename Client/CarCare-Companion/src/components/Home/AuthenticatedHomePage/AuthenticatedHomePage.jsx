@@ -10,38 +10,37 @@ import UpcomingTaxes from "./UpcomingTaxes/UpcomingTaxes";
 
 import './AuthenticatedHomePage.css';
 
-const AuthenticatedHomePage = (props) => {
+const AuthenticatedHomePage = () => {
 
     const { user } = useAuthContext();
 
-    const { setLoading } = props;
-
-    setLoading(false);
-
-    console.log(user);
     return (
-        <section className="authenticated-home-container">
-            <div className="user-overview-container">
-                <div className="user-welcoming">
-                    <div>Hello, {user.email}.</div>
-                    <div>Nice to see you again.</div>
-                </div>
-                <div className="all-user-statistics-container">
-                    <h1>Overview of your records:</h1>
-                    <ServiceRecordsStatistics />
-                    <TaxRecordsStatistics />
-                    <TripStatiscis/>
-                </div>
-            </div>
-            <div className="user-recent-activites">
-                <UpcomingTaxes/>
-                <LatestTrips/>
-            </div>
+        <section className="home">
+            <div className="container">
+                <section className="authenticated-home-container">
+                    <div className="user-overview-container">
+                        <div className="user-welcoming">
+                            <div>Hello, {user.email}.</div>
+                            <div>Nice to see you again.</div>
+                        </div>
+                        <div className="all-user-statistics-container">
+                            <h1>Overview of your records:</h1>
+                            <ServiceRecordsStatistics />
+                            <TaxRecordsStatistics />
+                            <TripStatiscis />
+                        </div>
+                    </div>
+                    <div className="user-recent-activites">
+                        <UpcomingTaxes />
+                        <LatestTrips />
+                    </div>
 
+                </section>
+            </div>
         </section>
     );
 
 }
 
 
-export default IsLoadingHOC(AuthenticatedHomePage);
+export default AuthenticatedHomePage;
