@@ -29,8 +29,7 @@ const useAxiosPrivate = () => {
                     const newAccessToken = await refresh();
                     prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
                     return axiosPrivate(prevRequest);
-                }
-                userLogout();
+                }               
                 return Promise.reject(error);
             }
         );
