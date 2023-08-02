@@ -8,7 +8,7 @@ const ApplicationUserCard = ({details}) => {
         <div className="application-user-card">
             <div>{userId}</div>
             <div>{username}</div>
-            <div><Link to = {`/Admin/ApplicationUsers/${userId}`}>Details</Link></div>
+            <div><Link to = {`/Administrator/ApplicationUsers/${userId}`}>Details</Link></div>
         </div>
     )
 }

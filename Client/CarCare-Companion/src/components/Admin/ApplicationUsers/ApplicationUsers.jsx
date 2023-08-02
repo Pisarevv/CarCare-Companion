@@ -29,7 +29,7 @@ const ApplicationUsers = (props) => {
 
         const getApplcationUsers = async () => {
            try {
-             const response = await axiosPrivate.get('/Admin/ApplicationUsers', {
+             const response = await axiosPrivate.get('/Users/ApplicationUsers', {
                 signal : controller.signal
             });
 
@@ -39,7 +39,7 @@ const ApplicationUsers = (props) => {
 
            } catch (error) {
             NotificationHandler(error);
-            navigate('/Admin', { state: { from: location }, replace: true });
+            navigate('/Administrator', { state: { from: location }, replace: true });
            }finally{
             setLoading(false);
            }

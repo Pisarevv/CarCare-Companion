@@ -50,7 +50,7 @@ const Navigation = () => {
                         user?.role == "Administrator"
                             ?
                             <>
-                                <li><Link to="/">Home</Link></li>
+                                <li><Link to="/Administrator">Home</Link></li>
                                 <li className="right_link first_link"><Link to="/Logout">Logout</Link></li>
                             </>
                             :
