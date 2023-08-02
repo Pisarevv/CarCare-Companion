@@ -1,4 +1,4 @@
-﻿namespace CarCare_Companion.Api.Controllers;
+﻿namespace CarCare_Companion.Api.Controllers.Admin;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
