@@ -18,6 +18,8 @@ using CarCare_Companion.Infrastructure.Data.Common;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 
+using static Common.GlobalConstants;
+
 /// <summary>
 /// The IdentityService is responsible for all the operations regarding the user-related actions
 /// </summary>
@@ -142,6 +144,29 @@ public class IdentityService : IIdentityService
             throw new Exception(result.Errors.First().ToString());
         }
 
+
+    }
+
+    /// <summary>
+    /// Adds an user to the Administrator role
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>A boolen based on the result</returns>
+    /// <exception cref="Exception">Exception thrown if an error occurs during the adding to role of the user</exception>
+    public async Task<bool> AddAdmin(string userId)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+
+        var result = await userManager.AddToRoleAsync(user, AdministratorRoleName);
+
+        if (!result.Succeeded)
+        {
+            throw new Exception(result.Errors.First().ToString());
+        }
+
+        await TerminateUserRefreshToken(userId);
+
+        return result.Succeeded;
 
     }
 
@@ -371,5 +396,5 @@ public class IdentityService : IIdentityService
 
         await repository.SaveChangesAsync();
     }
-    
+ 
 }
