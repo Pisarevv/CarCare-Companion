@@ -33,6 +33,7 @@ import AdminDashboard from './components/Admin/AdminDashboard/AdminDashboard';
 
 import './App.css'
 import CarouselAds from './components/Admin/Ads/CarouselAds/CarouselAds';
+import EditCarouselAd from './components/Admin/Ads/CarouselAds/EditCarouselAd/EditCarouselAd';
 
 
 
@@ -77,6 +78,7 @@ function App() {
                 <Route path='/Administrator/ApplicationUsers' element={<ApplicationUsers/>}/>
                 <Route path='/Administrator/ApplicationUsers/:id' element={<ApplicationUserDetails/>}/>
                 <Route path='/Administrator/CarouselAds' element={<CarouselAds/>}/>
+                <Route path='/Administrator/CarouselAds/Edit/:id' element={<EditCarouselAd/>}/>
                 
               </Route>
             </Route>

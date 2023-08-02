@@ -13,7 +13,7 @@ const AdminDashboard = () => {
 
                 <div className='admin-controls'>
                 <div><Link to = "/Administrator/ApplicationUsers">Application users</Link></div>
-                <div>Edit carousel ads</div>
+                <div><Link to = "/Administrator/CarouselAds">Carousel ads</Link></div>
                 </div>
             </div>
         </section>
