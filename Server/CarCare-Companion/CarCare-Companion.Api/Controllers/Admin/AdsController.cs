@@ -70,4 +70,65 @@ public class AdsController : BaseAdminController
         }
 
     }
+
+    [HttpGet]
+    [Route("CarouselAds/Details/{carouselAdId}")]
+    [ProducesResponseType(200, Type = typeof(CarouselAdResponseModel))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> CarouselAdDetails([FromRoute] string carouselAdId)
+    {
+        try
+        {
+            string userId = this.User.GetId()!;
+
+            bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
+
+
+            if (!isUserAdministrator)
+            {
+                return StatusCode(403, new ProblemDetails()
+                {
+                    Detail = StatusResponses.BadRequest,
+
+                });
+            }
+
+            bool doesAdExist = await adService.DoesAdExistAsync(carouselAdId);
+
+            if (!doesAdExist)
+            {
+                return StatusCode(400, new ProblemDetails()
+                {
+                    Detail = StatusResponses.ResourceNotFound,
+
+                });
+            }
+
+            CarouselAdResponseModel carouselAd = await adService.GetDetailsAsync(carouselAdId);
+
+            return StatusCode(200, carouselAd);
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new ProblemDetails()
+            {
+                Detail = StatusResponses.BadRequest,
+
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(400, new ProblemDetails()
+            {
+                Detail = InvalidData,
+
+            });
+        }
+
+    }
+
+    
 }
