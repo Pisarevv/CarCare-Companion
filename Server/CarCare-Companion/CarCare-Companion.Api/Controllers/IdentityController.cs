@@ -11,7 +11,7 @@ using CarCare_Companion.Core.Models.Status;
 using static CarCare_Companion.Common.StatusResponses;
 using Microsoft.Net.Http.Headers;
 using CarCare_Companion.Common;
-using Azure.Core;
+
 
 
 /// <summary>
