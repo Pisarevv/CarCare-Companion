@@ -4,6 +4,9 @@
     justify-content: center; 
     align-items: center; 
     height: 70vh; 
+    opacity: 0;
+    transform: translate3d(0, 500px, 0);
+    animation: arrive 500ms ease-in-out 0.5s forwards;
 }
 
 
