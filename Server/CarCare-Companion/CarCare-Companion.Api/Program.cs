@@ -10,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 
 using Amazon.S3;
 
+using Quartz;
+
 using Serilog;
 
 using CarCare_Companion.Api.ModelBinders;
@@ -20,7 +22,8 @@ using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using CarCare_Companion.Infrastructure.Data.Seeding;
 using CarCare_Companion.Api.Extensions.Quartz;
-using Quartz;
+using CarCare_Companion.Api.Extensions.Mail;
+using CarCare_Companion.Core.Messaging;
 
 namespace CarCare_Companion.Api
 {
@@ -84,6 +87,9 @@ namespace CarCare_Companion.Api
             //Add Quartz scheduler
             services.AddQuartz();
 
+            //Add mail options
+            services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -110,6 +116,7 @@ namespace CarCare_Companion.Api
             services.AddScoped<IServiceRecordsService, ServiceRecordsService>();
             services.AddScoped<ITaxRecordsService, TaxRecordsService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IEmailSender, GmailEmailSender>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
