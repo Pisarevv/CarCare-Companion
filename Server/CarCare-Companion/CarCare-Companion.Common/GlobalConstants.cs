@@ -13,4 +13,10 @@ public static class GlobalConstants
 
     public const int RecentlyJoinedUsersDaysLookback = 7;
 
+
+    //Quartz
+    public const string SendUsersTaxReminderSchedule = "0/5 * * * * ?"; //runs every 5 seconds
+    //public const string SendUsersTaxReminderSchedule = "0 0 12 ? * MON-SUN"; //runs every day of the week at 12:00pm
+
+
 }
