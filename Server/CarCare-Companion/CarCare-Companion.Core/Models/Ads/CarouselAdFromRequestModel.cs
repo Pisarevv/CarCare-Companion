@@ -6,8 +6,6 @@ using static Common.ValidationConstants.CarouselAdModel;
 
 public class CarouselAdFromRequestModel
 {
-    public string Id { get; set; } = null!;
-
     [Required]
     [MinLength(MinNameLength)]
     [MaxLength(MaxNameLength)]
