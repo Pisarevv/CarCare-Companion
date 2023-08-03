@@ -74,6 +74,23 @@ public class AdService : IAdService
                              .FirstAsync();
     }
 
+    /// <summary>
+    /// Edits a carousel ad
+    /// </summary>
+    /// <param name="carouselAdId">The carousel ad identifier</param>
+    /// <param name="model">The model containing the carousel ad data</param>
+    public async Task EditAsync(string carouselAdId, CarouselAdFromRequestModel model)
+    {
+        CarouselAdModel carouselAdToEdit = await repository.GetByIdAsync<CarouselAdModel>(Guid.Parse(carouselAdId));
+
+        carouselAdToEdit.UserFirstName = model.UserFirstName;
+        carouselAdToEdit.Description = model.Description;
+        carouselAdToEdit.StarsRating = model.StarsRating;
+        carouselAdToEdit.ModifiedOn = DateTime.UtcNow;
+
+        await repository.SaveChangesAsync();
+    }
+
 
     /// <summary>
     /// Retrieves the carousel ads data

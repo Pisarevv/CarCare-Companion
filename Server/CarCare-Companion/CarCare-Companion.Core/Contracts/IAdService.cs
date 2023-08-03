@@ -11,4 +11,7 @@ public interface IAdService
     public Task<bool> DoesAdExistAsync(string carouselAdId);
 
     public Task<CarouselAdResponseModel> GetDetailsAsync(string carouselAdId);
+
+    public Task EditAsync(string carouselAdId, CarouselAdFromRequestModel model);
+    
 }
