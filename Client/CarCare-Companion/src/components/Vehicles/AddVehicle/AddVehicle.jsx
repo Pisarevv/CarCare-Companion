@@ -47,6 +47,7 @@ import userVehicleReducer from "../../../reducers/userVehicleReducer";
 import dataURLtoFile from "../../../utils/URLtoFileConverter";
 
 import './AddVehicle.css'
+import DecimalSeparatorFormatter from "../../../utils/DecimalSeparatorFormatter";
 
 
 
@@ -61,7 +62,7 @@ const ValidationErrors = {
 const ValidationRegexes = {
   //Validates that the year is an integer 
   yearRegex: new RegExp(/^[0-9]*$/),
-  mileageRegex: new RegExp(/^[0-9]*$/)
+  mileageRegex: new RegExp(/^\d+(?:[.,]\d+)?$/)
 }
 
 
@@ -189,7 +190,7 @@ const AddVehicle = (props) => {
 
   const validateNumberFields = (target, value) => {
     if (target === "mileage") {
-      if (!ValidationRegexes.yearRegex.test(value) || value.trim() === "") {
+      if (value.trim() === "") {
         dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput });
         return false;
       }
@@ -200,10 +201,14 @@ const AddVehicle = (props) => {
       return true;
     }
     if (target === "year") {
-      if (!ValidationRegexes.yearRegex.test(value) || value.trim() === "") {
+      if (value.trim() === "") {
         dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput });
         return false;
       }
+      if (!ValidationRegexes.yearRegex.test(value)) {
+        dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.inputNotNumber });
+        return false;
+    }
       if (Number(value) < 1900 || Number(value) > Number(new Date().getFullYear())) {
         dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.yearNotValid });
         return false;
@@ -270,7 +275,8 @@ const AddVehicle = (props) => {
         isFuelTypeValid && isModelValid &&
         isVehicleTypeValid && isYearValid
       ) {
-        const { make, model, mileage, year, fuelTypeId, vehicleTypeId } = userVehicle;
+        const { make, model, year, fuelTypeId, vehicleTypeId } = userVehicle;
+        const mileage = DecimalSeparatorFormatter(userVehicle.mileage);
         const vehicleIdResponse = await axiosPrivate.post("/Vehicles",{ make, model, mileage, year, fuelTypeId, vehicleTypeId });
         vehicleId = vehicleIdResponse.data;
       }

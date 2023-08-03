@@ -47,6 +47,7 @@ import userVehicleReducer from "../../../reducers/userVehicleReducer";
 import dataURLtoFile from "../../../utils/URLtoFileConverter";
 
 import './EditVehicle.css'
+import DecimalSeparatorFormatter from "../../../utils/DecimalSeparatorFormatter";
 
 
 const ValidationErrors = {
@@ -211,8 +212,12 @@ const EditVehicle = (props) => {
       return true;
     }
     if (target === "year") {
-      if (!ValidationRegexes.yearRegex.test(value) || (value === "")) {
+      if (value === "") {
         dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput });
+        return false;
+      }
+      if (!ValidationRegexes.yearRegex.test(value)) {
+        dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.inputNotNumber });
         return false;
       }
       if (Number(value) < 1900 || Number(value) > Number(new Date().getFullYear())) {
@@ -279,9 +284,9 @@ const EditVehicle = (props) => {
         isfuelTypeIdValid && isModelValid &&
         isvehicleTypeIdValid && isYearValid
       ) {
-        const { make, model, mileage, year, fuelTypeId, vehicleTypeId} = userVehicle;
+        const { make, model, year, fuelTypeId, vehicleTypeId} = userVehicle;
+        const mileage = DecimalSeparatorFormatter(userVehicle.mileage);
         await axiosPrivate.patch(`/Vehicles/Edit/${id}`,{ make, model, mileage, year, fuelTypeId, vehicleTypeId});
-        // await editVehicle(make, model, mileage, year, fuelTypeId, vehicleTypeId, id);
       }
 
       else {
