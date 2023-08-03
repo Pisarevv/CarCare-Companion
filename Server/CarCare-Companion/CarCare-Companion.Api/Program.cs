@@ -19,7 +19,8 @@ using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using CarCare_Companion.Infrastructure.Data.Seeding;
-
+using CarCare_Companion.Api.Extensions.Quartz;
+using Quartz;
 
 namespace CarCare_Companion.Api
 {
@@ -79,7 +80,10 @@ namespace CarCare_Companion.Api
             //Adding AWS services
             services.AddDefaultAWSOptions(configuration.GetAWSOptions());
             services.AddAWSService<IAmazonS3>();
-                
+
+            //Add Quartz scheduler
+            services.AddQuartz();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
