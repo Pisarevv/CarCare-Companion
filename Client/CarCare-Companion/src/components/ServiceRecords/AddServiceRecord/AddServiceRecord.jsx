@@ -11,6 +11,7 @@ import { NotificationHandler } from '../../../utils/NotificationHandler'
 import StringToISODateString from '../../../utils/StringToISODateString'
 
 import './AddServiceRecord.css'
+import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter'
 
 
 const ValidationErrors = {
@@ -68,8 +69,10 @@ const AddServiceRecord = (props) => {
                 });
 
                 if(isMounted){
-                    setUserVehicles(userVehicles => response.data);
-                    dispatch({ type: `SET_VEHICLEID`, payload: response.data[0].id })
+                    if(response.data.length > 0){
+                        setUserVehicles(userVehicles => response.data);
+                        dispatch({ type: `SET_VEHICLEID`, payload: response.data[0].id })
+                    }
                 }
             } 
             catch (err) {
@@ -137,7 +140,8 @@ const AddServiceRecord = (props) => {
                 isMileageValid && isVehicleIdValid &&
                 isCostValid)
             {
-                const { title, description, mileage, cost, vehicleId } = serviceRecord;
+                const { title, description, mileage, vehicleId } = serviceRecord;
+                let cost = DecimalSeparatorFormatter(serviceRecord.cost);
                 const performedOn = StringToISODateString(serviceRecord.performedOn);
                 await axiosPrivate.post("/ServiceRecords", {title, description, mileage, cost, vehicleId, performedOn});
                 navigate('/ServiceRecords');
@@ -146,7 +150,6 @@ const AddServiceRecord = (props) => {
         }
         catch (error) {
             NotificationHandler(error);
-            navigate('/ServiceRecords')
         }
     }
 

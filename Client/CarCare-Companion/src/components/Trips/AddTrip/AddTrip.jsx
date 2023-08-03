@@ -29,7 +29,7 @@ const AddTrip = (props) => {
 
     const { setLoading } = props;
 
-    const [userVehicles, setUservehicles] = useState([]);
+    const [userVehicles, setUserVehicles] = useState([]);
 
     const [stepOneFinished, setStepOneFinished] = useState(false);
 
@@ -61,9 +61,12 @@ const AddTrip = (props) => {
                     signal: controller.signal
                 });
 
-                dispatch({ type: `SET_VEHICLEID`, payload: response.data[0].id })
-
-                isMounted && setUservehicles(uservehicleIds => response.data);
+                if(isMounted){
+                    if(response.data.length > 0){
+                        setUserVehicles(userVehicles => response.data);
+                        dispatch({ type: `SET_VEHICLEID`, payload: response.data[0].id })
+                    }
+                }
             } catch (err) {
                 NotificationHandler(err);
                 navigate('/login', { state: { from: location }, replace: true });

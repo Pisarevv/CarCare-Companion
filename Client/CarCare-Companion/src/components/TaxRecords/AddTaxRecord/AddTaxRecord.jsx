@@ -66,8 +66,10 @@ const AddTaxRecord = (props) => {
                 });
 
                 if(isMounted){
-                    setUserVehicles(userVehicles => response.data);
-                    dispatch({ type: `SET_VEHICLEID`, payload: response.data[0].id })
+                    if(response.data.length > 0){
+                        setUserVehicles(userVehicles => response.data);
+                        dispatch({ type: `SET_VEHICLEID`, payload: response.data[0].id })
+                    }
                 }
             } 
             catch (err) {
