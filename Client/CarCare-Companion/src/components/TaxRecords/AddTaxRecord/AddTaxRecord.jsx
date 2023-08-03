@@ -2,16 +2,17 @@ import { useEffect, useReducer, useState } from 'react'
 
 import { NavLink, useNavigate } from 'react-router-dom'
 
-import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
 import taxRecordReducer from '../../../reducers/taxRecordReducer'
 
-import { NotificationHandler } from '../../../utils/NotificationHandler'
-import StringToISODateString from '../../../utils/StringToISODateString'
-
 import IsLoadingHOC from '../../Common/IsLoadingHoc'
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
+
+import { NotificationHandler } from '../../../utils/NotificationHandler'
+
+import StringToISODateString from '../../../utils/StringToISODateString'
+import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter'
 
 import './AddTaxRecord.css'
-
 
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
@@ -117,8 +118,12 @@ const AddTaxRecord = (props) => {
 
     const validateNumberFields = (target, value) => {
 
-        if (!ValidationRegexes.floatNumbersRegex.test(value) || value.trim() === "") {
+        if (value.trim() === "") {
             dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput });
+            return false;
+        }
+        if (!ValidationRegexes.floatNumbersRegex.test(value)) {
+            dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.inputNotNumber });
             return false;
         }
         return true;
@@ -138,7 +143,8 @@ const AddTaxRecord = (props) => {
                 isValidToValid && isVehicleValid &&
                 isCostValid)
             {
-                const { title, description, cost, vehicleId } = taxRecord;
+                const { title, description, vehicleId } = taxRecord;
+                const cost = DecimalSeparatorFormatter(taxRecord.cost);
                 const validFrom = StringToISODateString(taxRecord.validFrom);
                 const validTo = StringToISODateString(taxRecord.validTo);
                 await axiosPrivate.post("/TaxRecords", {title, description, validFrom, validTo, cost, vehicleId})
@@ -148,7 +154,6 @@ const AddTaxRecord = (props) => {
         }
         catch (error) {
             NotificationHandler(error);
-            navigate('/taxRecords')
         }
     }
 

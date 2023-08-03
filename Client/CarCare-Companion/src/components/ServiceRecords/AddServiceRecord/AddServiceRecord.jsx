@@ -8,10 +8,11 @@ import IsLoadingHOC from '../../Common/IsLoadingHoc'
 import serviceRecordReducer from '../../../reducers/serviceRecordReducer'
 
 import { NotificationHandler } from '../../../utils/NotificationHandler'
+
 import StringToISODateString from '../../../utils/StringToISODateString'
+import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter'
 
 import './AddServiceRecord.css'
-import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter'
 
 
 const ValidationErrors = {
@@ -119,8 +120,12 @@ const AddServiceRecord = (props) => {
 
     const validateNumberFields = (target, value) => {
 
-        if (!ValidationRegexes.floatNumbersRegex.test(value) || value.trim() === "") {
+        if (value.trim() === "") {
             dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput });
+            return false;
+        }
+        if (!ValidationRegexes.floatNumbersRegex.test(value)) {
+            dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.inputNotNumber });
             return false;
         }
         return true;
@@ -140,8 +145,9 @@ const AddServiceRecord = (props) => {
                 isMileageValid && isVehicleIdValid &&
                 isCostValid)
             {
-                const { title, description, mileage, vehicleId } = serviceRecord;
-                let cost = DecimalSeparatorFormatter(serviceRecord.cost);
+                const { title, description, vehicleId } = serviceRecord;
+                const mileage = DecimalSeparatorFormatter(serviceRecord.mileage);
+                const cost = DecimalSeparatorFormatter(serviceRecord.cost);
                 const performedOn = StringToISODateString(serviceRecord.performedOn);
                 await axiosPrivate.post("/ServiceRecords", {title, description, mileage, cost, vehicleId, performedOn});
                 navigate('/ServiceRecords');

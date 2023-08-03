@@ -6,13 +6,15 @@ import serviceRecordReducer from '../../../reducers/serviceRecordReducer'
 
 import { NotificationHandler } from '../../../utils/NotificationHandler'
 
-import StringToISODateString from '../../../utils/StringToISODateString'
-import ISODateStringToString from '../../../utils/IsoDateStringToString'
-
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
 import IsLoadingHOC from '../../Common/IsLoadingHoc'
 
+import StringToISODateString from '../../../utils/StringToISODateString'
+import ISODateStringToString from '../../../utils/IsoDateStringToString'
+import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter'
+
 import './EditServiceRecord.css'
+
 
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
@@ -167,7 +169,9 @@ const EditServiceRecord = (props) => {
             if (isTitleValid && isPerformedOnValid &&
                 isMileageValid && isvehicleIdValid &&
                 isCostValid) {
-                const { title, description, mileage, cost, vehicleId } = serviceRecord;
+                const { title, description, vehicleId } = serviceRecord;
+                const mileage = DecimalSeparatorFormatter(serviceRecord.mileage);
+                const cost = DecimalSeparatorFormatter(serviceRecord.cost);
                 const performedOn = StringToISODateString(serviceRecord.performedOn);
                 await axiosPrivate.patch(`/ServiceRecords/Edit/${id}`, {title, description, mileage, cost, vehicleId, performedOn})
                 navigate('/ServiceRecords')
@@ -176,7 +180,6 @@ const EditServiceRecord = (props) => {
         }
         catch (error) {
             NotificationHandler(error);
-            navigate('/ServiceRecords')
         }
     }
 

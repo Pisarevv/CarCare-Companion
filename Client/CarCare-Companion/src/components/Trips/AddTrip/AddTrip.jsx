@@ -8,7 +8,10 @@ import IsLoadingHOC from '../../Common/IsLoadingHoc'
 
 import { NotificationHandler } from '../../../utils/NotificationHandler'
 
+import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter';
+
 import './AddTrip.css'
+
 
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
@@ -98,8 +101,12 @@ const AddTrip = (props) => {
 
     const validateNumberFields = (target, value) => {
 
-        if (!ValidationRegexes.floatNumbersRegex.test(value) || value.trim() === "") {
+        if (value.trim() === "") {
             dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput });
+            return false;
+        }
+        if (!ValidationRegexes.floatNumbersRegex.test(value)) {
+            dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.inputNotNumber });
             return false;
         }
         return true;
@@ -134,13 +141,15 @@ const AddTrip = (props) => {
             let isEndDestinationValid = validateTextFields("endDestination", trip.endDestination);
             let isMileageValid = validateNumberFields("mileageTravelled", trip.mileageTravelled);
             let isVehicleIdValid = validateTextFields("vehicleId", trip.vehicleId);
-            if (!trip.usedFuel || !trip.fuelPrice) {
+            if (!trip.usedFuel && !trip.fuelPrice) {
                 if (isStartDestinationValid && isEndDestinationValid &&
                     isMileageValid && isVehicleIdValid) {
-                    const { startDestination, endDestination, mileageTravelled, vehicleId } = trip;
+                    const { startDestination, endDestination, vehicleId } = trip;
+                    const mileageTravelled = DecimalSeparatorFormatter(trip.mileageTravelled);
                     const usedFuel = null;
-                    const fuelPrice = null;
-                    await axiosPrivate.post("/Trips", { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId})
+                    const fuelPrice = null; 
+                    await axiosPrivate.post("/Trips", { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId});
+                    navigate("/Trips")
                 }
             }
             else {
@@ -148,18 +157,19 @@ const AddTrip = (props) => {
                 let isUsedFuelValid = validateNumberFields("usedFuel", trip.usedFuel);
                 if (isStartDestinationValid && isEndDestinationValid &&
                     isMileageValid && isFuelPriceValid &&
-                    isUsedFuelValid && isVehicleIdValid) {
-                    const { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId } = trip;
-                    await axiosPrivate.post("/Trips", { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId})
+                    isUsedFuelValid && isVehicleIdValid) 
+                {
+                    const { startDestination, endDestination, vehicleId } = trip;
+                    const mileageTravelled = DecimalSeparatorFormatter(trip.mileageTravelled);
+                    const usedFuel = DecimalSeparatorFormatter(trip.usedFuel);
+                    const fuelPrice = DecimalSeparatorFormatter(trip.fuelPrice);
+                    await axiosPrivate.post("/Trips", { startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId});
+                    navigate("/Trips")
                 }
             }
-
-            navigate("/Trips")
-
         }
         catch (error) {
             NotificationHandler(error);
-            navigate('/Trips')
         }
     }
 
@@ -214,13 +224,13 @@ const AddTrip = (props) => {
                                         <label>Used fuel:</label>
                                         <input className="form-control" type="text" placeholder="Used fuel" name="usedFuel" value={trip.usedFuel} onChange={onInputChange} />
                                         {trip.usedFuelError && <p className="invalid-field" >{trip.usedFuelError}</p>}
-                                        {(trip.usedFuel && !trip.fuelPrice) && <p className="warning-field" >{ValidationErrors.fuelFields}</p>}
+                                        {(!trip.usedFuel && trip.fuelPrice) && <p className="warning-field" >{ValidationErrors.fuelFields}</p>}
                                     </div>
                                     <div className="input-group input-group-lg">
                                         <label>Fuel price per liter:</label>
                                         <input className="form-control" type="text" placeholder="Fuel price" name="fuelPrice" value={trip.fuelPrice} onChange={onInputChange} />
-                                        {trip.typeError && <p className="invalid-field">{trip.typeError}</p>}
-                                        {(!trip.usedFuel && trip.fuelPrice) && <p className="warning-field" >{ValidationErrors.fuelFields}</p>}
+                                        {trip.fuelPriceError && <p className="invalid-field">{trip.fuelPriceError}</p>}
+                                        {(trip.usedFuel && !trip.fuelPrice) && <p className="warning-field" >{ValidationErrors.fuelFields}</p>}
                                     </div>
 
                                     <button className="float" onClick={previousViewHandler}>Previous</button>

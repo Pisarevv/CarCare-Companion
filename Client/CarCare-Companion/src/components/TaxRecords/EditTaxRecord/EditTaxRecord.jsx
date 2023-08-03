@@ -11,9 +11,9 @@ import { NotificationHandler } from '../../../utils/NotificationHandler'
 
 import StringToISODateString from '../../../utils/StringToISODateString'
 import ISODateStringToString from '../../../utils/IsoDateStringToString'
+import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter'
 
 import './EditTaxRecord.css'
-
 
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
@@ -139,8 +139,12 @@ const EditTaxRecord = (props) => {
 
     const validateNumberFields = (target, value) => {
 
-        if (!ValidationRegexes.floatNumbersRegex.test(value) || value == "") {
+        if (value == "") {
             dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.emptyInput });
+            return false;
+        }
+        if (!ValidationRegexes.floatNumbersRegex.test(value)) {
+            dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.inputNotNumber });
             return false;
         }
         return true;
@@ -160,7 +164,8 @@ const EditTaxRecord = (props) => {
                 isValidToValid && isVehicleValid &&
                 isCostValid)
             {
-                const { title, description, cost, vehicleId } = taxRecord;
+                const { title, description, vehicleId } = taxRecord;
+                const cost = DecimalSeparatorFormatter(taxRecord.cost);
                 const validFrom = StringToISODateString(taxRecord.validFrom);
                 const validTo = StringToISODateString(taxRecord.validTo);
                 await axiosPrivate.patch(`/TaxRecords/Edit/${id}`, {title, description, validTo,validFrom, cost, vehicleId});
@@ -170,7 +175,6 @@ const EditTaxRecord = (props) => {
         }
         catch (error) {
             NotificationHandler(error);
-            navigate('/taxRecords')
         }
     }
 
