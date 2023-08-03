@@ -130,5 +130,77 @@ public class AdsController : BaseAdminController
 
     }
 
-    
+    /// <summary>
+    /// Edits a carousel ad
+    /// </summary>
+    /// <param name="carouselAdId">The ad identifier</param>
+    /// <param name="model">The model containing the ad details</param>
+    /// <returns>A status message based on the result</returns>
+    [HttpPatch]
+    [Route("CarouselAds/Edit/{carouselAdId}")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> EditCarouselAd([FromRoute] string carouselAdId, [FromBody] CarouselAdFromRequestModel model)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(400, new ProblemDetails()
+                {
+                    Detail = StatusResponses.InvalidData,
+
+                });
+            }
+
+            string userId = this.User.GetId()!;
+
+            bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
+
+
+            if (!isUserAdministrator)
+            {
+                return StatusCode(403, new ProblemDetails()
+                {
+                    Detail = StatusResponses.BadRequest,
+
+                });
+            }
+
+            bool doesAdExist = await adService.DoesAdExistAsync(carouselAdId);
+
+            if (!doesAdExist)
+            {
+                return StatusCode(400, new ProblemDetails()
+                {
+                    Detail = StatusResponses.ResourceNotFound,
+
+                });
+            }
+
+            await adService.EditAsync(carouselAdId,model);
+
+            return StatusCode(200);
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new ProblemDetails()
+            {
+                Detail = StatusResponses.BadRequest,
+
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(400, new ProblemDetails()
+            {
+                Detail = InvalidData,
+
+            });
+        }
+
+    }
 }
