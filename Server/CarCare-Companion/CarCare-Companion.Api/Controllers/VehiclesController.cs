@@ -47,13 +47,8 @@ public class VehiclesController : BaseController
             }
 
             ICollection<VehicleBasicInfoResponseModel> vehicles = await vehicleService.AllUserVehiclesByIdAsync(userId);
-            foreach (var vehicle in vehicles)
-            {
-                if(vehicle.ImageUrl != null)
-                {
-                    vehicle.ImageUrl = await imageService.GetImageUrlAsync(vehicle.ImageUrl);
-                }
-            }
+           
+
             return StatusCode(200, vehicles);
         }
         catch (SqlException ex)
@@ -152,7 +147,7 @@ public class VehiclesController : BaseController
                 return StatusCode(403, new StatusInformationMessage(NoPermission));
             }
 
-            await vehicleService.EditAsync(vehicleId, model);
+            await vehicleService.EditAsync(vehicleId, userId, model);
 
             return StatusCode(200, new StatusInformationMessage(Success));
 
@@ -197,7 +192,7 @@ public class VehiclesController : BaseController
                 return StatusCode(403, InvalidUser);
             }
            
-            await vehicleService.DeleteAsync(vehicleId);
+            await vehicleService.DeleteAsync(vehicleId, userId);
 
             return StatusCode(200, new StatusInformationMessage(Success));
 
@@ -229,6 +224,8 @@ public class VehiclesController : BaseController
     {
         try
         {
+            string userId = this.User.GetId()!;
+
             if (!ModelState.IsValid)
             {
                 return StatusCode(400, new StatusInformationMessage(InvalidData));
@@ -251,7 +248,7 @@ public class VehiclesController : BaseController
 
             string imageId = await imageService.UploadVehicleImage(file);
 
-            bool isAdded = await vehicleService.AddImageToVehicle(vehicleId, imageId);
+            bool isAdded = await vehicleService.AddImageToVehicle(vehicleId, userId ,imageId);
 
             if (isAdded) 
             {
@@ -314,11 +311,6 @@ public class VehiclesController : BaseController
             }
 
             VehicleDetailsResponseModel vehicle = await vehicleService.GetVehicleDetailsByIdAsync(vehicleId);
-
-            if(vehicle.ImageUrl != null)
-            {
-                vehicle.ImageUrl = await imageService.GetImageUrlAsync(vehicle.ImageUrl);
-            }
 
             return StatusCode(200, vehicle);
 
