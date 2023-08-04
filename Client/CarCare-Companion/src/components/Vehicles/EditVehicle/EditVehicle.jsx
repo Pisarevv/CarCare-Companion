@@ -303,14 +303,9 @@ const EditVehicle = (props) => {
             "Content-Type": "multipart/form-data" 
           }
         })
-        // const file = new file();
-        // file.append("file", dataURLtoFile(vehicleImage, "inputImage"));
-        // await uploadVehicleImage(file, id);
+        navigate('/MyVehicles');
       }
-
-      navigate('/MyVehicles');
     }
-
     catch (error) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       NotificationHandler(error)

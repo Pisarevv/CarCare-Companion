@@ -79,7 +79,7 @@ const AddVehicle = (props) => {
 
   const [fuelTypes, setFuelTypes] = useState([]);
   const [vehicleTypes, setVehicleTypes] = useState([]);
-  
+
   const [stepOneFinished, setStepOneFinished] = useState(false);
 
   const [userVehicle, dispatch] = useReducer(userVehicleReducer, {
@@ -113,18 +113,18 @@ const AddVehicle = (props) => {
           })
         ]
         Promise.all(requests)
-        .then(responses => {
+          .then(responses => {
 
-          const fuelTypesResult = responses[0].data;
-          const vehicleTypesResult = responses[1].data;
+            const fuelTypesResult = responses[0].data;
+            const vehicleTypesResult = responses[1].data;
 
-          dispatch({ type: `SET_FUELTYPEID`, payload: fuelTypesResult[0].id })
-          dispatch({ type: `SET_VEHICLETYPEID`, payload: vehicleTypesResult[0].id })
-          if(isMounted){
-            setFuelTypes(fuelTypes => fuelTypesResult);
-            setVehicleTypes(vehicleTypes => vehicleTypesResult);
-          }        
-        })
+            dispatch({ type: `SET_FUELTYPEID`, payload: fuelTypesResult[0].id })
+            dispatch({ type: `SET_VEHICLETYPEID`, payload: vehicleTypesResult[0].id })
+            if (isMounted) {
+              setFuelTypes(fuelTypes => fuelTypesResult);
+              setVehicleTypes(vehicleTypes => vehicleTypesResult);
+            }
+          })
       } catch (err) {
         NotificationHandler(err);
         navigate('/login', { state: { from: location }, replace: true });
@@ -208,7 +208,7 @@ const AddVehicle = (props) => {
       if (!ValidationRegexes.yearRegex.test(value)) {
         dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.inputNotNumber });
         return false;
-    }
+      }
       if (Number(value) < 1900 || Number(value) > Number(new Date().getFullYear())) {
         dispatch({ type: `SET_${target.toUpperCase()}_ERROR`, payload: ValidationErrors.yearNotValid });
         return false;
@@ -277,7 +277,7 @@ const AddVehicle = (props) => {
       ) {
         const { make, model, year, fuelTypeId, vehicleTypeId } = userVehicle;
         const mileage = DecimalSeparatorFormatter(userVehicle.mileage);
-        const vehicleIdResponse = await axiosPrivate.post("/Vehicles",{ make, model, mileage, year, fuelTypeId, vehicleTypeId });
+        const vehicleIdResponse = await axiosPrivate.post("/Vehicles", { make, model, mileage, year, fuelTypeId, vehicleTypeId });
         vehicleId = vehicleIdResponse.data;
       }
 
@@ -289,10 +289,10 @@ const AddVehicle = (props) => {
 
         const file = new FormData();
         file.append("file", dataURLtoFile(vehicleImage, "inputImage"));
-        await axiosPrivateFile.post("/Vehicles/ImageUpload",file, {
-          headers : {
-            "VehicleId" : `${vehicleId}`,
-            "Content-Type": "multipart/form-data" 
+        await axiosPrivateFile.post("/Vehicles/ImageUpload", file, {
+          headers: {
+            "VehicleId": `${vehicleId}`,
+            "Content-Type": "multipart/form-data"
           }
         })
       }
