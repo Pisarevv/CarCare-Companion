@@ -13,6 +13,7 @@ using CarCare_Companion.Api.Extensions.Mail;
 using CarCare_Companion.Core.Messaging.Models;
 
 
+
 public class GmailEmailSender : IEmailSender
 {
     private readonly MailSettings mailSettings;
@@ -27,11 +28,10 @@ public class GmailEmailSender : IEmailSender
     public async Task SendEmailAsync(MailRequest mailRequest)
     {
         var email = new MimeMessage();
-        email.Sender = MailboxAddress.Parse(mailSettings.Mail);
+        email.From.Add(new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail));
         email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
         email.Subject = mailRequest.Subject;
         var builder = new BodyBuilder();
-       
         builder.HtmlBody = mailRequest.Body;
         email.Body = builder.ToMessageBody();
 
@@ -59,14 +59,13 @@ public class GmailEmailSender : IEmailSender
         foreach (var mailRequest in mailRequests)
         {
             var email = new MimeMessage();
-            email.Sender = MailboxAddress.Parse(mailSettings.Mail);
+            email.From.Add(new MailboxAddress(mailSettings.DisplayName, mailSettings.Mail));
             email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
             email.Subject = mailRequest.Subject;
             var builder = new BodyBuilder();
 
             builder.HtmlBody = mailRequest.Body;
             email.Body = builder.ToMessageBody();
-
             emails.Add(email);
         }
 
@@ -85,7 +84,6 @@ public class GmailEmailSender : IEmailSender
         }
         catch (Exception ex)
         {
-
              logger.LogError(ex.Message);
         }
     }
