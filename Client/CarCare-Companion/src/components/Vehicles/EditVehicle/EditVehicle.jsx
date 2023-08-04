@@ -305,6 +305,8 @@ const EditVehicle = (props) => {
         })
         navigate('/MyVehicles');
       }
+
+      navigate('/MyVehicles');
     }
     catch (error) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
