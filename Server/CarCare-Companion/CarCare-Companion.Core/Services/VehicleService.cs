@@ -9,7 +9,6 @@ using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Vehicle;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
-using CarCare_Companion.Infrastructure.Data.Models.Contracts;
 
 /// <summary>
 /// The VehicleService is responsible for operations regarding the vehicle-related actions

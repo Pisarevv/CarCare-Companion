@@ -1,6 +1,7 @@
-﻿using CarCare_Companion.Api.Extensions.Quartz;
+﻿using Quartz;
+
+using CarCare_Companion.Api.Extensions.Quartz;
 using CarCare_Companion.Api.Jobs;
-using Quartz;
 
 using static CarCare_Companion.Common.GlobalConstants;
 
