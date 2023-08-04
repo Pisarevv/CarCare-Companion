@@ -16,11 +16,11 @@ public interface IVehicleService
 
     public Task<string> CreateAsync(string userId, VehicleFormRequestModel model);
 
-    public Task EditAsync(string vehicleId, VehicleFormRequestModel model);
+    public Task EditAsync(string vehicleId, string userId,VehicleFormRequestModel model);
 
-    public Task DeleteAsync(string vehicleId);
+    public Task DeleteAsync(string vehicleId, string userId);
 
-    public Task<bool> AddImageToVehicle(string vehicleId, string imageId);
+    public Task<bool> AddImageToVehicle(string vehicleId, string userId, string imageId);
 
     public Task<ICollection<VehicleBasicInfoResponseModel>> AllUserVehiclesByIdAsync(string userId);
 

@@ -4,11 +4,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Vehicle;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
+
+using static Common.CacheKeysAndDurations.Vehicles;
+
 
 /// <summary>
 /// The VehicleService is responsible for operations regarding the vehicle-related actions
@@ -16,11 +20,16 @@ using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
 public class VehicleService : IVehicleService
 {
     private readonly IRepository repository;
+    private readonly IImageService imageService;
+    private readonly IMemoryCache memoryCache;
 
-    public VehicleService(IRepository repository)
+    public VehicleService(IRepository repository, IImageService imageService, IMemoryCache memoryCache)
     {
         this.repository = repository;
+        this.imageService = imageService;
+        this.memoryCache = memoryCache;
     }
+
 
     /// <summary>
     /// Creates a new vehicle
@@ -44,6 +53,8 @@ public class VehicleService : IVehicleService
         await repository.AddAsync(newVehicle);
         await repository.SaveChangesAsync();
 
+        this.memoryCache.Remove(userId + UserVehiclesCacheKeyAddition);
+
         return newVehicle.Id.ToString();
     }
 
@@ -52,7 +63,7 @@ public class VehicleService : IVehicleService
     /// </summary>
     /// <param name="vehicleId">The vehicle identifier</param>
     /// <param name="model">The input model containing the vehicle information</param>
-    public async Task EditAsync(string vehicleId, VehicleFormRequestModel model)
+    public async Task EditAsync(string vehicleId, string userId ,VehicleFormRequestModel model)
     {
         Vehicle vehicleToEdit = await repository.GetByIdAsync<Vehicle>(Guid.Parse(vehicleId));
 
@@ -65,6 +76,9 @@ public class VehicleService : IVehicleService
         vehicleToEdit.ModifiedOn = DateTime.UtcNow;
 
         await repository.SaveChangesAsync();
+
+        this.memoryCache.Remove(userId + UserVehiclesCacheKeyAddition);
+        this.memoryCache.Remove(vehicleId + VehicleDetailsCacheKeyAddition);
     }
 
 
@@ -74,7 +88,7 @@ public class VehicleService : IVehicleService
     /// <param name="vehicleId">The vehicle Id</param>
     /// <param name="imageId">The image Id</param>
     /// <returns>A boolean regarding the adding process</returns>
-    public async Task<bool> AddImageToVehicle(string vehicleId, string imageId)
+    public async Task<bool> AddImageToVehicle(string vehicleId,string userId ,string imageId)
     {
         Vehicle vehicle = await repository.GetByIdAsync<Vehicle>(Guid.Parse(vehicleId));
         if (vehicle != null)
@@ -83,6 +97,9 @@ public class VehicleService : IVehicleService
            await  repository.SaveChangesAsync();  
            return true;
         }
+
+        this.memoryCache.Remove(userId + UserVehiclesCacheKeyAddition);
+        this.memoryCache.Remove(vehicleId + VehicleDetailsCacheKeyAddition);
 
         return false;
     }
@@ -129,13 +146,28 @@ public class VehicleService : IVehicleService
     /// <returns>Collection of fuel types</returns>
     public async Task<ICollection<FuelTypeResponseModel>> AllFuelTypesAsync()
     {
-        return await repository.AllReadonly<FuelType>()
+        ICollection<FuelTypeResponseModel>? fuelTypes =
+            this.memoryCache.Get<ICollection<FuelTypeResponseModel>>(FuelTypesCacheKey);
+
+        if (fuelTypes == null)
+        {
+            fuelTypes = await repository.AllReadonly<FuelType>()
                .Select(ft => new FuelTypeResponseModel
                {
                    Id = ft.Id,
                    Name = ft.Name,
                })
                .ToListAsync();
+
+            MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+             .SetAbsoluteExpiration(TimeSpan.FromMinutes(FuelTypesCacheDurationMinutes));
+
+            this.memoryCache.Set(FuelTypesCacheKey, fuelTypes, cacheOptions);
+
+        }
+
+        return fuelTypes;
+
     }
 
     /// <summary>
@@ -144,13 +176,27 @@ public class VehicleService : IVehicleService
     /// <returns>Collection of vehicle types</returns>
     public async Task<ICollection<VehicleTypeResponseModel>> AllVehicleTypesAsync()
     {
-        return await repository.AllReadonly<VehicleType>()
+
+        ICollection<VehicleTypeResponseModel>? vehicleTypes =
+            this.memoryCache.Get<ICollection<VehicleTypeResponseModel>>(VehicleTypesCacheKey);
+
+        if (vehicleTypes == null)
+        {
+            vehicleTypes = await repository.AllReadonly<VehicleType>()
              .Select(ft => new VehicleTypeResponseModel
              {
                  Id = ft.Id,
                  Name = ft.Name,
              })
              .ToListAsync();
+
+            MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+             .SetAbsoluteExpiration(TimeSpan.FromMinutes(VehicleTypesCacheDurationMinutes));
+
+            this.memoryCache.Set(VehicleTypesCacheKey, vehicleTypes, cacheOptions);
+
+        }
+        return vehicleTypes;
     }
 
     /// <summary>
@@ -160,7 +206,12 @@ public class VehicleService : IVehicleService
     /// <returns>A collection of vehicles with basic information about them</returns>
     public async Task<ICollection<VehicleBasicInfoResponseModel>> AllUserVehiclesByIdAsync(string userId)
     {
-         return await repository.AllReadonly<Vehicle>()
+        ICollection<VehicleBasicInfoResponseModel>? userVehicles =
+            this.memoryCache.Get<ICollection<VehicleBasicInfoResponseModel>>(userId + UserVehiclesCacheKeyAddition);
+        
+        if(userVehicles == null)
+        {
+            userVehicles =  await repository.AllReadonly<Vehicle>()
                .Where(v => v.IsDeleted == false)
                .Where(v => v.OwnerId == Guid.Parse(userId))
                .OrderBy(v => v.CreatedOn)
@@ -172,6 +223,19 @@ public class VehicleService : IVehicleService
                    ImageUrl = v.VehicleImageKey.ToString()
                })
                .ToListAsync();
+
+            foreach(var userVehicle in userVehicles)
+            {
+                userVehicle.ImageUrl = await imageService.GetImageUrlAsync(userVehicle.ImageUrl);
+            }
+
+            MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(UserVehiclesCacheDurationMinutes));
+
+            this.memoryCache.Set(userId + UserVehiclesCacheKeyAddition,userVehicles, cacheOptions); 
+        }
+
+        return userVehicles;
     }
 
     /// <summary>
@@ -181,7 +245,12 @@ public class VehicleService : IVehicleService
     /// <returns>Detailed model containing all the vehicle information</returns>
     public async Task<VehicleDetailsResponseModel> GetVehicleDetailsByIdAsync(string vehicleId)
     {
-        return await repository.AllReadonly<Vehicle>()
+        VehicleDetailsResponseModel? vehicle = 
+            this.memoryCache.Get<VehicleDetailsResponseModel>(vehicleId + VehicleDetailsCacheKeyAddition);
+
+        if(vehicle == null)
+        {
+            vehicle = await repository.AllReadonly<Vehicle>()
                .Where(v => v.Id == Guid.Parse(vehicleId))
                .Select(v => new VehicleDetailsResponseModel
                {
@@ -195,6 +264,20 @@ public class VehicleService : IVehicleService
                    VehicleType = v.VehicleType.Name
                })
                .FirstAsync();
+
+            if (vehicle.ImageUrl != null)
+            {
+                vehicle.ImageUrl = await imageService.GetImageUrlAsync(vehicle.ImageUrl);
+            }
+
+            MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(VehicleDetailCacheDurationMinutes));
+
+            this.memoryCache.Set(vehicleId + VehicleDetailsCacheKeyAddition, vehicle, cacheOptions);
+        }
+
+        return vehicle;
+        
                                          
     }
 
@@ -250,7 +333,7 @@ public class VehicleService : IVehicleService
     /// Deletes a vehicle and all of its records
     /// </summary>
     /// <param name="vehicleId">The vehicle identifier</param>
-    public async Task DeleteAsync(string vehicleId)
+    public async Task DeleteAsync(string vehicleId, string userId)
     {
         Vehicle vehicleToDelete = await repository.All<Vehicle>().
                                   Where(v => v.Id == Guid.Parse(vehicleId))
@@ -281,6 +364,9 @@ public class VehicleService : IVehicleService
         }
 
         await repository.SaveChangesAsync();
+
+        this.memoryCache.Remove(userId + UserVehiclesCacheKeyAddition);
+        this.memoryCache.Remove(vehicleId + VehicleDetailsCacheKeyAddition);
     }
 
 }
