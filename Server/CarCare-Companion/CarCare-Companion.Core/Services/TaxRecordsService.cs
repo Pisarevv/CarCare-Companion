@@ -207,4 +207,33 @@ public class TaxRecordsService : ITaxRecordsService
                .ToListAsync();
 
     }
+
+    /// <summary>
+    /// Retrieves users and their taxes that are expiring the next day
+    /// </summary>
+    /// <returns>Collection of taxes that are expiring the next day</returns>
+    public async Task<ICollection<UpcomingUserTaxResponseModel>> GetUpcomingUsersTaxesAsync()
+    {
+
+        DateTime filterDay = DateTime.Today.AddDays(1);
+
+        DateTime startDateFilter = new DateTime(filterDay.Year, filterDay.Month, filterDay.Day, 0, 0, 0);
+        DateTime endDateFilter = new DateTime(filterDay.Year, filterDay.Month, filterDay.Day, 23,59, 59);
+
+        return await repository.AllReadonly<TaxRecord>()
+               .Where(tr => tr.IsDeleted == false)
+               .Where(tr => tr.ValidTo >= startDateFilter && tr.ValidTo <= endDateFilter)
+               .Select(tr => new UpcomingUserTaxResponseModel
+               {
+                   Email = tr.Owner.Email,
+                   FirstName = tr.Owner.FirstName,
+                   LastName = tr.Owner.LastName,
+                   TaxName = tr.Title,
+                   TaxValidTo = tr.ValidTo.ToString("dd/MM/yyyy"),
+                   VehicleMake = tr.Vehicle.Make,
+                   VehicleModel = tr.Vehicle.Model
+               })
+               .ToListAsync();
+
+    }
 }
