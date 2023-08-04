@@ -1,19 +1,27 @@
 ﻿namespace CarCare_Companion.Core.Messaging;
 
-using CarCare_Companion.Api.Extensions.Mail;
-using CarCare_Companion.Core.Messaging.Models;
+using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
 using MailKit.Net.Smtp;
 using MailKit.Security;
-using Microsoft.Extensions.Options;
 using MimeKit;
-using System.Threading.Tasks;
+
+using CarCare_Companion.Api.Extensions.Mail;
+using CarCare_Companion.Core.Messaging.Models;
+
 
 public class GmailEmailSender : IEmailSender
 {
     private readonly MailSettings mailSettings;
-    public GmailEmailSender(IOptions<MailSettings> mailSettings) 
+    private readonly ILogger<GmailEmailSender> logger;
+
+    public GmailEmailSender(IOptions<MailSettings> mailSettings, ILogger<GmailEmailSender> logger) 
     {
         this.mailSettings = mailSettings.Value;
+        this.logger = logger;
     }
 
     public async Task SendEmailAsync(MailRequest mailRequest)
@@ -26,12 +34,20 @@ public class GmailEmailSender : IEmailSender
        
         builder.HtmlBody = mailRequest.Body;
         email.Body = builder.ToMessageBody();
-        using (var smtp = new SmtpClient())
+
+        try
         {
-            smtp.Connect(mailSettings.Host, mailSettings.Port, SecureSocketOptions.StartTls);
-            smtp.Authenticate(mailSettings.Mail, mailSettings.Password);
-            await smtp.SendAsync(email);
-            smtp.Disconnect(true);
+            using (var smtp = new SmtpClient())
+            {
+                smtp.Connect(mailSettings.Host, mailSettings.Port, SecureSocketOptions.StartTls);
+                smtp.Authenticate(mailSettings.Mail, mailSettings.Password);
+                await smtp.SendAsync(email);
+                smtp.Disconnect(true);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex.Message);
         }
           
     }
@@ -54,15 +70,23 @@ public class GmailEmailSender : IEmailSender
             emails.Add(email);
         }
 
-        using (var smtp = new SmtpClient())
+        try
         {
-            smtp.Connect(mailSettings.Host, mailSettings.Port, SecureSocketOptions.StartTls);
-            smtp.Authenticate(mailSettings.Mail, mailSettings.Password);
-            foreach(var email in emails)
+            using (var smtp = new SmtpClient())
             {
-                smtp.Send(email);
+                smtp.Connect(mailSettings.Host, mailSettings.Port, SecureSocketOptions.StartTls);
+                smtp.Authenticate(mailSettings.Mail, mailSettings.Password);
+                foreach (var email in emails)
+                {
+                    smtp.Send(email);
+                }
+                smtp.Disconnect(true);
             }
-            smtp.Disconnect(true);
+        }
+        catch (Exception ex)
+        {
+
+             logger.LogError(ex.Message);
         }
     }
 }
