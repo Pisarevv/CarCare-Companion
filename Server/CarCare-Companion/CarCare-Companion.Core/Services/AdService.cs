@@ -9,6 +9,9 @@ using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Ads;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Ads;
+using Microsoft.Extensions.Caching.Memory;
+
+using static Common.CacheKeysAndDurations.CarouselAds;
 
 
 /// <summary>
@@ -17,11 +20,14 @@ using CarCare_Companion.Infrastructure.Data.Models.Ads;
 public class AdService : IAdService
 {
     private readonly IRepository repository;
+    private readonly IMemoryCache memoryCache;
 
-    public AdService(IRepository repository)
+    public AdService(IRepository repository, IMemoryCache memoryCache)
     {
         this.repository = repository;
+        this.memoryCache = memoryCache;
     }
+
 
     /// <summary>
     /// Retrieves all the carousel ads 
@@ -29,7 +35,12 @@ public class AdService : IAdService
     /// <returns>Collection of carousel ad models</returns>
     public async Task<ICollection<CarouselAdResponseModel>> GetAllAsync()
     {
-        return await repository.AllReadonly<CarouselAdModel>()
+        ICollection<CarouselAdResponseModel>? allCarouselAds =
+            this.memoryCache.Get<ICollection<CarouselAdResponseModel>>(CarouselAdsCacheKey);
+
+        if (allCarouselAds == null)
+        {
+            allCarouselAds = await repository.AllReadonly<CarouselAdModel>()
                                .Select(c => new CarouselAdResponseModel
                                {
                                    Id = c.Id.ToString(),
@@ -39,7 +50,13 @@ public class AdService : IAdService
                                })
                                .ToListAsync();
 
+            MemoryCacheEntryOptions cacheOptions   = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(CarouselAdsCacheDurationMinutes));
 
+            this.memoryCache.Set(CarouselAdsCacheKey, allCarouselAds, cacheOptions);
+        }
+
+        return allCarouselAds;
     }
 
     /// <summary>
@@ -89,6 +106,8 @@ public class AdService : IAdService
         carouselAdToEdit.ModifiedOn = DateTime.UtcNow;
 
         await repository.SaveChangesAsync();
+
+        this.memoryCache.Remove(CarouselAdsCacheKey);
     }
 
 
@@ -98,7 +117,13 @@ public class AdService : IAdService
     /// <returns>Collection of carousel ad models</returns>
     public async Task<ICollection<CarouselAdResponseModel>> GetFiveAsync()
     {
-        return await repository.AllReadonly<CarouselAdModel>()
+
+        ICollection<CarouselAdResponseModel>? fiveCarouselAds =
+           this.memoryCache.Get<ICollection<CarouselAdResponseModel>>(CarouselAdsCacheKey);
+
+        if (fiveCarouselAds == null)
+        {
+            fiveCarouselAds = await repository.AllReadonly<CarouselAdModel>()
                                .Select(c => new CarouselAdResponseModel
                                {
                                    Id = c.Id.ToString(),
@@ -109,6 +134,13 @@ public class AdService : IAdService
                                .Take(5)
                                .ToListAsync();
 
+            MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(CarouselAdsCacheDurationMinutes));
+
+            this.memoryCache.Set(CarouselAdsCacheKey, fiveCarouselAds, cacheOptions);
+        }
+
+        return fiveCarouselAds;
 
     }
 }
