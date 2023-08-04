@@ -117,6 +117,7 @@ namespace CarCare_Companion.Api
             services.AddScoped<ITaxRecordsService, TaxRecordsService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailSender, GmailEmailSender>();
+            services.AddScoped<IMessagingService, MessagingService>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
