@@ -80,6 +80,9 @@ namespace CarCare_Companion.Api
                 options.Password.RequiredLength = 6;
             });
 
+            //Add memory cache
+            services.AddMemoryCache();
+
             //Adding AWS services
             services.AddDefaultAWSOptions(configuration.GetAWSOptions());
             services.AddAWSService<IAmazonS3>();
