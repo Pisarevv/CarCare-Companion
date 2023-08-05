@@ -22,10 +22,22 @@ public static class CacheKeysAndDurations
         public static int VehicleDetailCacheDurationMinutes = 10;
 
         public static string FuelTypesCacheKey = "FuelTypes";
-        public static int FuelTypesCacheDurationMinutes = 20;
+        public static int FuelTypesCacheDurationMinutes = 10;
 
         public static string VehicleTypesCacheKey = "VehicleTypes";
-        public static int VehicleTypesCacheDurationMinutes = 20;
+        public static int VehicleTypesCacheDurationMinutes = 10;
+    }
+
+    public static class Trips
+    {
+        public static string UserTripsCacheKeyAddition = "UserTrips";
+        public static int UserTripsCacheDurationMinutes = 10;
+
+        public static string UserTripsCostCacheKeyAddition = "UserTripsCost";
+        public static int UserTripsCostDurationMinutes = 10;
+
+        public static string UserTripsCountCacheKeyAddition = "UserTripsCount";
+        public static int UserTripsCountDurationMinutes = 10;
     }
 
 

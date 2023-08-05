@@ -115,7 +115,7 @@ public class TripsController : BaseController
                 return StatusCode(403, InvalidUser);
             }
 
-            await tripService.EditAsync(tripId, model);
+            await tripService.EditAsync(tripId, userId, model);
 
             return StatusCode(200, new StatusInformationMessage(Success));
 
@@ -160,7 +160,7 @@ public class TripsController : BaseController
                 return StatusCode(403, InvalidUser);
             }
 
-            await tripService.DeleteAsync(tripId);
+            await tripService.DeleteAsync(tripId, userId);
 
             return StatusCode(200, new StatusInformationMessage(Success));
 

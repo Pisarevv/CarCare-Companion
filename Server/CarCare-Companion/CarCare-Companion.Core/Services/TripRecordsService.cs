@@ -5,11 +5,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Trip;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
+
+using static Common.CacheKeysAndDurations.Trips;
+
+
 
 
 /// <summary>
@@ -18,10 +23,12 @@ using CarCare_Companion.Infrastructure.Data.Models.Records;
 public class TripRecordsService : ITripRecordsService
 {
     private readonly IRepository repository;
+    private readonly IMemoryCache memoryCache;
 
-    public TripRecordsService(IRepository repository)
+    public TripRecordsService(IRepository repository, IMemoryCache memoryCache)
     {
         this.repository = repository;
+        this.memoryCache = memoryCache;
     }
 
     /// <summary>
@@ -48,6 +55,10 @@ public class TripRecordsService : ITripRecordsService
         await repository.AddAsync<TripRecord>(tripToAdd);
         await repository.SaveChangesAsync();
 
+        this.memoryCache.Remove(userId + UserTripsCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTripsCostCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTripsCountCacheKeyAddition);
+
         return tripToAdd.Id.ToString();
     }
 
@@ -57,7 +68,7 @@ public class TripRecordsService : ITripRecordsService
     /// <param name="tripId">The trip record identifier</param>
     /// <param name="model">The input model containing the trip information</param>
     /// <returns></returns>
-    public async Task EditAsync(string tripId, TripFormRequestModel model)
+    public async Task EditAsync(string tripId, string userId,TripFormRequestModel model)
     {
         TripRecord tripToEdit = await repository.GetByIdAsync<TripRecord>(Guid.Parse(tripId));
 
@@ -71,19 +82,27 @@ public class TripRecordsService : ITripRecordsService
         tripToEdit.Cost = CalculateTripCost(model.FuelPrice, model.UsedFuel);
 
         await repository.SaveChangesAsync();
+
+        this.memoryCache.Remove(userId + UserTripsCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTripsCostCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTripsCountCacheKeyAddition);
     }
 
     /// <summary>
     /// Deletes a trip record
     /// </summary>
     /// <param name="tripId">The trip record identifier</param>
-    public async Task DeleteAsync(string tripId)
+    public async Task DeleteAsync(string tripId, string userId)
     {
         TripRecord tripToDelete = await repository.GetByIdAsync<TripRecord>(Guid.Parse(tripId));
 
         repository.SoftDelete<TripRecord>(tripToDelete);
 
         await repository.SaveChangesAsync();
+
+        this.memoryCache.Remove(userId + UserTripsCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTripsCostCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTripsCountCacheKeyAddition);
     }
 
     /// <summary>
@@ -105,7 +124,12 @@ public class TripRecordsService : ITripRecordsService
     /// <returns>A collection of trip records</returns>
     public async Task<ICollection<TripDetailsByUserResponseModel>> GetAllTripsByUsedIdAsync(string userId)
     {
-        return await repository.AllReadonly<TripRecord>()
+        ICollection<TripDetailsByUserResponseModel>? userTrips =
+            this.memoryCache.Get<ICollection<TripDetailsByUserResponseModel>>(userId + UserTripsCacheKeyAddition);
+
+        if(userTrips == null)
+        {
+            userTrips = await repository.AllReadonly<TripRecord>()
                .Where(v => v.IsDeleted == false)
                .Where(t => t.OwnerId == Guid.Parse(userId))
                .OrderByDescending(t => t.CreatedOn)
@@ -121,9 +145,17 @@ public class TripRecordsService : ITripRecordsService
                    VehicleModel = t.Vehicle.Model,
                    DateCreated = t.CreatedOn,
                    TripCost = t.Cost
-             
+
                })
                .ToListAsync();
+
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(UserTripsCacheDurationMinutes));
+
+            this.memoryCache.Set(userId + UserTripsCacheKeyAddition, userTrips, options);
+        }
+
+        return userTrips;
 
     }
 
@@ -169,11 +201,23 @@ public class TripRecordsService : ITripRecordsService
     /// <returns>The count of the user trip records</returns>
     public async Task<int> GetAllUserTripsCountAsync(string userId)
     {
-        return await repository.AllReadonly<TripRecord>()
+        int tripsCount =
+            this.memoryCache.Get<int>(userId + UserTripsCountCacheKeyAddition);
+
+        if(tripsCount == 0)
+        {
+            tripsCount = await repository.AllReadonly<TripRecord>()
                .Where(v => v.IsDeleted == false)
                .Where(tr => tr.OwnerId == Guid.Parse(userId))
                .CountAsync();
-    }
+
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+              .SetSlidingExpiration(TimeSpan.FromMinutes(UserTripsCountDurationMinutes));
+
+            this.memoryCache.Set(userId + UserTripsCountCacheKeyAddition, tripsCount, options);
+        }
+        return tripsCount;
+    }   
 
     /// <summary>
     /// Retrieves all user trip records cost
@@ -181,11 +225,24 @@ public class TripRecordsService : ITripRecordsService
     /// <returns>The total cost of the user trip records</returns>
     public async Task<decimal?> GetAllUserTripsCostAsync(string userId)
     {
-        return await repository.All<TripRecord>()
-               .Where(v => v.IsDeleted == false)
-               .Where(tr => tr.OwnerId == Guid.Parse(userId) && tr.Cost != null)
-               .SumAsync(tr => tr.Cost);
-                 
+        decimal? tripsCost =
+            this.memoryCache.Get<decimal?>(userId + UserTripsCostCacheKeyAddition);
+
+        if(tripsCost == null)
+        {
+            tripsCost = await repository.All<TripRecord>()
+              .Where(v => v.IsDeleted == false)
+              .Where(tr => tr.OwnerId == Guid.Parse(userId) && tr.Cost != null)
+              .SumAsync(tr => tr.Cost);
+
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+             .SetSlidingExpiration(TimeSpan.FromMinutes(UserTripsCountDurationMinutes));
+
+            this.memoryCache.Set(userId + UserTripsCostCacheKeyAddition, tripsCost, options);
+        }
+
+        return tripsCost;
+
     }
 
     /// <summary>

@@ -6,9 +6,9 @@ public interface ITripRecordsService
 {
     public Task<string> CreateAsync(string userId, TripFormRequestModel model);
 
-    public Task EditAsync(string tripId, TripFormRequestModel model);
+    public Task EditAsync(string tripId, string userId, TripFormRequestModel model);
 
-    public Task DeleteAsync(string tripId);
+    public Task DeleteAsync(string tripId, string userId);
 
     public Task<TripEditDetailsResponseModel> GetTripDetailsByIdAsync(string tripId);
 
