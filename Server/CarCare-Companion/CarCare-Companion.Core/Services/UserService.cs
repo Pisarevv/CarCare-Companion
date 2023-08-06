@@ -4,22 +4,28 @@ using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Admin.Users;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using static Common.GlobalConstants;
+using static Common.CacheKeysAndDurations.Users;
 
 public class UserService : IUserService
 {
     private readonly IRepository repository;
     private readonly IIdentityService identityService;
+    private readonly IMemoryCache memoryCache;
 
-    public UserService(IRepository repository, IIdentityService identityService)
+    public UserService(IRepository repository, IIdentityService identityService, IMemoryCache memoryCache)
     {
         this.repository = repository;
         this.identityService = identityService;
+        this.memoryCache = memoryCache;
     }
-
 
 
     /// <summary>
@@ -28,13 +34,27 @@ public class UserService : IUserService
     /// <returns>Collection of the application users</returns>
     public async Task<ICollection<UserInformationResponseModel>> GetAllUsersAsync()
     {
-        return await repository.AllReadonly<ApplicationUser>()
+        ICollection<UserInformationResponseModel>? users =
+            this.memoryCache.Get<ICollection<UserInformationResponseModel>>(UsersCacheKey);
+
+        if(users == null)
+        {
+            users = await repository.AllReadonly<ApplicationUser>()
             .Select(au => new UserInformationResponseModel()
             {
-                UserId = au.Id.ToString(),            
+                UserId = au.Id.ToString(),
                 Username = au.UserName,
             })
             .ToListAsync();
+
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromMinutes(UsersCacheDurationMinutes));
+
+            this.memoryCache.Set(UsersCacheKey, users, options);
+        }
+
+        return users;
+
     }
 
     /// <summary>

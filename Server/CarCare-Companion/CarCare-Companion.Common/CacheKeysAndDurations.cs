@@ -13,6 +13,12 @@ public static class CacheKeysAndDurations
         public static int CarouselAdsCacheDurationMinutes = 10;
     }
 
+    public static class Users
+    {
+        public static string UsersCacheKey = "Users";
+        public static int UsersCacheDurationMinutes = 2;
+    }
+
     public static class Vehicles
     {
         public static string UserVehiclesCacheKeyAddition = "UserVehicles";
