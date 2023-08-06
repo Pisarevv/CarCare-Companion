@@ -210,7 +210,7 @@ public class ServiceRecordsController : BaseController
                 return StatusCode(403, InvalidUser);
             }
 
-            await serviceRecordsService.EditAsync(recordId, model);
+            await serviceRecordsService.EditAsync(recordId, userId, model);
 
             return StatusCode(200, new StatusInformationMessage(Success));
         }
@@ -254,7 +254,7 @@ public class ServiceRecordsController : BaseController
                 return StatusCode(403, InvalidUser);
             }
 
-            await serviceRecordsService.DeleteAsync(recordId);
+            await serviceRecordsService.DeleteAsync(recordId, userId);
 
             return StatusCode(200, new StatusInformationMessage(Success));
         }

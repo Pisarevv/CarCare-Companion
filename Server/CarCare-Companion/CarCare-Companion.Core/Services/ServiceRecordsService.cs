@@ -1,12 +1,19 @@
 ﻿namespace CarCare_Companion.Core.Services;
 
 using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.ServiceRecords;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
-using Microsoft.EntityFrameworkCore;
+
+using static Common.CacheKeysAndDurations.ServiceRecords;
+
+
 
 /// <summary>
 /// The ServiceRecordsService is responsible for operations regarding the service records-related actions
@@ -14,11 +21,14 @@ using Microsoft.EntityFrameworkCore;
 public class ServiceRecordsService : IServiceRecordsService
 {
     private readonly IRepository repository;
+    private readonly IMemoryCache memoryCache;
 
-    public ServiceRecordsService(IRepository repository)
+    public ServiceRecordsService(IRepository repository, IMemoryCache memoryCache)
     {
         this.repository = repository;
+        this.memoryCache = memoryCache;
     }
+
 
     /// <summary>
     /// Creates a new service record
@@ -43,6 +53,12 @@ public class ServiceRecordsService : IServiceRecordsService
         await repository.AddAsync<ServiceRecord>(serviceRecordToAdd);
         await repository.SaveChangesAsync();
 
+        this.memoryCache.Remove(userId + UserServiceRecordsCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserServiceRecordsCountCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserServiceRecordsCostCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserServiceRecordsLastNCacheKeyAddition);
+
+
         return serviceRecordToAdd.Id.ToString();
     }
 
@@ -52,7 +68,7 @@ public class ServiceRecordsService : IServiceRecordsService
     /// </summary>
     /// <param name="serviceRecordId">The service record identifier</param>
     /// <param name="model">The input model containing the service record information</param>
-    public async Task EditAsync(string serviceRecordId, ServiceRecordFormRequestModel model)
+    public async Task EditAsync(string serviceRecordId, string userId, ServiceRecordFormRequestModel model)
     {
         ServiceRecord recordToEdit = await repository.GetByIdAsync<ServiceRecord>(Guid.Parse(serviceRecordId));
 
@@ -64,21 +80,29 @@ public class ServiceRecordsService : IServiceRecordsService
         recordToEdit.PerformedOn = model.PerformedOn;
         recordToEdit.ModifiedOn = DateTime.UtcNow;
 
-        await repository.SaveChangesAsync();   
-       
+        await repository.SaveChangesAsync();
+
+        this.memoryCache.Remove(userId + UserServiceRecordsCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserServiceRecordsCostCacheKeyAddition);
+
     }
 
     /// <summary>
     /// Deletes a service record
     /// </summary>
     /// <param name="serviceRecordId">The service record identifier</param>
-    public async Task DeleteAsync(string serviceRecordId)
+    public async Task DeleteAsync(string serviceRecordId, string userId)
     {
         ServiceRecord serviceRecordToDelete = await repository.GetByIdAsync<ServiceRecord>(Guid.Parse(serviceRecordId));
 
         repository.SoftDelete(serviceRecordToDelete);
 
         await repository.SaveChangesAsync();
+
+        this.memoryCache.Remove(userId + UserServiceRecordsCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserServiceRecordsCountCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserServiceRecordsCostCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserServiceRecordsLastNCacheKeyAddition);
     }
 
     /// <summary>
@@ -88,7 +112,12 @@ public class ServiceRecordsService : IServiceRecordsService
     /// <returns>A collection of service records</returns>
     public async Task<ICollection<ServiceRecordResponseModel>> GetAllByUserIdAsync(string userId)
     {
-        return await repository.AllReadonly<ServiceRecord>()
+        ICollection<ServiceRecordResponseModel>? serviceRecords =
+            this.memoryCache.Get<ICollection<ServiceRecordResponseModel>>(userId + UserServiceRecordsCacheKeyAddition);
+
+        if(serviceRecords == null)
+        {
+           serviceRecords = await repository.AllReadonly<ServiceRecord>()
                .Where(sr => sr.IsDeleted == false && sr.OwnerId == Guid.Parse(userId))
                .OrderByDescending(sr => sr.CreatedOn)
                .Select(sr => new ServiceRecordResponseModel
@@ -103,6 +132,14 @@ public class ServiceRecordsService : IServiceRecordsService
                    VehicleModel = sr.Vehicle.Model
                })
                .ToListAsync();
+
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+               .SetSlidingExpiration(TimeSpan.FromMinutes(UserServiceRecordsCacheDuration));
+
+            this.memoryCache.Set(userId + UserServiceRecordsCacheKeyAddition, serviceRecords, options);
+        }
+
+        return serviceRecords;
     }
 
     /// <summary>
@@ -159,9 +196,22 @@ public class ServiceRecordsService : IServiceRecordsService
     /// <returns>An integer containing the count of user service records</returns>
     public async Task<int> GetAllUserServiceRecordsCountAsync(string userId)
     {
-        return await repository.AllReadonly<ServiceRecord>()
+        int serviceRecordsCount =
+            this.memoryCache.Get<int>(userId + UserServiceRecordsCountCacheKeyAddition);
+
+        if(serviceRecordsCount == 0)
+        {
+            serviceRecordsCount = await repository.AllReadonly<ServiceRecord>()
                .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
                .CountAsync();
+
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+               .SetSlidingExpiration(TimeSpan.FromMinutes(UserServiceRecordsCountCacheDuration));
+
+            this.memoryCache.Set(userId + UserServiceRecordsCountCacheKeyAddition, serviceRecordsCount, options);
+        }
+
+        return serviceRecordsCount;
     }
 
     /// <summary>
@@ -171,9 +221,22 @@ public class ServiceRecordsService : IServiceRecordsService
     /// <returns>An decimal containing the cost of all the user service records</returns>
     public async Task<decimal> GetAllUserServiceRecordsCostAsync(string userId)
     {
-        return await repository.AllReadonly<ServiceRecord>()
+        decimal serviceRecordsCost = 
+            this.memoryCache.Get<decimal>(userId + UserServiceRecordsCostCacheKeyAddition);
+
+        if(serviceRecordsCost == 0)
+        {
+            serviceRecordsCost = await repository.AllReadonly<ServiceRecord>()
                .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
                .SumAsync(tr => tr.Cost);
+
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+              .SetSlidingExpiration(TimeSpan.FromMinutes(UserServiceRecordsCostCacheDuration));
+
+            this.memoryCache.Set(userId + UserServiceRecordsCostCacheKeyAddition, serviceRecordsCost, options);
+        }
+
+        return serviceRecordsCost;
     }
 
     /// <summary>
@@ -185,20 +248,34 @@ public class ServiceRecordsService : IServiceRecordsService
     /// <returns>A collection of service records</returns>
     public async Task<ICollection<ServiceRecordBasicInformationResponseModel>> GetLastNCountAsync(string userId, int count)
     {
-        return await repository.AllReadonly<ServiceRecord>()
+
+        ICollection<ServiceRecordBasicInformationResponseModel>? lastServiceRecords =
+            this.memoryCache.Get<ICollection<ServiceRecordBasicInformationResponseModel>>(userId + UserServiceRecordsLastNCacheKeyAddition);
+
+        if(lastServiceRecords == null)
+        {
+            lastServiceRecords = await repository.AllReadonly<ServiceRecord>()
                .Where(sr => sr.IsDeleted == false)
                .Where(sr => sr.OwnerId == Guid.Parse(userId))
                .OrderByDescending(sr => sr.CreatedOn)
                .Take(count)
                .Select(sr => new ServiceRecordBasicInformationResponseModel
                {
-                  Id = sr.Id.ToString(),
-                  Title = sr.Title,
-                  PerformedOn = sr.PerformedOn,
-                  VehicleMake = sr.Vehicle.Make,
-                  VehicleModel = sr.Vehicle.Model
+                   Id = sr.Id.ToString(),
+                   Title = sr.Title,
+                   PerformedOn = sr.PerformedOn,
+                   VehicleMake = sr.Vehicle.Make,
+                   VehicleModel = sr.Vehicle.Model
 
                })
                .ToListAsync();
+
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+           .SetSlidingExpiration(TimeSpan.FromMinutes(UserServiceRecordsLastNCacheDuration));
+
+            this.memoryCache.Set(userId + UserServiceRecordsLastNCacheKeyAddition, lastServiceRecords, options);
+        }
+
+        return lastServiceRecords;
     }
 }

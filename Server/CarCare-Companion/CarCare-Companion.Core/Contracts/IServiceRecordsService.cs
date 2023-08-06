@@ -8,9 +8,9 @@ public interface IServiceRecordsService
 
     public Task<ICollection<ServiceRecordResponseModel>> GetAllByUserIdAsync(string userId);
 
-    public Task EditAsync(string serviceRecordId, ServiceRecordFormRequestModel model);
+    public Task EditAsync(string serviceRecordId, string userId, ServiceRecordFormRequestModel model);
 
-    public Task DeleteAsync(string serviceRecordId);
+    public Task DeleteAsync(string serviceRecordId, string userId);
 
     public Task<bool> DoesRecordExistByIdAsync(string serviceRecordId);
 

@@ -1,9 +1,5 @@
 ﻿namespace CarCare_Companion.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 public static class CacheKeysAndDurations
 {
@@ -59,6 +55,21 @@ public static class CacheKeysAndDurations
 
         public static string UserTaxRecordsUpcomingCacheKeyAddition = "UserTaxRecordsUpcoming";
         public static int UserTaxRecordsUpcomingCacheDuration = 10;
+    }
+
+    public static class ServiceRecords
+    {
+        public static string UserServiceRecordsCacheKeyAddition = "UserServiceRecords";
+        public static int UserServiceRecordsCacheDuration = 5;
+
+        public static string UserServiceRecordsCountCacheKeyAddition = "UserServiceRecordsCount";
+        public static int UserServiceRecordsCountCacheDuration = 10;
+
+        public static string UserServiceRecordsCostCacheKeyAddition = "UserServiceRecordsCost";
+        public static int UserServiceRecordsCostCacheDuration = 10;
+
+        public static string UserServiceRecordsLastNCacheKeyAddition = "UserServiceRecordsLastN";
+        public static int UserServiceRecordsLastNCacheDuration = 10;
     }
 
 
