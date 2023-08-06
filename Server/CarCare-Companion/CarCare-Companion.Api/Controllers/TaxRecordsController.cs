@@ -1,6 +1,7 @@
 ﻿namespace CarCare_Companion.Api.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 using CarCare_Companion.Common;
 using CarCare_Companion.Core.Contracts;
@@ -9,10 +10,6 @@ using CarCare_Companion.Core.Models.TaxRecords;
 using CarCare_Companion.Core.Services;
 
 using static Common.StatusResponses;
-using CarCare_Companion.Core.Models.ServiceRecords;
-using Microsoft.Data.SqlClient;
-using CarCare_Companion.Core.Models.Trip;
-
 
 /// <summary>
 /// The service records controller handles tax records related operations
@@ -225,7 +222,7 @@ public class TaxRecordsController : BaseController
                 return StatusCode(401, new StatusInformationMessage(NoPermission));
             }
 
-            await taxRecordsService.EditAsync(recordId, model);
+            await taxRecordsService.EditAsync(recordId, userId, model);
 
             return StatusCode(200, new StatusInformationMessage(Success));
         }
@@ -316,7 +313,7 @@ public class TaxRecordsController : BaseController
                 return StatusCode(403, InvalidUser);
             }
 
-            await taxRecordsService.DeleteAsync(recordId);
+            await taxRecordsService.DeleteAsync(recordId, userId);
 
             return StatusCode(200, new StatusInformationMessage(Success));
         }

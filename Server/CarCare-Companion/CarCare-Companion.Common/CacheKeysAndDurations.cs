@@ -34,10 +34,25 @@ public static class CacheKeysAndDurations
         public static int UserTripsCacheDurationMinutes = 10;
 
         public static string UserTripsCostCacheKeyAddition = "UserTripsCost";
-        public static int UserTripsCostDurationMinutes = 10;
+        public static int UserTripsCostCacheDurationMinutes = 10;
 
         public static string UserTripsCountCacheKeyAddition = "UserTripsCount";
-        public static int UserTripsCountDurationMinutes = 10;
+        public static int UserTripsCountCacheDurationMinutes = 10;
+    }
+
+    public static class TaxRecords
+    {
+        public static string UserTaxRecordsCacheKeyAddition = "UserTaxRecords";
+        public static int UserTaxRecordsCacheDuration = 5;
+
+        public static string UserTaxRecordsCountCacheKeyAddition = "UserTaxRecordsCount";
+        public static int UserTaxRecordsCountCacheDuration = 10;
+
+        public static string UserTaxRecordsCostCacheKeyAddition = "UserTaxRecordsCost";
+        public static int UserTaxRecordsCostCacheDuration = 10;
+
+        public static string UserTaxRecordsUpcomingCacheKeyAddition = "UserTaxRecordsUpcoming";
+        public static int UserTaxRecordsUpcomingCacheDuration = 10;
     }
 
 

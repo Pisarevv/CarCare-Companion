@@ -212,7 +212,7 @@ public class TripRecordsService : ITripRecordsService
                .CountAsync();
 
             MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
-              .SetSlidingExpiration(TimeSpan.FromMinutes(UserTripsCountDurationMinutes));
+              .SetSlidingExpiration(TimeSpan.FromMinutes(UserTripsCountCacheDurationMinutes));
 
             this.memoryCache.Set(userId + UserTripsCountCacheKeyAddition, tripsCount, options);
         }
@@ -236,7 +236,7 @@ public class TripRecordsService : ITripRecordsService
               .SumAsync(tr => tr.Cost);
 
             MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
-             .SetSlidingExpiration(TimeSpan.FromMinutes(UserTripsCountDurationMinutes));
+             .SetSlidingExpiration(TimeSpan.FromMinutes(UserTripsCountCacheDurationMinutes));
 
             this.memoryCache.Set(userId + UserTripsCostCacheKeyAddition, tripsCost, options);
         }

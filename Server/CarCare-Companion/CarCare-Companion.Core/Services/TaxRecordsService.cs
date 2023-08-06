@@ -4,21 +4,28 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.TaxRecords;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 
+using static Common.CacheKeysAndDurations.TaxRecords;
+
 
 public class TaxRecordsService : ITaxRecordsService
 {
     private readonly IRepository repository;
+    private readonly IMemoryCache memoryCache;
 
-    public TaxRecordsService(IRepository repository)
+    public TaxRecordsService(IRepository repository, IMemoryCache memoryCache)
     {
         this.repository = repository;
+        this.memoryCache = memoryCache;
     }
+
+
 
     /// <summary>
     /// Retrieves all user tax records
@@ -27,10 +34,15 @@ public class TaxRecordsService : ITaxRecordsService
     /// <returns>Collection of tax records</returns>
     public async Task<ICollection<TaxRecordResponseModel>> GetAllByUserIdAsync(string userId)
     {
-        return await repository.AllReadonly<TaxRecord>()
+        ICollection<TaxRecordResponseModel>? taxRecords = 
+            this.memoryCache.Get<ICollection<TaxRecordResponseModel>>(userId + UserTaxRecordsCacheKeyAddition);
+
+        if(taxRecords == null)
+        {
+            taxRecords = await repository.AllReadonly<TaxRecord>()
                .Where(tr => tr.IsDeleted == false)
                .Where(tr => tr.OwnerId == Guid.Parse(userId))
-               .OrderByDescending(tr => tr.CreatedOn) 
+               .OrderByDescending(tr => tr.CreatedOn)
                .Select(tr => new TaxRecordResponseModel()
                {
                    Id = tr.Id.ToString(),
@@ -43,6 +55,14 @@ public class TaxRecordsService : ITaxRecordsService
                    Description = tr.Description
                })
                .ToListAsync();
+
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(UserTaxRecordsCacheDuration));
+
+            this.memoryCache.Set(userId + UserTaxRecordsCacheKeyAddition, taxRecords, options);
+        }
+        
+        return taxRecords;
     }
 
     /// <summary>
@@ -68,7 +88,14 @@ public class TaxRecordsService : ITaxRecordsService
         await repository.AddAsync(recordToAdd);
         await repository.SaveChangesAsync();
 
+
+        this.memoryCache.Remove(userId + UserTaxRecordsCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTaxRecordsCostCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTaxRecordsCountCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTaxRecordsUpcomingCacheKeyAddition);
+
         return recordToAdd.Id.ToString();
+
     }
 
     /// <summary>
@@ -76,7 +103,7 @@ public class TaxRecordsService : ITaxRecordsService
     /// </summary>
     /// <param name="model">The input model containing the tax record information</param>
     /// <param name="recordId">The tax record identifier</param>
-    public async Task EditAsync(string recordId, TaxRecordFormRequestModel model)
+    public async Task EditAsync(string recordId, string userId, TaxRecordFormRequestModel model)
     {
         TaxRecord recordToEdit = await repository.GetByIdAsync<TaxRecord>(Guid.Parse(recordId));
 
@@ -90,19 +117,29 @@ public class TaxRecordsService : ITaxRecordsService
 
         await repository.SaveChangesAsync();
 
+        this.memoryCache.Remove(userId + UserTaxRecordsCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTaxRecordsCostCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTaxRecordsUpcomingCacheKeyAddition);
+
+
     }
 
     /// <summary>
     /// Deletes a tax record
     /// </summary>
     /// <param name="recordId">The tax record identifier</param>
-    public async Task DeleteAsync(string recordId)
+    public async Task DeleteAsync(string recordId, string userId)
     {
         TaxRecord taxRecordToDelete = await repository.GetByIdAsync<TaxRecord>(Guid.Parse(recordId));
 
         repository.SoftDelete(taxRecordToDelete);
 
         await repository.SaveChangesAsync();
+
+        this.memoryCache.Remove(userId + UserTaxRecordsCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTaxRecordsCostCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTaxRecordsCountCacheKeyAddition);
+        this.memoryCache.Remove(userId + UserTaxRecordsUpcomingCacheKeyAddition);
     }
 
 
@@ -164,9 +201,22 @@ public class TaxRecordsService : ITaxRecordsService
     /// <returns>An integer containing the count of user tax records</returns>
     public async Task<int> GetAllUserTaxRecordsCountAsync(string userId)
     {
-        return await repository.AllReadonly<TaxRecord>()
+        int taxRecordsCount =
+            this.memoryCache.Get<int>(userId + UserTaxRecordsCountCacheKeyAddition);
+
+        if(taxRecordsCount == 0)
+        {
+            taxRecordsCount = await repository.AllReadonly<TaxRecord>()
                .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
                .CountAsync();
+
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+               .SetSlidingExpiration(TimeSpan.FromMinutes(UserTaxRecordsCountCacheDuration));
+
+            this.memoryCache.Set(userId + UserTaxRecordsCountCacheKeyAddition, taxRecordsCount, options);
+        }
+
+        return taxRecordsCount;
     }
 
     /// <summary>
@@ -176,9 +226,22 @@ public class TaxRecordsService : ITaxRecordsService
     /// <returns>An decimal containing the cost of all the user tax records</returns>
     public async Task<decimal> GetAllUserTaxRecordsCostAsync(string userId)
     {
-        return await repository.AllReadonly<TaxRecord>()
+        decimal taxRecordsCost =
+            this.memoryCache.Get<decimal>(userId + UserTaxRecordsCostCacheKeyAddition);
+
+        if(taxRecordsCost == 0)
+        {
+            taxRecordsCost = await repository.AllReadonly<TaxRecord>()
                .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
                .SumAsync(tr => tr.Cost);
+
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+              .SetSlidingExpiration(TimeSpan.FromMinutes(UserTaxRecordsCostCacheDuration));
+
+            this.memoryCache.Set(userId + UserTaxRecordsCostCacheKeyAddition, taxRecordsCost, options);
+        }
+
+        return taxRecordsCost;
     }
 
     /// <summary>
@@ -189,23 +252,36 @@ public class TaxRecordsService : ITaxRecordsService
     /// <returns>Collection of upcoming taxes</returns>
     public async Task<ICollection<UpcomingTaxRecordResponseModel>> GetUpcomingTaxesAsync(string userId, int count)
     {
-        DateTime dateFilterStart = DateTime.UtcNow;
-        DateTime dateFilterEnd = dateFilterStart.AddMonths(2);
+        ICollection<UpcomingTaxRecordResponseModel>? upcomingTaxes =
+            this.memoryCache.Get<ICollection<UpcomingTaxRecordResponseModel>>(userId + UserTaxRecordsUpcomingCacheKeyAddition);
 
-        return await repository.AllReadonly<TaxRecord>()
-               .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
-               .Where(tr => tr.ValidTo >= dateFilterStart && tr.ValidTo <= dateFilterEnd )
-               .Take(count)
-               .Select(tr => new UpcomingTaxRecordResponseModel
-               {
-                   Id = tr.Id.ToString(),
-                   Title = tr.Title,
-                   ValidTo = tr.ValidTo,
-                   VehicleMake = tr.Vehicle.Make,
-                   VehicleModel = tr.Vehicle.Model
-               })
-               .ToListAsync();
+        if(upcomingTaxes == null)
+        {
+            DateTime dateFilterStart = DateTime.UtcNow;
+            DateTime dateFilterEnd = dateFilterStart.AddMonths(2);
 
+            upcomingTaxes =  await repository.AllReadonly<TaxRecord>()
+                   .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
+                   .Where(tr => tr.ValidTo >= dateFilterStart && tr.ValidTo <= dateFilterEnd)
+                   .Take(count)
+                   .Select(tr => new UpcomingTaxRecordResponseModel
+                   {
+                       Id = tr.Id.ToString(),
+                       Title = tr.Title,
+                       ValidTo = tr.ValidTo,
+                       VehicleMake = tr.Vehicle.Make,
+                       VehicleModel = tr.Vehicle.Model
+                   })
+                   .ToListAsync();
+
+            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromMinutes(UserTaxRecordsUpcomingCacheDuration));
+
+            this.memoryCache.Set(userId + UserTaxRecordsUpcomingCacheKeyAddition, upcomingTaxes, options);
+        }
+
+        return upcomingTaxes;
+        
     }
 
     /// <summary>
