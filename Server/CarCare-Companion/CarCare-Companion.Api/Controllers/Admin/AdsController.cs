@@ -5,11 +5,13 @@ using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Ads;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+
 using static Common.GlobalConstants;
-using static Common.StatusResponses;
 
+/// <summary>
+/// The ads controller handles all ads related operations
+/// </summary>
 [Route("[controller]")]
-
 public class AdsController : BaseAdminController
 {
     private readonly IAdService adService;
@@ -32,10 +34,17 @@ public class AdsController : BaseAdminController
     {
         try
         {
-            string userId = this.User.GetId()!;
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
 
             bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
-
 
             if (!isUserAdministrator)
             {
@@ -64,7 +73,7 @@ public class AdsController : BaseAdminController
             logger.LogInformation(ex.Message);
             return StatusCode(400, new ProblemDetails()
             {
-                Detail = InvalidData,
+                Detail = StatusResponses.InvalidData,
 
             });
         }
@@ -80,10 +89,17 @@ public class AdsController : BaseAdminController
     {
         try
         {
-            string userId = this.User.GetId()!;
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
 
             bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
-
 
             if (!isUserAdministrator)
             {
@@ -123,7 +139,7 @@ public class AdsController : BaseAdminController
             logger.LogInformation(ex.Message);
             return StatusCode(400, new ProblemDetails()
             {
-                Detail = InvalidData,
+                Detail = StatusResponses.InvalidData,
 
             });
         }
@@ -145,6 +161,16 @@ public class AdsController : BaseAdminController
     {
         try
         {
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
+
             if (!ModelState.IsValid)
             {
                 return StatusCode(400, new ProblemDetails()
@@ -154,10 +180,7 @@ public class AdsController : BaseAdminController
                 });
             }
 
-            string userId = this.User.GetId()!;
-
             bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
-
 
             if (!isUserAdministrator)
             {
@@ -197,7 +220,7 @@ public class AdsController : BaseAdminController
             logger.LogInformation(ex.Message);
             return StatusCode(400, new ProblemDetails()
             {
-                Detail = InvalidData,
+                Detail = StatusResponses.InvalidData,
 
             });
         }
