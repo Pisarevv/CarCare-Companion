@@ -31,7 +31,7 @@ public class TaxRecordsController : BaseController
 
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(ICollection<TaxRecordResponseModel>))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> All()
     {
         try
@@ -40,7 +40,10 @@ public class TaxRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, new StatusInformationMessage(InvalidUser));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             ICollection<TaxRecordResponseModel> taxRecords = await taxRecordsService.GetAllByUserIdAsync(userId);
@@ -50,12 +53,18 @@ public class TaxRecordsController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -65,22 +74,29 @@ public class TaxRecordsController : BaseController
     /// <param name="model">The model containing the tax record details</param>
     /// <returns>The Id of the tax record trip</returns>
     [HttpPost]
-    [ProducesResponseType(201, Type = typeof(string))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(201, Type = typeof(TaxRecordFormRequestModel))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Create([FromBody] TaxRecordFormRequestModel model)
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return StatusCode(400, new StatusInformationMessage(InvalidData));
-            }
             string? userId = this.User.GetId();
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, new StatusInformationMessage(InvalidUser));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(400, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
 
             bool doesVehicleExist = await vehicleService.DoesVehicleExistByIdAsync(model.VehicleId);
@@ -94,22 +110,31 @@ public class TaxRecordsController : BaseController
 
             if (!isUserVehicleOwner)
             {
-                return StatusCode(400, new StatusInformationMessage(InvalidData));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
-            string recordId = await taxRecordsService.CreateAsync(userId, model);
+            await taxRecordsService.CreateAsync(userId, model);
 
-            return StatusCode(201, recordId);
+            return StatusCode(201, model);
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
 
     }
@@ -122,8 +147,8 @@ public class TaxRecordsController : BaseController
     [HttpGet]
     [Route("Details/{recordId}")]
     [ProducesResponseType(200, Type = typeof(TaxRecordEditDetailsResponseModel))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> TaxRecordsDetails([FromRoute] string recordId)
     {
         try
@@ -132,21 +157,30 @@ public class TaxRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             bool doesTaxRecordExist = await taxRecordsService.DoesRecordExistByIdAsync(recordId);
 
             if (!doesTaxRecordExist)
             {
-                return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             bool isUserCreator = await taxRecordsService.IsUserRecordCreatorAsync(userId, recordId);
 
             if (!isUserCreator)
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             TaxRecordEditDetailsResponseModel taxRecord = await taxRecordsService.GetEditDetailsByIdAsync(recordId);
@@ -158,12 +192,18 @@ public class TaxRecordsController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -175,66 +215,91 @@ public class TaxRecordsController : BaseController
     /// <returns>A status message based on the result</returns>
     [HttpPatch]
     [Route("Edit/{recordId}")]
-    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(401, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(200, Type = typeof(TaxRecordFormRequestModel))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(401, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Edit([FromRoute] string recordId,[FromBody] TaxRecordFormRequestModel model)
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return StatusCode(400, new StatusInformationMessage(InvalidData));
-            }
             string? userId = this.User.GetId();
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, new StatusInformationMessage(InvalidUser));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(400, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
 
             bool doesTaxRecordExist = await taxRecordsService.DoesRecordExistByIdAsync(recordId);
 
             if (!doesTaxRecordExist)
             {
-                return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             bool isUserCreator = await taxRecordsService.IsUserRecordCreatorAsync(userId, recordId);
 
             if (!isUserCreator)
             {
-                return StatusCode(401, new StatusInformationMessage(NoPermission));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             bool doesVehicleExist = await vehicleService.DoesVehicleExistByIdAsync(model.VehicleId);
 
             if (!doesVehicleExist)
             {
-                return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             bool isUserVehicleOwner = await vehicleService.IsUserOwnerOfVehicleAsync(userId, model.VehicleId);
 
             if (!isUserVehicleOwner)
             {
-                return StatusCode(401, new StatusInformationMessage(NoPermission));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             await taxRecordsService.EditAsync(recordId, userId, model);
 
-            return StatusCode(200, new StatusInformationMessage(Success));
+            return StatusCode(200, model);
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
 
     }
@@ -248,17 +313,20 @@ public class TaxRecordsController : BaseController
     [HttpGet]
     [Route("Upcoming/{count?}")]
     [ProducesResponseType(200, Type = typeof(ICollection<UpcomingTaxRecordResponseModel>))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> UpcomingNCountTaxesByUserId([FromQuery] int count = 3)
     {
         try
         {
-            var userId = this.User.GetId();
+            string? userId = this.User.GetId();
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             ICollection<UpcomingTaxRecordResponseModel> userTrips = await taxRecordsService.GetUpcomingTaxesAsync(userId, count);
@@ -268,12 +336,18 @@ public class TaxRecordsController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -284,9 +358,9 @@ public class TaxRecordsController : BaseController
     /// <returns>A status message based on the result</returns>
     [HttpDelete]
     [Route("Delete/{recordId}")]
-    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Delete([FromRoute] string recordId)
     {
         try
@@ -295,14 +369,20 @@ public class TaxRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             bool doesTaxRecordExist = await taxRecordsService.DoesRecordExistByIdAsync(recordId);
 
             if (!doesTaxRecordExist)
             {
-                return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
 
@@ -310,22 +390,31 @@ public class TaxRecordsController : BaseController
 
             if (!isUserCreator)
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             await taxRecordsService.DeleteAsync(recordId, userId);
 
-            return StatusCode(200, new StatusInformationMessage(Success));
+            return StatusCode(200);
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -336,8 +425,8 @@ public class TaxRecordsController : BaseController
     [HttpGet]
     [Route("Count")]
     [ProducesResponseType(200, Type = typeof(int))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> TaxRecordsCount()
     {
         try
@@ -346,7 +435,10 @@ public class TaxRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             int taxRecordsCount = await taxRecordsService.GetAllUserTaxRecordsCountAsync(userId);
@@ -358,12 +450,18 @@ public class TaxRecordsController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -374,8 +472,8 @@ public class TaxRecordsController : BaseController
     [HttpGet]
     [Route("Cost")]
     [ProducesResponseType(200, Type = typeof(decimal))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> TaxRecordsCost()
     {
         try
@@ -384,7 +482,10 @@ public class TaxRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             decimal taxRecordsCost = await taxRecordsService.GetAllUserTaxRecordsCostAsync(userId);
@@ -396,12 +497,18 @@ public class TaxRecordsController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 }
