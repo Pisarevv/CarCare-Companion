@@ -7,10 +7,6 @@ using CarCare_Companion.Common;
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.ServiceRecords;
 
-using static Common.StatusResponses;
-
-
-
 
 /// <summary>
 /// The service records controller handles service records related operations
@@ -201,7 +197,7 @@ public class ServiceRecordsController : BaseController
                 });
             }
 
-            string recordId = await serviceRecordsService.CreateAsync(userId, model);
+            await serviceRecordsService.CreateAsync(userId, model);
 
             return StatusCode(201, model);
         }
@@ -431,7 +427,7 @@ public class ServiceRecordsController : BaseController
             {
                 return StatusCode(403, new ProblemDetails
                 {
-                    Title = NoPermission
+                    Title = StatusResponses.NoPermission
                 });
             }
             ICollection<ServiceRecordBasicInformationResponseModel> userServiceRecords = await serviceRecordsService.GetLastNCountAsync(userId, count);

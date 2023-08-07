@@ -5,11 +5,9 @@ using Microsoft.Data.SqlClient;
 
 using CarCare_Companion.Common;
 using CarCare_Companion.Core.Contracts;
-using CarCare_Companion.Core.Models.Status;
 using CarCare_Companion.Core.Models.TaxRecords;
 using CarCare_Companion.Core.Services;
 
-using static Common.StatusResponses;
 
 /// <summary>
 /// The service records controller handles tax records related operations
@@ -103,7 +101,10 @@ public class TaxRecordsController : BaseController
 
             if (!doesVehicleExist)
             {
-                return StatusCode(404, ResourceNotFound);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             bool isUserVehicleOwner = await vehicleService.IsUserOwnerOfVehicleAsync(userId, model.VehicleId);
