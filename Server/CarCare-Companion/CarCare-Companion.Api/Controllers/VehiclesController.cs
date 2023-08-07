@@ -8,7 +8,7 @@ using CarCare_Companion.Core.Models.Status;
 using CarCare_Companion.Core.Models.Vehicle;
 
 using CarCare_Companion.Common;
-using static CarCare_Companion.Common.StatusResponses;
+
 
 /// <summary>
 /// The vehicle controller handles vehicle related operations
@@ -33,17 +33,28 @@ public class VehiclesController : BaseController
     /// <returns>Collection of the user vehicles</returns>
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(ICollection<VehicleBasicInfoResponseModel>))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> GetUserVehicles()
     {
         try
         {
-            var userId = this.User.GetId();
+            string? userId = this.User.GetId();
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(400, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
 
             ICollection<VehicleBasicInfoResponseModel> vehicles = await vehicleService.AllUserVehiclesByIdAsync(userId);
@@ -54,12 +65,18 @@ public class VehiclesController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -70,38 +87,51 @@ public class VehiclesController : BaseController
     /// <param name="model">The input data containing the vehicle information</param>
     /// <returns>The Id of the created vehicle</returns>
     [HttpPost]
-    [ProducesResponseType(200, Type = typeof(string))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
-    public async Task<IActionResult> CreateVehicle([FromBody] VehicleFormRequestModel model)
+    [ProducesResponseType(200, Type = typeof(VehicleFormRequestModel))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> Create([FromBody] VehicleFormRequestModel model)
     {
         try
         {
-            var userId = this.User.GetId();
+            string? userId = this.User.GetId();
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, new StatusInformationMessage(InvalidData));
+                return StatusCode(400, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
-            string vehicleId = await vehicleService.CreateAsync(userId,model);
+
+            await vehicleService.CreateAsync(userId,model);
           
-            return StatusCode(200, vehicleId);
+            return StatusCode(200, model);
 
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -113,54 +143,71 @@ public class VehiclesController : BaseController
     /// <returns>Status response based on the edit result</returns>
     [HttpPatch]
     [Route("Edit/{vehicleId}")]
-    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
-    public async Task<IActionResult> EditVehicle([FromRoute] string vehicleId,[FromBody] VehicleFormRequestModel model)
+    [ProducesResponseType(200, Type = typeof(VehicleFormRequestModel))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> Edit([FromRoute] string vehicleId,[FromBody] VehicleFormRequestModel model)
     {
         try
         {
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
+
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, new StatusInformationMessage(InvalidData));
+                return StatusCode(400, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
 
             bool vehicleExist = await vehicleService.DoesVehicleExistByIdAsync(vehicleId);
 
             if (!vehicleExist)
             {
-                return StatusCode(404, new StatusInformationMessage(ResourceNotFound));
-            }
-
-            var userId = this.User.GetId();
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             bool isUserOwnerOfVehicle = await vehicleService.IsUserOwnerOfVehicleAsync(userId, vehicleId);
 
-
             if (!isUserOwnerOfVehicle)
             {
-                return StatusCode(403, new StatusInformationMessage(NoPermission));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             await vehicleService.EditAsync(vehicleId, userId, model);
 
-            return StatusCode(200, new StatusInformationMessage(Success));
+            return StatusCode(200, model);
 
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -171,41 +218,53 @@ public class VehiclesController : BaseController
     /// <returns>A status code with message based on the process of deleting </returns>
     [HttpDelete]
     [Route("Delete/{vehicleId}")]
-    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Delete([FromRoute] string vehicleId)
     {
         try
         {
-            var userId = this.User.GetId();
+            string? userId = this.User.GetId();
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             bool isUserOwner = await vehicleService.IsUserOwnerOfVehicleAsync(userId,vehicleId);
 
             if (!isUserOwner)
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
            
             await vehicleService.DeleteAsync(vehicleId, userId);
 
-            return StatusCode(200, new StatusInformationMessage(Success));
+            return StatusCode(200);
 
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -217,58 +276,77 @@ public class VehiclesController : BaseController
     /// <returns></returns>
     [HttpPost]
     [Route("ImageUpload")]
-    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> UploadVehicleImage([FromHeader] string vehicleId,[FromForm] IFormFile file)
     {
         try
         {
-            string userId = this.User.GetId()!;
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
 
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, new StatusInformationMessage(InvalidData));
+                return StatusCode(400, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
 
             if (file.Length == 0 || file == null)
             {
-                return StatusCode(400, new StatusInformationMessage(InvalidData));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
 
             if(file.ContentType != "image/jpeg")
             {
-                return StatusCode(415, new StatusInformationMessage(InvalidData));
+                return StatusCode(415, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
 
             if(file.Length/1024 > 2048)
             {
-                return StatusCode(413, new StatusInformationMessage(FileSizeTooBig));
+                return StatusCode(413, new ProblemDetails
+                {
+                    Title = StatusResponses.FileSizeTooBig
+                });
             }
 
             string imageId = await imageService.UploadVehicleImage(file);
 
-            bool isAdded = await vehicleService.AddImageToVehicle(vehicleId, userId ,imageId);
+            await vehicleService.AddImageToVehicle(vehicleId, userId ,imageId);
 
-            if (isAdded) 
-            {
-                return StatusCode(200, new StatusInformationMessage(Success));
-            }
-
-            logger.LogInformation("Attempt to adding an image to non existent car has occurred");
-            return StatusCode(400, new StatusInformationMessage(InvalidData));
-
+            return StatusCode(200);
 
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
 
     }
@@ -282,34 +360,39 @@ public class VehiclesController : BaseController
     [HttpGet]
     [Route("Details/{vehicleId}")]
     [ProducesResponseType(200, Type = typeof(VehicleDetailsResponseModel))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> VehicleDetails([FromRoute] string vehicleId)
     {
         try
         {
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
+
             bool vehicleExist = await vehicleService.DoesVehicleExistByIdAsync(vehicleId);
 
             if (!vehicleExist)
             {
-                return StatusCode(404, new StatusInformationMessage(ResourceNotFound));
-            }
-
-            var userId = this.User.GetId();
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             bool isUserOwnerOfVehicle = await vehicleService.IsUserOwnerOfVehicleAsync(userId,vehicleId);
-
 
             if (!isUserOwnerOfVehicle)
             {
                 return StatusCode(403, new ProblemDetails
                 {
-                    Title = NoPermission
+                    Title = StatusResponses.InvalidUser
                 });
             }
 
@@ -321,12 +404,18 @@ public class VehiclesController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -338,32 +427,40 @@ public class VehiclesController : BaseController
     [HttpGet]
     [Route("Edit/{vehicleId}")]
     [ProducesResponseType(200, Type = typeof(VehicleDetailsEditResponseModel))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> VehicleEditDetails([FromRoute] string vehicleId)
     {
         try
         {
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
+
             bool vehicleExist = await vehicleService.DoesVehicleExistByIdAsync(vehicleId);
 
             if (!vehicleExist)
             {
-                return StatusCode(404, new StatusInformationMessage(ResourceNotFound));
-            }
-
-            var userId = this.User.GetId();
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             bool isUserOwnerOfVehicle = await vehicleService.IsUserOwnerOfVehicleAsync(userId, vehicleId);
 
-
             if (!isUserOwnerOfVehicle)
             {
-                return StatusCode(403, new StatusInformationMessage(NoPermission));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             VehicleDetailsEditResponseModel vehicle = await vehicleService.GetVehicleEditDetails(vehicleId);
@@ -374,12 +471,18 @@ public class VehiclesController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -391,8 +494,8 @@ public class VehiclesController : BaseController
     [HttpGet]
     [Route("FuelTypes")]
     [ProducesResponseType(200, Type = typeof(ICollection<VehicleTypeResponseModel>))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> GetFuelTypes()
     {
         try
@@ -403,12 +506,18 @@ public class VehiclesController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -419,25 +528,30 @@ public class VehiclesController : BaseController
     [HttpGet]
     [Route("Types")]
     [ProducesResponseType(200, Type = typeof(ICollection<VehicleTypeResponseModel>))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> GetVehicleTypes()
     {
         try
         {
             ICollection<VehicleTypeResponseModel> vehicleTypes = await vehicleService.AllVehicleTypesAsync();
-
             return StatusCode(200, vehicleTypes);
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
