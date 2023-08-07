@@ -169,7 +169,7 @@ public class ServiceRecordsController : BaseController
     {
         try
         {
-            string userId = this.User.GetId()!;
+            string? userId = this.User.GetId();
 
             if (string.IsNullOrEmpty(userId))
             {
@@ -189,7 +189,7 @@ public class ServiceRecordsController : BaseController
 
             bool vehicleExists = await vehicleService.DoesVehicleExistByIdAsync(model.VehicleId);
 
-            if (vehicleExists)
+            if (!vehicleExists)
             {
                 return StatusCode(403, new ProblemDetails
                 {
@@ -430,8 +430,8 @@ public class ServiceRecordsController : BaseController
                     Title = StatusResponses.NoPermission
                 });
             }
-            ICollection<ServiceRecordBasicInformationResponseModel> userServiceRecords = await serviceRecordsService.GetLastNCountAsync(userId, count);
-            return StatusCode(200, userServiceRecords);
+            ICollection<ServiceRecordBasicInformationResponseModel> recentVehicleServiceRecords = await serviceRecordsService.GetRecentByVehicleId(vehicleId, count);
+            return StatusCode(200, recentVehicleServiceRecords);
 
         }
         catch (SqlException ex)
