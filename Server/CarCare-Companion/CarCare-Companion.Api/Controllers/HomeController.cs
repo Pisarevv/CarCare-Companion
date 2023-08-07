@@ -2,16 +2,15 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
 
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Ads;
-using CarCare_Companion.Core.Models.Status;
+using CarCare_Companion.Common;
 
-using Microsoft.AspNetCore.Authorization;
-
-using static CarCare_Companion.Common.StatusResponses;
-
-
+/// <summary>
+/// The home controller handles ads related operations
+/// </summary>
 [Route("[controller]")]
 [AllowAnonymous]
 public class HomeController : BaseController
@@ -27,8 +26,8 @@ public class HomeController : BaseController
 
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(CarouselAdResponseModel))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Index()
     {
         try
@@ -39,14 +38,19 @@ public class HomeController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
-
 
     }
 
