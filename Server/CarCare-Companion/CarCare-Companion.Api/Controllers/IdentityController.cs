@@ -1,15 +1,13 @@
 ﻿namespace CarCare_Companion.Api.Controllers;
 
+
+using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Identity;
-using CarCare_Companion.Core.Models.Status;
-
-using static CarCare_Companion.Common.StatusResponses;
-using Microsoft.Net.Http.Headers;
 using CarCare_Companion.Common;
 
 
@@ -38,10 +36,10 @@ public class IdentityController : BaseController
     [AllowAnonymous]
     [HttpPost]
     [Route("/Register")]
-    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(409, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(409, Type = typeof(ProblemDetails))]
    
     public async Task<IActionResult> Register([FromBody] RegisterRequestModel registerData)
     {
@@ -49,9 +47,9 @@ public class IdentityController : BaseController
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, new
+                return StatusCode(400, new ProblemDetails
                 {
-                    title = MissingOrInvalidFields,
+                    Title = StatusResponses.InvalidData
                 });
             }
 
@@ -59,23 +57,31 @@ public class IdentityController : BaseController
 
             if (userExist)
             {
-                return StatusCode(409, new StatusInformationMessage(UserEmailAlreadyExists));
-
+                return StatusCode(409, new ProblemDetails
+                {
+                    Title = StatusResponses.UserEmailAlreadyExists
+                });
             }
 
             await identityService.RegisterAsync(registerData);
 
-            return StatusCode(200, new StatusInformationMessage(Success));
+            return StatusCode(200);
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -88,15 +94,18 @@ public class IdentityController : BaseController
     [HttpPost]
     [Route("/Login")]
     [ProducesResponseType(200, Type = typeof(AuthDataModel))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(401, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(401, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Login([FromBody] LoginRequestModel loginData)
     {
         try
         {
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, new StatusInformationMessage(MissingOrInvalidFields));
+                return StatusCode(400, new ProblemDetails
+                {
+                    Title = StatusResponses.MissingOrInvalidFields
+                });
             }
 
             AuthDataInternalTransferModel userData = await identityService.LoginAsync(loginData);
@@ -109,31 +118,42 @@ public class IdentityController : BaseController
                 Email = userData.Email,
                 Role = userData.Role
             });
-           
-            
+
+
         }
-        catch(ArgumentNullException ex)
+        catch (ArgumentNullException ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(401, new StatusInformationMessage(InvalidCredentials));
+            return StatusCode(401, new ProblemDetails
+            {
+                Title = StatusResponses.InvalidCredentials
+            });
         }
         catch (ArgumentException ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(401, new StatusInformationMessage(InvalidCredentials));
+            return StatusCode(401, new ProblemDetails
+            {
+                Title = StatusResponses.InvalidCredentials
+            });
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            logger.LogInformation(ex.Message);
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
-        }
-
+    }
 
     /// <summary>
     /// Logs out the user by terminating the refresh token
@@ -141,45 +161,43 @@ public class IdentityController : BaseController
     /// <returns>A status message based on the result</returns>
     [HttpPost]
     [Route("/Logout")]
-    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(401, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(401, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Logout()
     {
         try
         {
-            string userId = this.User.GetId();
+            string? userId = this.User.GetId();
 
-            if(userId == null)
+            if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, new StatusInformationMessage(InvalidUser));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             await identityService.TerminateUserRefreshToken(userId);
 
+            return StatusCode(200);
 
-            return StatusCode(200, new StatusInformationMessage(StatusResponses.Success));
-
-        }
-        catch (ArgumentNullException ex)
-        {
-            logger.LogInformation(ex.Message);
-            return StatusCode(401, new StatusInformationMessage(InvalidCredentials));
-        }
-        catch (ArgumentException ex)
-        {
-            logger.LogInformation(ex.Message);
-            return StatusCode(401, new StatusInformationMessage(InvalidCredentials));
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            logger.LogInformation(ex.Message);
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -192,8 +210,8 @@ public class IdentityController : BaseController
     [Route("/Refresh")]
     [AllowAnonymous]
     [ProducesResponseType(200, Type = typeof(AuthDataModel))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(401, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(401, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> RefreshUserToken()
     {
         try
@@ -202,21 +220,31 @@ public class IdentityController : BaseController
 
             if (refreshToken == null)
             {
-                return StatusCode(401, new StatusInformationMessage(InvalidData));
+                return StatusCode(401, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
 
             string? refreshTokenOwnerUsername = await identityService.GetRefreshTokenOwner(refreshToken);
 
             if (refreshTokenOwnerUsername == null)
             {
-                return StatusCode(403, new StatusInformationMessage(TokenExpired));
+                return StatusCode(401, new ProblemDetails
+                {
+                    Title = StatusResponses.TokenExpired
+                });
+
             }
 
             bool isTokenExpired = await identityService.IsUserRefreshTokenExpired(refreshToken);
 
             if (isTokenExpired)
             {
-                return StatusCode(401, new StatusInformationMessage(TokenExpired));
+                return StatusCode(401, new ProblemDetails
+                {
+                    Title = StatusResponses.TokenExpired
+                });
             }
 
             AuthDataModel authData = await identityService.RefreshJWTToken(refreshTokenOwnerUsername);
@@ -227,12 +255,18 @@ public class IdentityController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            logger.LogInformation(ex.Message);
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
