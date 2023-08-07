@@ -71,7 +71,7 @@ public class TaxRecordsService : ITaxRecordsService
     /// <param name="model">The input model containing the tax record information</param>
     /// <param name="userId">The user identifier</param>
     /// <returns>String containing the newly created tax record Id</returns>
-    public async Task<string> CreateAsync(string userId, TaxRecordFormRequestModel model)
+    public async Task CreateAsync(string userId, TaxRecordFormRequestModel model)
     {
         TaxRecord recordToAdd = new TaxRecord()
         {
@@ -93,9 +93,6 @@ public class TaxRecordsService : ITaxRecordsService
         this.memoryCache.Remove(userId + UserTaxRecordsCostCacheKeyAddition);
         this.memoryCache.Remove(userId + UserTaxRecordsCountCacheKeyAddition);
         this.memoryCache.Remove(userId + UserTaxRecordsUpcomingCacheKeyAddition);
-
-        return recordToAdd.Id.ToString();
-
     }
 
     /// <summary>

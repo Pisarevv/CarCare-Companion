@@ -35,7 +35,7 @@ public class ServiceRecordsService : IServiceRecordsService
     /// </summary>
     /// <param name="model">The input model containing the service record information</param>
     /// <returns>String containing the newly created service record Id</returns>
-    public async Task<string> CreateAsync(string userId, ServiceRecordFormRequestModel model)
+    public async Task CreateAsync(string userId, ServiceRecordFormRequestModel model)
     {
         ServiceRecord serviceRecordToAdd = new ServiceRecord()
         {
@@ -58,8 +58,6 @@ public class ServiceRecordsService : IServiceRecordsService
         this.memoryCache.Remove(userId + UserServiceRecordsCostCacheKeyAddition);
         this.memoryCache.Remove(userId + UserServiceRecordsLastNCacheKeyAddition);
 
-
-        return serviceRecordToAdd.Id.ToString();
     }
 
 

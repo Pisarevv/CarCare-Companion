@@ -36,7 +36,7 @@ public class TripRecordsService : ITripRecordsService
     /// </summary>
     /// <param name="model">The input model containing the trip information</param>
     /// <returns>String containing the newly created trip record Id</returns>
-    public async Task<string> CreateAsync(string userId, TripFormRequestModel model)
+    public async Task CreateAsync(string userId, TripFormRequestModel model)
     {
         TripRecord tripToAdd = new TripRecord()
         {
@@ -58,8 +58,6 @@ public class TripRecordsService : ITripRecordsService
         this.memoryCache.Remove(userId + UserTripsCacheKeyAddition);
         this.memoryCache.Remove(userId + UserTripsCostCacheKeyAddition);
         this.memoryCache.Remove(userId + UserTripsCountCacheKeyAddition);
-
-        return tripToAdd.Id.ToString();
     }
 
     /// <summary>

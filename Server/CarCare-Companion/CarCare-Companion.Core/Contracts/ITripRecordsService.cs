@@ -4,7 +4,7 @@ using CarCare_Companion.Core.Models.Trip;
 
 public interface ITripRecordsService
 {
-    public Task<string> CreateAsync(string userId, TripFormRequestModel model);
+    public Task CreateAsync(string userId, TripFormRequestModel model);
 
     public Task EditAsync(string tripId, string userId, TripFormRequestModel model);
 
