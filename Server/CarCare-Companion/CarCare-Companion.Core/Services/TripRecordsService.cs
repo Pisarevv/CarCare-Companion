@@ -271,31 +271,6 @@ public class TripRecordsService : ITripRecordsService
     }
 
     /// <summary>
-    /// Retrieves a specified count of records containing basic information about of records for a vehicle
-    /// ordered by time of creating
-    /// </summary>
-    /// <param name="vehicleId">The vehicle identifier</param>
-    /// <param name="count">The amount of record to be retrieved</param>
-    /// <returns>A collection of trip records</returns>
-    public async Task<ICollection<TripBasicInformationByUserResponseModel>> GetRecentByVehicleId(string vehicleId, int count)
-    {
-        return await repository.AllReadonly<TripRecord>()
-               .Where(v => v.IsDeleted == false)
-               .Where(t => t.VehicleId == Guid.Parse(vehicleId))
-               .OrderByDescending(t => t.CreatedOn)
-               .Take(count)
-               .Select(t => new TripBasicInformationByUserResponseModel
-               {
-                   Id = t.Id.ToString(),
-                   StartDestination = t.StartDestination,
-                   EndDestination = t.EndDestination,
-                   MileageTravelled = t.MileageTravelled,
-                   Vehicle = $"{t.Vehicle.Make} {t.Vehicle.Model}"
-               })
-               .ToListAsync();
-    }
-
-    /// <summary>
     /// Calculates the total cost of the user trips
     /// </summary>
     /// <returns>The total cost of the user trip record</returns>

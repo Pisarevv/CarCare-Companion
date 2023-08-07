@@ -18,8 +18,6 @@ public interface ITripRecordsService
 
     public Task<ICollection<TripDetailsByUserResponseModel>> GetAllTripsByUsedIdAsync(string userId);
 
-    public Task<ICollection<TripBasicInformationByUserResponseModel>> GetRecentByVehicleId(string vehicleId, int count);
-
     public Task<ICollection<TripBasicInformationByUserResponseModel>> GetLastNCountAsync(string userId, int count);
 
     public Task<int> GetAllUserTripsCountAsync(string userId);
