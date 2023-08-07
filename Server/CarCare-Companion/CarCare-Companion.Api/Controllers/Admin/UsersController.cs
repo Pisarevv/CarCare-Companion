@@ -7,7 +7,6 @@ using CarCare_Companion.Common;
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Admin.Users;
 
-using static Common.StatusResponses;
 using static Common.GlobalConstants;
 
 [Route("[controller]")]
@@ -38,7 +37,15 @@ public class UsersController : BaseAdminController
     {
         try
         {
-            string userId = User.GetId()!;
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
 
             bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
 
@@ -57,7 +64,7 @@ public class UsersController : BaseAdminController
             {
                 return StatusCode(400, new ProblemDetails()
                 {
-                    Detail = InvalidData,
+                    Detail = StatusResponses.InvalidData,
 
                 });
             }
@@ -82,7 +89,7 @@ public class UsersController : BaseAdminController
             logger.LogInformation(ex.Message);
             return StatusCode(400, new ProblemDetails()
             {
-                Detail = InvalidData,
+                Detail = StatusResponses.InvalidData,
 
             });
         }
@@ -98,7 +105,15 @@ public class UsersController : BaseAdminController
     {
         try
         {
-            string userId = User.GetId()!;
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
 
             bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
 
@@ -130,7 +145,7 @@ public class UsersController : BaseAdminController
             logger.LogInformation(ex.Message);
             return StatusCode(400, new ProblemDetails()
             {
-                Detail = InvalidData,
+                Detail = StatusResponses.InvalidData,
 
             });
         }
@@ -149,7 +164,15 @@ public class UsersController : BaseAdminController
     {
         try
         {
-            string userId = User.GetId()!;
+            string? userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
 
             bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
 
@@ -168,7 +191,7 @@ public class UsersController : BaseAdminController
             {
                 return StatusCode(400, new ProblemDetails()
                 {
-                    Detail = InvalidData,
+                    Detail = StatusResponses.InvalidData,
 
                 });
             }
@@ -211,7 +234,7 @@ public class UsersController : BaseAdminController
             logger.LogInformation(ex.Message);
             return StatusCode(400, new ProblemDetails()
             {
-                Detail = InvalidData,
+                Detail = StatusResponses.InvalidData,
 
             });
         }
@@ -249,7 +272,7 @@ public class UsersController : BaseAdminController
             {
                 return StatusCode(400, new ProblemDetails()
                 {
-                    Detail = InvalidData,
+                    Detail = StatusResponses.InvalidData,
 
                 });
             }
@@ -294,7 +317,7 @@ public class UsersController : BaseAdminController
             logger.LogInformation(ex.Message);
             return StatusCode(400, new ProblemDetails()
             {
-                Detail = InvalidData,
+                Detail = StatusResponses.InvalidData,
 
             });
         }
