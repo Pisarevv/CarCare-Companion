@@ -23,5 +23,7 @@ public interface IServiceRecordsService
     public Task<decimal> GetAllUserServiceRecordsCostAsync(string userId);
 
     public Task<ICollection<ServiceRecordBasicInformationResponseModel>> GetLastNCountAsync(string userId,int count);
+
+    public Task<ICollection<ServiceRecordBasicInformationResponseModel>> GetRecentByVehicleId(string vehicleId, int count);
 }
  

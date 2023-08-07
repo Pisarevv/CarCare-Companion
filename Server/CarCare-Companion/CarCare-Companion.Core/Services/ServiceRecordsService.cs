@@ -278,4 +278,32 @@ public class ServiceRecordsService : IServiceRecordsService
 
         return lastServiceRecords;
     }
+
+    /// <summary>
+    /// Retrieves a specified count of records containing basic information of the records for a vehicle
+    /// ordered by time of creation
+    /// </summary>
+    /// <param name="vehicleId">The vehicle identifier</param>
+    /// <param name="count">The amount of record to be retrieved</param>
+    /// <returns>A collection of service records for a vehicle</returns>
+    public async Task<ICollection<ServiceRecordBasicInformationResponseModel>> GetRecentByVehicleId(string vehicleId, int count)
+    {
+
+         return await repository.AllReadonly<ServiceRecord>()
+               .Where(sr => sr.IsDeleted == false)
+               .Where(sr => sr.OwnerId == Guid.Parse(vehicleId))
+               .OrderByDescending(sr => sr.CreatedOn)
+               .Take(count)
+               .Select(sr => new ServiceRecordBasicInformationResponseModel
+               {
+                   Id = sr.Id.ToString(),
+                   Title = sr.Title,
+                   PerformedOn = sr.PerformedOn,
+                   VehicleMake = sr.Vehicle.Make,
+                   VehicleModel = sr.Vehicle.Model
+
+               })
+               .ToListAsync();
+
+    }
 }
