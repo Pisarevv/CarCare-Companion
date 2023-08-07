@@ -112,9 +112,9 @@ public class VehiclesController : BaseController
                 });
             }
 
-            await vehicleService.CreateAsync(userId,model);
+            string vehicleId = await vehicleService.CreateAsync(userId,model);
           
-            return StatusCode(200, model);
+            return StatusCode(200, vehicleId);
 
         }
         catch (SqlException ex)
