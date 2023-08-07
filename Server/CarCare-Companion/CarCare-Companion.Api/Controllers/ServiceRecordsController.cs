@@ -411,7 +411,7 @@ public class ServiceRecordsController : BaseController
     [ProducesResponseType(200, Type = typeof(ICollection<ServiceRecordBasicInformationResponseModel>))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
-    public async Task<IActionResult> LastNCountServiceRecordsByVehicleId([FromQuery] string vehicleId, [FromQuery] int count = 3)
+    public async Task<IActionResult> LastNCountServiceRecordsByVehicleId([FromRoute] string vehicleId, [FromRoute] int count = 3)
     {
         try
         {
