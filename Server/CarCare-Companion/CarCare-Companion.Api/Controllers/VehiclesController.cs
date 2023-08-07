@@ -307,7 +307,10 @@ public class VehiclesController : BaseController
 
             if (!isUserOwnerOfVehicle)
             {
-                return StatusCode(403, new StatusInformationMessage(NoPermission));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = NoPermission
+                });
             }
 
             VehicleDetailsResponseModel vehicle = await vehicleService.GetVehicleDetailsByIdAsync(vehicleId);
