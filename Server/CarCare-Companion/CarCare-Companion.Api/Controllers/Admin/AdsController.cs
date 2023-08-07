@@ -25,6 +25,10 @@ public class AdsController : BaseAdminController
         this.logger = logger;
     }
 
+    /// <summary>
+    /// Retrieves all carousel ads
+    /// </summary>
+    /// <returns>Collection of carousel ads</returns>
     [HttpGet]
     [Route("CarouselAds")]
     [ProducesResponseType(200, Type = typeof(ICollection<CarouselAdResponseModel>))]
@@ -80,6 +84,11 @@ public class AdsController : BaseAdminController
 
     }
 
+    /// <summary>
+    /// Retrieves details about a carousel ad
+    /// </summary>
+    /// <param name="carouselAdId">The carousel ad identifier</param>
+    /// <returns>Model containing the carousel ad details</returns>
     [HttpGet]
     [Route("CarouselAds/Details/{carouselAdId}")]
     [ProducesResponseType(200, Type = typeof(CarouselAdResponseModel))]

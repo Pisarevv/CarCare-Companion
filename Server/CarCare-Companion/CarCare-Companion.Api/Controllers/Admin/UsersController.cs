@@ -96,6 +96,10 @@ public class UsersController : BaseAdminController
     }
 
 
+    /// <summary>
+    /// Retrieves all application users
+    /// </summary>
+    /// <returns>Collection of the application users</returns>
     [HttpGet]
     [Route("ApplicationUsers")]
     [ProducesResponseType(200, Type = typeof(ICollection<UserInformationResponseModel>))]

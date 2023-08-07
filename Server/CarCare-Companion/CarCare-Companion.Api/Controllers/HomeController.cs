@@ -24,6 +24,10 @@ public class HomeController : BaseController
         this.logger = logger;
     }
 
+    /// <summary>
+    /// Retrieves the carousel ads
+    /// </summary>
+    /// <returns>Collection of carousel ads</returns>
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(CarouselAdResponseModel))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
