@@ -3,13 +3,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
-using CarCare_Companion.Core.Models.Status;
 using CarCare_Companion.Common;
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.ServiceRecords;
 
 using static Common.StatusResponses;
-using CarCare_Companion.Core.Models.Trip;
+
 
 
 
@@ -36,8 +35,8 @@ public class ServiceRecordsController : BaseController
     /// <returns>A collection of user service records</returns>
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(ServiceRecordResponseModel))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> All()
     {
         try
@@ -46,7 +45,18 @@ public class ServiceRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, new StatusInformationMessage(InvalidUser));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(400, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
 
             ICollection<ServiceRecordResponseModel> serviceRecords = await serviceRecordsService.GetAllByUserIdAsync(userId);
@@ -58,12 +68,18 @@ public class ServiceRecordsController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            }); 
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            }); 
         }
     }
 
@@ -74,8 +90,8 @@ public class ServiceRecordsController : BaseController
     [HttpGet]
     [Route("Details/{recordId}")]
     [ProducesResponseType(200, Type = typeof(ServiceRecordEditDetailsResponseModel))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> ServiceRecordDetails([FromRoute] string recordId)
     {
         try
@@ -84,21 +100,38 @@ public class ServiceRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(400, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
 
             bool doesServiceRecordExist = await serviceRecordsService.DoesRecordExistByIdAsync(recordId);
 
             if(!doesServiceRecordExist)
             {
-                return StatusCode(400, new StatusInformationMessage(StatusResponses.BadRequest));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.NoPermission
+                });
             }
 
             bool isUserCreator = await serviceRecordsService.IsUserRecordCreatorAsync(userId, recordId);
 
             if (!isUserCreator)
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.NoPermission
+                });
             }
 
             ServiceRecordEditDetailsResponseModel serviceRecord = await serviceRecordsService.GetEditDetailsByIdAsync(recordId);
@@ -110,12 +143,18 @@ public class ServiceRecordsController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -127,45 +166,60 @@ public class ServiceRecordsController : BaseController
     /// <param name="model">The input data containing the service record information</param>
     /// <returns>The Id of the created service record</returns>
     [HttpPost]
-    [ProducesResponseType(201, Type = typeof(string))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(201, Type = typeof(ServiceRecordFormRequestModel))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Create([FromBody] ServiceRecordFormRequestModel model)
     {
         try
         {
-            string? userId = this.User.GetId();
+            string userId = this.User.GetId()!;
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, new StatusInformationMessage(InvalidData));
+                return StatusCode(400, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
 
             bool vehicleExists = await vehicleService.DoesVehicleExistByIdAsync(model.VehicleId);
 
-            if (!vehicleExists)
+            if (vehicleExists)
             {
-                return StatusCode(400, new StatusInformationMessage(InvalidData));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.NoPermission
+                });
             }
 
             string recordId = await serviceRecordsService.CreateAsync(userId, model);
 
-            return StatusCode(201, recordId);
+            return StatusCode(201, model);
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -177,9 +231,9 @@ public class ServiceRecordsController : BaseController
     /// <returns>A status message based on the result</returns>
     [HttpPatch]
     [Route("Edit/{recordId}")]
-    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(200, Type = typeof(ServiceRecordFormRequestModel))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Edit([FromRoute] string recordId, [FromBody] ServiceRecordFormRequestModel model)
     {
         try
@@ -188,41 +242,59 @@ public class ServiceRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             if (!ModelState.IsValid)
             {
-                return StatusCode(400, new StatusInformationMessage(InvalidData));
+                return StatusCode(400, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidData
+                });
             }
 
             bool vehicleExists = await vehicleService.DoesVehicleExistByIdAsync(model.VehicleId);
 
             if (!vehicleExists)
             {
-                return StatusCode(400, new StatusInformationMessage(InvalidData));
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.NoPermission
+                });
             }
 
             bool isUserCreator = await serviceRecordsService.IsUserRecordCreatorAsync(userId, recordId);
 
             if (!isUserCreator)
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.NoPermission
+                });
             }
 
             await serviceRecordsService.EditAsync(recordId, userId, model);
 
-            return StatusCode(200, new StatusInformationMessage(Success));
+            return StatusCode(200, model);
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -233,9 +305,9 @@ public class ServiceRecordsController : BaseController
     /// <returns>A status message based on the result</returns>
     [HttpDelete]
     [Route("Delete/{recordId}")]
-    [ProducesResponseType(200, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Delete([FromRoute] string recordId)
     {
         try
@@ -244,29 +316,41 @@ public class ServiceRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             bool isUserCreator = await serviceRecordsService.IsUserRecordCreatorAsync(userId, recordId);
 
             if (!isUserCreator)
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             await serviceRecordsService.DeleteAsync(recordId, userId);
 
-            return StatusCode(200, new StatusInformationMessage(Success));
+            return StatusCode(200);
         }
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -278,8 +362,8 @@ public class ServiceRecordsController : BaseController
     [HttpGet]
     [Route("Last/{count?}")]
     [ProducesResponseType(200, Type = typeof(ICollection<ServiceRecordBasicInformationResponseModel>))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> LastNCountServiceRecordsByUserId([FromQuery] int count = 3)
     {
         try
@@ -288,7 +372,10 @@ public class ServiceRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             ICollection<ServiceRecordBasicInformationResponseModel> userServiceRecords = await serviceRecordsService.GetLastNCountAsync(userId, count);
@@ -298,12 +385,74 @@ public class ServiceRecordsController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
+        }
+    }
+
+    /// <summary>
+    /// Retrieves a specified count of service records for a vehicle
+    /// </summary>
+    /// <param name="vehicleId">The vehicle identifier</param>
+    /// <param name="count">The count of service records to be retrieved</param>
+    /// <returns>Collection of service records for a vehicle</returns>
+    [HttpGet]
+    [Route("{vehicleId}/Last/{count?}")]
+    [ProducesResponseType(200, Type = typeof(ICollection<ServiceRecordBasicInformationResponseModel>))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> LastNCountServiceRecordsByVehicleId([FromQuery] string vehicleId, [FromQuery] int count = 3)
+    {
+        try
+        {
+            var userId = this.User.GetId();
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
+            }
+
+            bool isUserOwnerOfVehicle = await vehicleService.IsUserOwnerOfVehicleAsync(userId, vehicleId);
+
+            if (!isUserOwnerOfVehicle)
+            {
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = NoPermission
+                });
+            }
+            ICollection<ServiceRecordBasicInformationResponseModel> userServiceRecords = await serviceRecordsService.GetLastNCountAsync(userId, count);
+            return StatusCode(200, userServiceRecords);
+
+        }
+        catch (SqlException ex)
+        {
+            logger.LogWarning(ex.Message);
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -314,8 +463,8 @@ public class ServiceRecordsController : BaseController
     [HttpGet]
     [Route("Count")]
     [ProducesResponseType(200, Type = typeof(int))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> ServiceRecordsCount()
     {
         try
@@ -324,7 +473,10 @@ public class ServiceRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             int serviceRecordsCount = await serviceRecordsService.GetAllUserServiceRecordsCountAsync(userId);
@@ -336,12 +488,18 @@ public class ServiceRecordsController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
@@ -352,8 +510,8 @@ public class ServiceRecordsController : BaseController
     [HttpGet]
     [Route("Cost")]
     [ProducesResponseType(200, Type = typeof(decimal))]
-    [ProducesResponseType(400, Type = typeof(StatusInformationMessage))]
-    [ProducesResponseType(403, Type = typeof(StatusInformationMessage))]
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> ServiceRecordsCost()
     {
         try
@@ -362,7 +520,10 @@ public class ServiceRecordsController : BaseController
 
             if (string.IsNullOrEmpty(userId))
             {
-                return StatusCode(403, InvalidUser);
+                return StatusCode(403, new ProblemDetails
+                {
+                    Title = StatusResponses.InvalidUser
+                });
             }
 
             decimal serviceRecordsCost = await serviceRecordsService.GetAllUserServiceRecordsCostAsync(userId);
@@ -374,12 +535,18 @@ public class ServiceRecordsController : BaseController
         catch (SqlException ex)
         {
             logger.LogWarning(ex.Message);
-            return StatusCode(400, new StatusInformationMessage(GenericError));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
         }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(403, new StatusInformationMessage(InvalidData));
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.BadRequest
+            });
         }
     }
 
