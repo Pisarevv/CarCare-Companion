@@ -36,7 +36,7 @@ public class VehicleService : IVehicleService
     /// </summary>
     /// <param name="model">The input model containing the vehicle information</param>
     /// <returns>String containing the newly created vehicle Id</returns>
-    public async Task<string> CreateAsync(string userId, VehicleFormRequestModel model)
+    public async Task<VehicleResponseModel> CreateAsync(string userId, VehicleFormRequestModel model)
     {
         Vehicle newVehicle = new Vehicle()
         {
@@ -55,7 +55,16 @@ public class VehicleService : IVehicleService
 
         this.memoryCache.Remove(userId + UserVehiclesCacheKeyAddition);
 
-        return newVehicle.Id.ToString();
+        return new VehicleResponseModel
+        {
+            Id = newVehicle.Id.ToString(),
+            Make = model.Make,
+            Model = newVehicle.Model,
+            Mileage = model.Mileage,
+            FuelTypeId = model.FuelTypeId,
+            VehicleTypeId = model.VehicleTypeId,
+            Year = model.Year
+        };
     }
 
     /// <summary>
@@ -63,7 +72,7 @@ public class VehicleService : IVehicleService
     /// </summary>
     /// <param name="vehicleId">The vehicle identifier</param>
     /// <param name="model">The input model containing the vehicle information</param>
-    public async Task EditAsync(string vehicleId, string userId ,VehicleFormRequestModel model)
+    public async Task<VehicleResponseModel> EditAsync(string vehicleId, string userId ,VehicleFormRequestModel model)
     {
         Vehicle vehicleToEdit = await repository.GetByIdAsync<Vehicle>(Guid.Parse(vehicleId));
 
@@ -79,6 +88,17 @@ public class VehicleService : IVehicleService
 
         this.memoryCache.Remove(userId + UserVehiclesCacheKeyAddition);
         this.memoryCache.Remove(vehicleId + VehicleDetailsCacheKeyAddition);
+
+        return new VehicleResponseModel
+        {
+            Id = vehicleId,
+            Make = vehicleToEdit.Make,
+            Model = vehicleToEdit.Model,
+            Mileage = vehicleToEdit.Mileage,
+            FuelTypeId = vehicleToEdit.FuelTypeId,
+            VehicleTypeId = vehicleToEdit.VehicleTypeId,
+            Year = vehicleToEdit.Year,
+        };
     }
 
 
