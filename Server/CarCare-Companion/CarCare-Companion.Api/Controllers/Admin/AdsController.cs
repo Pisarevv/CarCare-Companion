@@ -163,7 +163,7 @@ public class AdsController : BaseAdminController
     /// <returns>A status message based on the result</returns>
     [HttpPatch]
     [Route("CarouselAds/Edit/{carouselAdId}")]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(200, Type = typeof(CarouselAdResponseModel))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> EditCarouselAd([FromRoute] string carouselAdId, [FromBody] CarouselAdFromRequestModel model)
@@ -211,9 +211,9 @@ public class AdsController : BaseAdminController
                 });
             }
 
-            await adService.EditAsync(carouselAdId,model);
+            CarouselAdResponseModel editedModel = await adService.EditAsync(carouselAdId,model);
 
-            return StatusCode(200);
+            return StatusCode(200, editedModel);
         }
         catch (SqlException ex)
         {
