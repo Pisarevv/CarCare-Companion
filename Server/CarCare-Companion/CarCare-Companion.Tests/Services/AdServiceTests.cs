@@ -1,13 +1,17 @@
-﻿
+﻿namespace CarCare_Companion.Tests.Services;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+
 using Moq;
+
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Models.Ads;
 using CarCare_Companion.Core.Services;
 using CarCare_Companion.Core.Models.Ads;
 using CarCare_Companion.Infrastructure.Data.Common;
+
 
 [TestFixture]
 public class AdServiceTests
@@ -229,5 +233,12 @@ public class AdServiceTests
         Assert.AreEqual(firstName, result.UserFirstName);
         Assert.AreEqual(description, result.Description);
         Assert.AreEqual(starsRating, result.StarsRating);
+    }
+
+
+    [TearDown]
+    public void TearDown()
+    {
+        applicationDbContext.Dispose();
     }
 }
