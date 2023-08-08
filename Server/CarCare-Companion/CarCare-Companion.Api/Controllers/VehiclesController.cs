@@ -87,7 +87,7 @@ public class VehiclesController : BaseController
     /// <param name="model">The input data containing the vehicle information</param>
     /// <returns>The Id of the created vehicle</returns>
     [HttpPost]
-    [ProducesResponseType(200, Type = typeof(VehicleFormRequestModel))]
+    [ProducesResponseType(200, Type = typeof(VehicleResponseModel))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Create([FromBody] VehicleFormRequestModel model)
@@ -112,9 +112,9 @@ public class VehiclesController : BaseController
                 });
             }
 
-            string vehicleId = await vehicleService.CreateAsync(userId,model);
+           VehicleResponseModel createdVehicle = await vehicleService.CreateAsync(userId,model);
           
-            return StatusCode(200, vehicleId);
+            return StatusCode(200, createdVehicle);
 
         }
         catch (SqlException ex)
@@ -143,7 +143,7 @@ public class VehiclesController : BaseController
     /// <returns>Status response based on the edit result</returns>
     [HttpPatch]
     [Route("Edit/{vehicleId}")]
-    [ProducesResponseType(200, Type = typeof(VehicleFormRequestModel))]
+    [ProducesResponseType(200, Type = typeof(VehicleResponseModel))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Edit([FromRoute] string vehicleId,[FromBody] VehicleFormRequestModel model)
@@ -188,9 +188,9 @@ public class VehiclesController : BaseController
                 });
             }
 
-            await vehicleService.EditAsync(vehicleId, userId, model);
+            VehicleResponseModel editedVehicle = await vehicleService.EditAsync(vehicleId, userId, model);
 
-            return StatusCode(200, model);
+            return StatusCode(200, editedVehicle);
 
         }
         catch (SqlException ex)

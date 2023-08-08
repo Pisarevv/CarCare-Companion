@@ -14,9 +14,9 @@ public interface IVehicleService
 
     public Task<bool> DoesVehicleExistByIdAsync(string id);
 
-    public Task<string> CreateAsync(string userId, VehicleFormRequestModel model);
+    public Task<VehicleResponseModel> CreateAsync(string userId, VehicleFormRequestModel model);
 
-    public Task EditAsync(string vehicleId, string userId,VehicleFormRequestModel model);
+    public Task<VehicleResponseModel> EditAsync(string vehicleId, string userId,VehicleFormRequestModel model);
 
     public Task DeleteAsync(string vehicleId, string userId);
 
