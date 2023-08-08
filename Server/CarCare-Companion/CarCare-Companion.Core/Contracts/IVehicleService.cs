@@ -26,7 +26,7 @@ public interface IVehicleService
 
     public Task<VehicleDetailsResponseModel> GetVehicleDetailsByIdAsync(string vehicleId);
 
-    public Task<VehicleDetailsEditResponseModel> GetVehicleEditDetails(string vehicleId);
+    public Task<VehicleDetailsEditResponseModel> GetVehicleEditDetailsAsync(string vehicleId);
 
     public Task<bool> IsUserOwnerOfVehicleAsync(string  userId, string vehicleId);
 }

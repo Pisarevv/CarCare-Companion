@@ -463,7 +463,7 @@ public class VehiclesController : BaseController
                 });
             }
 
-            VehicleDetailsEditResponseModel vehicle = await vehicleService.GetVehicleEditDetails(vehicleId);
+            VehicleDetailsEditResponseModel vehicle = await vehicleService.GetVehicleEditDetailsAsync(vehicleId);
 
             return StatusCode(200, vehicle);
 

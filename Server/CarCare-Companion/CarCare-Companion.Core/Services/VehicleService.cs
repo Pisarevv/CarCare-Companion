@@ -306,7 +306,7 @@ public class VehicleService : IVehicleService
     /// </summary>
     /// <param name="vehicleId">The vehicle identifier</param>
     /// <returns>A less detailed model containing the vehicle information for editing</returns>
-    public async Task<VehicleDetailsEditResponseModel> GetVehicleEditDetails(string vehicleId)
+    public async Task<VehicleDetailsEditResponseModel> GetVehicleEditDetailsAsync(string vehicleId)
     {
         return await repository.AllReadonly<Vehicle>()
                .Where(v => v.Id == Guid.Parse(vehicleId))
