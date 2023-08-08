@@ -243,16 +243,16 @@ public class VehicleService : IVehicleService
     /// </summary>
     /// <param name="vehicleId">The vehicle identifier</param>
     /// <returns>Detailed model containing all the vehicle information</returns>
-    public async Task<VehicleDetailsResponseModel> GetVehicleDetailsByIdAsync(string vehicleId)
+    public async Task<VehicleResponseModel> GetVehicleDetailsByIdAsync(string vehicleId)
     {
-        VehicleDetailsResponseModel? vehicle = 
-            this.memoryCache.Get<VehicleDetailsResponseModel>(vehicleId + VehicleDetailsCacheKeyAddition);
+        VehicleResponseModel? vehicle = 
+            this.memoryCache.Get<VehicleResponseModel>(vehicleId + VehicleDetailsCacheKeyAddition);
 
         if(vehicle == null)
         {
             vehicle = await repository.AllReadonly<Vehicle>()
                .Where(v => v.Id == Guid.Parse(vehicleId))
-               .Select(v => new VehicleDetailsResponseModel
+               .Select(v => new VehicleResponseModel
                {
                    Id = v.Id.ToString(),
                    Make = v.Make,

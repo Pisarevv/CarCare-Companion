@@ -24,7 +24,7 @@ public interface IVehicleService
 
     public Task<ICollection<VehicleBasicInfoResponseModel>> AllUserVehiclesByIdAsync(string userId);
 
-    public Task<VehicleDetailsResponseModel> GetVehicleDetailsByIdAsync(string vehicleId);
+    public Task<VehicleResponseModel> GetVehicleDetailsByIdAsync(string vehicleId);
 
     public Task<VehicleDetailsEditResponseModel> GetVehicleEditDetails(string vehicleId);
 
