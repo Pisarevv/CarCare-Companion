@@ -173,15 +173,13 @@ const EditServiceRecord = (props) => {
                 const mileage = DecimalSeparatorFormatter(serviceRecord.mileage);
                 const cost = DecimalSeparatorFormatter(serviceRecord.cost);
                 const performedOn = StringToISODateString(serviceRecord.performedOn);
-                const response = await axiosPrivate.patch(`/ServiceRecords/Edit/${id}`, {title, description, mileage, cost, vehicleId, performedOn})
+                await axiosPrivate.patch(`/ServiceRecords/Edit/${id}`, {title, description, mileage, cost, vehicleId, performedOn})
                 navigate('/ServiceRecords')
-                NotificationHandler("Success", "Sucessfully added service record!",response.status);
             }
 
         }
         catch (error) {
-            const {title, status} = error.response.data;
-            NotificationHandler("Warning",title,status);
+            NotificationHandler(error);
         }
     }
 

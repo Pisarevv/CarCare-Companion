@@ -50,36 +50,16 @@ const notificationMessages = {
     }
 }
 
-const responseStatusNotificationType = (responeStatus) => {
-    if(Number(responeStatus) >= 100 && Number(responeStatus) <= 199){
-        return "info";
+
+
+
+export const NotificationHandler = (input) => {
+
+    if(!notificationMessages.hasOwnProperty(input)){
+       input = "Generic error"
     }
-
-    if(Number(responeStatus) >= 200 && Number(responeStatus) <= 299){
-        return "success";
-    }
-
-    if(Number(responeStatus) >= 300 && Number(responeStatus) <= 399){
-        return "default";
-    }
-
-    if(Number(responeStatus) >= 400 && Number(responeStatus) <= 599){
-        return "warning";
-    }
-
-}
-
-'success' | 'danger' | '' | 'default' | 'warning';
-
-export const NotificationHandler = (title,message,responeStatus) => {
-
-    // if(!notificationMessages.hasOwnProperty(input)){
-    //    input = "Generic error"
-    // }
     
-    const type = responseStatusNotificationType(responeStatus);
-    
-    // const {title,message,type} = notificationMessages[input];
+    const {title,message,type} = notificationMessages[input];
     return (
         Store.addNotification({
             title: title,
