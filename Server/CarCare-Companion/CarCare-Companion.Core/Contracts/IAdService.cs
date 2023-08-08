@@ -12,6 +12,6 @@ public interface IAdService
 
     public Task<CarouselAdResponseModel> GetDetailsAsync(string carouselAdId);
 
-    public Task EditAsync(string carouselAdId, CarouselAdFromRequestModel model);
+    public Task<CarouselAdResponseModel> EditAsync(string carouselAdId, CarouselAdFromRequestModel model);
     
 }
