@@ -359,7 +359,7 @@ public class VehiclesController : BaseController
     /// <returns>Model containing all the vehicle details</returns>
     [HttpGet]
     [Route("Details/{vehicleId}")]
-    [ProducesResponseType(200, Type = typeof(VehicleDetailsResponseModel))]
+    [ProducesResponseType(200, Type = typeof(VehicleResponseModel))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> VehicleDetails([FromRoute] string vehicleId)
@@ -396,7 +396,7 @@ public class VehiclesController : BaseController
                 });
             }
 
-            VehicleDetailsResponseModel vehicle = await vehicleService.GetVehicleDetailsByIdAsync(vehicleId);
+            VehicleResponseModel vehicle = await vehicleService.GetVehicleDetailsByIdAsync(vehicleId);
 
             return StatusCode(200, vehicle);
 
