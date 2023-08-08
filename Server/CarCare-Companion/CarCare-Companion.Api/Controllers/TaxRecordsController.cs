@@ -26,7 +26,10 @@ public class TaxRecordsController : BaseController
         this.logger = logger;
     }
 
-
+    /// <summary>
+    /// Retrieves all tax records
+    /// </summary>
+    /// <returns>Collection of tax records</returns>
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(ICollection<TaxRecordResponseModel>))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]

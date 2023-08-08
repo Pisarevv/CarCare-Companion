@@ -8,6 +8,7 @@ import IsLoadingHOC from '../../Common/IsLoadingHoc';
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 
 import './VehicleDetails.css'
+import RecentVehicleServices from './RecentVehicleServices/RecentVehicleServices';
 
 
 const VehicleDetails = (props) => {
@@ -25,7 +26,7 @@ const VehicleDetails = (props) => {
         let isMounted = true;
         const controller = new AbortController();
 
-        const getVehicleDetails= async () => {
+        const getVehicleDetails = async () => {
             try {
                 const response = await axiosPrivate.get(`/Vehicles/Details/${id}`, {
                     signal: controller.signal
@@ -35,7 +36,7 @@ const VehicleDetails = (props) => {
                 NotificationHandler(err);
                 navigate('/login', { state: { from: location }, replace: true });
             }
-            finally{
+            finally {
                 setLoading(false);
             }
         }
@@ -48,16 +49,13 @@ const VehicleDetails = (props) => {
         }
     }, [])
 
-    
+
     return (
         <section className="vehicle-details">
             <div className="vehicle-details-container">
-                <div className="management-buttons">
-                    <NavLink to={`/Vehicle/Details`}>Trip manager</NavLink>
-                    <NavLink to={`/Vehicle/Details`}>Service manager</NavLink>
+                <div className="recent-actions-information"> 
+                <RecentVehicleServices/>
                 </div>
-                <div className="last-three-taxes-container"> TEST2</div>
-                <div className="last-three-trips-container">TEST3 </div>
                 <div className="vehicle-information">
                     <div className="vehicl-details-card">
                         {
@@ -73,9 +71,9 @@ const VehicleDetails = (props) => {
                             <div className="vehicle-details-information">Fuel: {vehicleDetails.fuelType}</div>
                             <div className="vehicle-details-information">Type: {vehicleDetails.vehicleType}</div>
                             <NavLink to={`/Vehicle/Edit/${id}`}>Edit</NavLink>
-                            <Link 
-                            to={`/Vehicle/Delete/${id}`}
-                            state = {{details : {make:vehicleDetails.make, model:vehicleDetails.model}}}
+                            <Link
+                                to={`/Vehicle/Delete/${id}`}
+                                state={{ details: { make: vehicleDetails.make, model: vehicleDetails.model } }}
                             >Delete
                             </Link>
                         </div>
