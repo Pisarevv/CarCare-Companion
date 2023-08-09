@@ -9,9 +9,6 @@ body {
     font-family: "Montserrat", sans-serif;
     font-size: 20px;
     background-size: 200% 100% !important;
-    animation: move 10s ease infinite;
-    transform: translate3d(0, 0, 0);
-    background: linear-gradient(45deg, #0d0e0d 10%, #292b2d 90%);
     height: 100vh;
 }
 
