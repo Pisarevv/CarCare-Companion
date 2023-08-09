@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: baseline;
     gap: 0.2em;
-    width: 90%;
+    max-width: 45%;
     background: rgb(45, 51, 68); 
     padding: 4% 10%;
     border-radius: 30px;
@@ -17,6 +17,9 @@
 }
 
 .trip-actions-container{
+    display: flex;
+    justify-content: space-between;
+    gap: 2em;
     align-self: center;
 }
 

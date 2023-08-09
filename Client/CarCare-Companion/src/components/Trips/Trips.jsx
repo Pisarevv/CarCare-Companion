@@ -21,7 +21,7 @@ const Trips = (props) => {
     const location = useLocation();
 
     const [userTrips, setUserTrips] = useState([]);
-   
+
     const { setLoading } = props;
 
     useEffect(() => {
@@ -38,7 +38,7 @@ const Trips = (props) => {
                 NotificationHandler(err);
                 navigate('/login', { state: { from: location }, replace: true });
             }
-            finally{
+            finally {
                 setLoading(false);
             }
         }
@@ -54,9 +54,11 @@ const Trips = (props) => {
     return (
         <section className="trips-section">
             <div className="trips-container">
-                <div className="add-trip-button"><NavLink to="/Trips/Add">Add trip</NavLink> </div>
-                <div className="trips-statistics"><TripsStatistics/></div>
-                <div className="trips-list">{userTrips.map(ut => <UserTripCard key={ut.id} tripDetails={ut} />)}</div>
+                <div className="trips-statistics">
+                    <div className="add-trip-button"><NavLink to="/Trips/Add">Add trip</NavLink></div>
+                    <div className='trip-records-statistics'> <TripsStatistics /></div>
+                </div>
+                <div className="trips-list-container ">{userTrips.map(ut => <UserTripCard key={ut.id} tripDetails={ut} />)}</div>
             </div>
         </section>
     )

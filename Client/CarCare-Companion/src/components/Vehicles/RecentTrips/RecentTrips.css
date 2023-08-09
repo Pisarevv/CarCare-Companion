@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     background-color: rgb(45, 51, 68);
     opacity: 70%;
     border-radius: 40px;
@@ -20,7 +20,7 @@
     font-size: 30px;
 }
 
-.trips-list{
+.trips-list-vehicle{
     display: flex;
     flex-direction: column;
     align-items: center;

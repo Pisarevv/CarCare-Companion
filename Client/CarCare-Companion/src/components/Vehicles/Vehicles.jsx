@@ -56,7 +56,7 @@ const Vehicles = (props) => {
         <section className="vehicles-section">
             <div className="vehicle-container">
                 <div className="user-recent-services-table">
-                    <NavLink to="/Vehicle/Create">Add vehicle</NavLink>
+                    <div className="add-vehicle-button"><NavLink to="/Vehicle/Create">Add vehicle</NavLink></div>
                     <RecentTrips/>
                     <RecentServices/>
                 </div>

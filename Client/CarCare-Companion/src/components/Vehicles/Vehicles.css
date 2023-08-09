@@ -11,53 +11,31 @@
     grid-row-gap: 0px;
 }
 
+.add-vehicle-button{
+  align-self: baseline;
+}
+
 .user-recent-services-table {
     grid-area: 1 / 1 / 2 / 2;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    gap: 0.5em;
+    gap: 2em;
     opacity: 0;
     transform: translate3d(0, 300px, 0);
     animation: arrive 500ms ease-in-out 0.1s forwards;
 }
 
-
- .user-recent-services-table .create-button {
-    gap: 0.5em;
-    opacity: 0;
-    transform: translate3d(0, 300px, 0);
-    animation: arrive 500ms ease-in-out 0.1s forwards;
-    transition: all 0.3s ease 0s;
-} 
 
 .vehicle-container a {
     background-color: rgb(45, 51, 68);
     opacity: 60%;
-    padding: 20px;
+    padding: 15px 20px;
     border-radius: 50px;
     transition: all 0.3s ease 0s;
 }
 
-
-
-/* .recent-trips-container {
-  
-    position: sticky;
-    top: 0;
-} */
-
-/* .user-recent-services {
-    position: sticky;
-    top: 0;
-}
-
-.user-recent-taxes {
-  
-    position: sticky;
-    top: 0;
-} */
 
 .user-vehicles {
     grid-area: 1 / 2 / 2 / 3;

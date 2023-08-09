@@ -278,7 +278,7 @@ const AddVehicle = (props) => {
         const { make, model, year, fuelTypeId, vehicleTypeId } = userVehicle;
         const mileage = DecimalSeparatorFormatter(userVehicle.mileage);
         const vehicleIdResponse = await axiosPrivate.post("/Vehicles", { make, model, mileage, year, fuelTypeId, vehicleTypeId });
-        vehicleId = vehicleIdResponse.data;
+        vehicleId = vehicleIdResponse.data.id;
       }
 
       else {

@@ -53,7 +53,7 @@ const RecentVehicleServices = (props) => {
     
     return (
         <div className="vehicle-recent-services-container">
-            <div className="vehicle-services-header">Recently added service records</div>
+            <div className="vehicle-services-header">Recent service records</div>
             <div className="vehicle-services-list">
                 {
                     recentServiceRecords.length > 0

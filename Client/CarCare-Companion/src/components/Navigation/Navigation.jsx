@@ -52,8 +52,7 @@ const Navigation = () => {
                                 <li><Link to="/Trips">Trips manager</Link></li>
                                 <li><Link to="/ServiceRecords">Services manager</Link></li>
                                 <li><Link to="/TaxRecords">Taxes manager</Link></li>
-                                <li className="right_link first_link"><Link to="/Profile">Profile</Link></li>
-                                <li className="right_link"><Link to="/Logout">Logout</Link></li>
+                                <li className="right_link first_link"><Link to="/Logout">Logout</Link></li>
                             </>
                             :
                             <>

@@ -1,13 +1,11 @@
-.user-recent-trip-card-container { 
+.user-recent-trip-card-container-vehicle { 
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.2em;
-
     background: rgb(43, 43, 43); 
     padding: 4% 10%;
     border-radius: 30px;
-    width: 100%;
 }
 
 .recent-trip-card-border{

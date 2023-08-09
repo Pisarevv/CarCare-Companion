@@ -3,11 +3,11 @@
     flex-direction: column;
     padding: 10%;
     gap: 0.5em;
+    align-items: baseline;
 }
 
 .trip-statistics-border{
     width: 160px;
     height: 5px;
     background-color: #3910b4;
-    margin: 22px auto;
 }

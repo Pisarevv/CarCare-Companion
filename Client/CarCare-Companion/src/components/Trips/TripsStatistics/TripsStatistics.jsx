@@ -63,9 +63,9 @@ const TripsStatistics = (props) => {
 
         <div className="trips-statistics-list">
             <h1>Overview:</h1>
+            <div className="trip-statistics-border"></div>
             <div className="trips-count">You have completed {userTripsCount} so far.</div>
             <div className="trips-cost">The total cost of your trips is: {userTripsCost} lv.</div>
-            <div className="trip-statistics-border"></div>
         </div>   
         
     )

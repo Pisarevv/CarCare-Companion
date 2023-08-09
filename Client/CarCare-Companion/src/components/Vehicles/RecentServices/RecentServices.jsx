@@ -48,9 +48,9 @@ const RecentServices = (props) => {
 
     
     return (
-        <div className="recent-trips-container">
-            <div className="trips-header">Recently added service records</div>
-            <div className="trips-list">
+        <div className="recent-services-container">
+            <div className="services-header">Recently added service records</div>
+            <div className="services-list">
                 {
                     recentServiceRecords.length > 0
                         ?

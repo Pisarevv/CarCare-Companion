@@ -47,7 +47,7 @@ const RecentTrips = (props) => {
     return (
         <div className="recent-trips-container">
             <div className="trips-header">Recent trips</div>
-            <div className="trips-list">
+            <div className="trips-list-vehicle">
                 {
                     recentUserTrips.length > 0
                         ?

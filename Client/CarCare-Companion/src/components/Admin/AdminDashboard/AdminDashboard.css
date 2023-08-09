@@ -9,6 +9,11 @@
     animation: arrive 500ms ease-in-out 0.5s forwards;
 }
 
+.admin-home a {
+    background-color: transparent;
+    transition: all 0.3s ease 0s;
+}
+
 
 .admin-home-container {    
    background-color: rgb(19, 24, 24);

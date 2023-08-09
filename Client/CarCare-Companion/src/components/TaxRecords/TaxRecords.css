@@ -1,20 +1,32 @@
+.tax-records-section{
+    background-color: #242424;
+}
+
 .tax-records-container {
     display: grid;
     grid-template-columns: 0.3fr 1fr;
     grid-template-rows: 1fr;
     grid-column-gap: 15px;
     grid-row-gap: 0px;
-    opacity: 0;
-    transform: translate3d(0, 300px, 0);
-    animation: arrive 500ms ease-in-out 0.2s forwards;
+  
 }
 
 #add-tax-record {
-    background: tint(#2742ae, 4%);
+    background-color: rgb(45, 51, 68);
+    opacity: 60%;
+    padding: 15px 20px;
+    border-radius: 50px;
+    width: 50%;
+    text-align: center;
+    transition: all 0.3s ease 0s;
+    animation: arrive 200ms ease-in-out 0.1s forwards;
 }
 
-.tax-statistics {
+.taxes-statistics {
     grid-area: 1 / 1 / 2 / 2;
+    opacity: 0;
+    transform: translate3d(0, 300px, 0);
+    animation: arrive 500ms ease-in-out 0.2s forwards;
 }
 
 .tax-records-list {
@@ -23,4 +35,7 @@
     align-items: flex-end;
     flex-wrap: wrap;
     gap: 2em;
+    opacity: 0;
+    transform: translate3d(0, 300px, 0);
+    animation: arrive 500ms ease-in-out 0.3s forwards;
 }

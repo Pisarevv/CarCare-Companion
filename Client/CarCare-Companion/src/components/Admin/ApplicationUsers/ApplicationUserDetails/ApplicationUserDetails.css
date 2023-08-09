@@ -32,4 +32,10 @@
 .admin-button{
     padding: 10px;
     font-size: 20px;
+    transition: all 0.3s ease 0s;
+}
+
+.admin-button:hover{
+    color: #020c0e;
+    transition: all 0.3s ease 0s;
 }
