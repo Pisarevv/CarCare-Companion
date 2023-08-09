@@ -303,10 +303,10 @@ const EditVehicle = (props) => {
             "Content-Type": "multipart/form-data" 
           }
         })
-        navigate('/MyVehicles');
+        navigate(`/Vehicle/Details/${id}`);
       }
 
-      navigate('/MyVehicles');
+      navigate(`/Vehicle/Details/${id}`);
     }
     catch (error) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
