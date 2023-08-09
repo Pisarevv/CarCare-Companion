@@ -24,11 +24,12 @@ public class TripRecordsServiceTests
     private TripRecordsService tripRecordsService;
     private Mock<IMemoryCache> mockMemoryCache;
     private CarCareCompanionDbContext applicationDbContext;
+
     [SetUp]
     public void Setup()
     {
         var contextOptions = new DbContextOptionsBuilder<CarCareCompanionDbContext>()
-            .UseInMemoryDatabase("AdsDB")
+            .UseInMemoryDatabase("TripRecordsDb")
             .Options;
         applicationDbContext = new CarCareCompanionDbContext(contextOptions);
 
@@ -130,6 +131,9 @@ public class TripRecordsServiceTests
 
     }
 
+    /// <summary>
+    /// Tests the trip record deleting 
+    /// </summary>
     [Test]
     public async Task DeleteAsync_ShouldDeleteAEntity()
     {
@@ -163,6 +167,9 @@ public class TripRecordsServiceTests
         Assert.IsTrue(deletedTripRecord.IsDeleted);
     }
 
+    /// <summary>
+    /// Tests if a trip exist by id
+    /// </summary>
     [Test]
     public async Task DoesTripExistByIdAsync_ShouldReturnTrue_WhenTripExists()
     {
@@ -194,6 +201,9 @@ public class TripRecordsServiceTests
         Assert.IsTrue(doesTripExist);
     }
 
+    /// <summary>
+    /// Tests if a trip exist by id
+    /// </summary>
     [Test]
     public async Task DoesTripExistByIdAsync_ShouldReturnFalse_WhenTripDoesntExists()
     {
@@ -207,6 +217,9 @@ public class TripRecordsServiceTests
         Assert.IsFalse(doesTripExist);
     }
 
+    /// <summary>
+    /// Tests if retrieving all user trips from cache works
+    /// </summary>
     [Test]
     public async Task GetAllTripsByUsedIdAsync_ReturnsDataFromCache_IfPresent()
     {
@@ -253,6 +266,10 @@ public class TripRecordsServiceTests
         Assert.AreEqual(testData, result);
     }
 
+
+    /// <summary>
+    /// Tests if retrieving all user trips from repository works
+    /// </summary>
     [Test]
     public async Task GetAllTripsByUsedIdAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
@@ -305,6 +322,9 @@ public class TripRecordsServiceTests
         Assert.AreEqual(trip.Cost, result[0].TripCost);
     }
 
+    /// <summary>
+    /// Tests if user is a trip record creator
+    /// </summary>
     [Test]
     public async Task IsUserCreatorOfTripAsync_ShouldReturnTrue_WhenUserIsCreator()
     {
@@ -336,6 +356,9 @@ public class TripRecordsServiceTests
         Assert.IsTrue(isUserTripCrator);
     }
 
+    /// <summary>
+    /// Tests if user is a trip record creator
+    /// </summary>
     [Test]
     public async Task IsUserCreatorOfTripAsync_ShouldReturnFalse_WhenUserIsNotCreator()
     {
@@ -368,6 +391,9 @@ public class TripRecordsServiceTests
         Assert.IsFalse(isUserTripCrator);
     }
 
+    /// <summary>
+    /// Tests retrieving of details for a trip record
+    /// </summary>
     [Test]
     public async Task GetTripDetailsByIdAsync_ShouldRetrieveTripDetails()
     {
@@ -424,6 +450,9 @@ public class TripRecordsServiceTests
      
     }
 
+    /// <summary>
+    /// Tests retrieving of trip records count from cache
+    /// </summary>
     [Test]
     public async Task GetAllUserTripsCountAsync_ReturnsDataFromCache_IfPresent()
     {
@@ -444,6 +473,9 @@ public class TripRecordsServiceTests
         Assert.AreEqual(expectedCount, result);
     }
 
+    /// <summary>
+    /// Tests retrieving of trip records count from repository
+    /// </summary>
     [Test]
     public async Task GetAllUserTripsCountAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
@@ -489,6 +521,9 @@ public class TripRecordsServiceTests
         Assert.AreEqual(tripRecords.Count, result);
     }
 
+    /// <summary>
+    /// Tests retrieving of trip records cost from cache
+    /// </summary>
     [Test]
     public async Task GetAllUserTripsCostAsync_ReturnsDataFromCache_IfPresent()
     {
@@ -509,6 +544,9 @@ public class TripRecordsServiceTests
         Assert.AreEqual(expectedCost, result);
     }
 
+    /// <summary>
+    /// Tests retrieving of trip records cost from repository
+    /// </summary>
     [Test]
     public async Task GetAllUserTripsCostAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
@@ -554,6 +592,9 @@ public class TripRecordsServiceTests
         Assert.AreEqual(tripRecords.Sum(x => x.Cost), result);
     }
 
+    /// <summary>
+    /// Tests retrieving of latest N count records works
+    /// </summary>
     [Test]
     public async Task GetLastNCountAsync_ShouldRetrieveNRecords()
     {
