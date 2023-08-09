@@ -156,6 +156,7 @@ const AddServiceRecord = (props) => {
 
         }
         catch (error) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             const {title, status} = error.response.data;
             NotificationHandler("Warning",title,status);
         }

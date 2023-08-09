@@ -168,8 +168,9 @@ const EditTrip = (props) => {
                     const mileageTravelled = DecimalSeparatorFormatter(trip.mileageTravelled);
                     const usedFuel = null;
                     const fuelPrice = null;
-                    await axiosPrivate.patch(`/Trips/Edit/${id}`,{startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId});
+                    const response = await axiosPrivate.patch(`/Trips/Edit/${id}`,{startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId});
                     navigate("/Trips");
+                    NotificationHandler("Success", "Sucessfully added trip record!", response.status);
                 }
             }
             else {
@@ -182,14 +183,17 @@ const EditTrip = (props) => {
                     const mileageTravelled = DecimalSeparatorFormatter(trip.mileageTravelled);
                     const usedFuel = DecimalSeparatorFormatter(trip.usedFuel);
                     const fuelPrice = DecimalSeparatorFormatter(trip.fuelPrice);
-                    await axiosPrivate.patch(`/Trips/Edit/${id}`,{startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId})
-                    navigate("/Trips")
+                    const response = await axiosPrivate.patch(`/Trips/Edit/${id}`,{startDestination, endDestination, mileageTravelled, usedFuel, fuelPrice, vehicleId});
+                    navigate("/Trips");
+                    NotificationHandler("Success", "Sucessfully edited trip record!", response.status);
                 }
             }
 
         }
         catch (error) {
-            NotificationHandler(error);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const { title, status } = error.response.data;
+            NotificationHandler("Warning", title, status);
         }
     }
 

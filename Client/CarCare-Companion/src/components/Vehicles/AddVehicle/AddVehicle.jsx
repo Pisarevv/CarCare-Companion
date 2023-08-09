@@ -270,6 +270,7 @@ const AddVehicle = (props) => {
       let isYearValid = validateNumberFields("year", userVehicle.year);
 
       let vehicleId = "";
+      let response = "";
 
       if (isMakeValid && isMileageValid &&
         isFuelTypeValid && isModelValid &&
@@ -277,8 +278,9 @@ const AddVehicle = (props) => {
       ) {
         const { make, model, year, fuelTypeId, vehicleTypeId } = userVehicle;
         const mileage = DecimalSeparatorFormatter(userVehicle.mileage);
-        const vehicleIdResponse = await axiosPrivate.post("/Vehicles", { make, model, mileage, year, fuelTypeId, vehicleTypeId });
-        vehicleId = vehicleIdResponse.data.id;
+        const requestResponse = await axiosPrivate.post("/Vehicles", { make, model, mileage, year, fuelTypeId, vehicleTypeId });
+        vehicleId = requestResponse.data.id;
+        response = requestResponse;
       }
 
       else {
@@ -296,13 +298,14 @@ const AddVehicle = (props) => {
           }
         })
       }
-
       navigate('/MyVehicles');
+      NotificationHandler("Success", "Sucessfully added vehicle!",response.status);
     }
 
     catch (error) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      NotificationHandler(error)
+      const {title, status} = error.response.data;
+      NotificationHandler("Warning",title,status);
     }
   }
 

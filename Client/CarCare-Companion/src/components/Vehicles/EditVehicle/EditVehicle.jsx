@@ -280,13 +280,14 @@ const EditVehicle = (props) => {
       let isvehicleTypeIdValid = validateSelectFields("vehicleTypeId", userVehicle.vehicleTypeId);
       let isYearValid = validateNumberFields("year", userVehicle.year);
 
+      let response = "";
       if (isMakeValid && isMileageValid &&
         isfuelTypeIdValid && isModelValid &&
         isvehicleTypeIdValid && isYearValid
       ) {
         const { make, model, year, fuelTypeId, vehicleTypeId} = userVehicle;
         const mileage = DecimalSeparatorFormatter(userVehicle.mileage);
-        await axiosPrivate.patch(`/Vehicles/Edit/${id}`,{ make, model, mileage, year, fuelTypeId, vehicleTypeId});
+        response = await axiosPrivate.patch(`/Vehicles/Edit/${id}`,{ make, model, mileage, year, fuelTypeId, vehicleTypeId});
       }
 
       else {
@@ -303,14 +304,14 @@ const EditVehicle = (props) => {
             "Content-Type": "multipart/form-data" 
           }
         })
-        navigate(`/Vehicle/Details/${id}`);
       }
-
       navigate(`/Vehicle/Details/${id}`);
+      NotificationHandler("Success", "Sucessfully edited vehicle!",response.status);
     }
     catch (error) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      NotificationHandler(error)
+      const {title, status} = error.response.data;
+      NotificationHandler("Warning",title,status);
     }
   }
 

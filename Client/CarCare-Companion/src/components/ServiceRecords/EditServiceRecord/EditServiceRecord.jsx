@@ -175,11 +175,12 @@ const EditServiceRecord = (props) => {
                 const performedOn = StringToISODateString(serviceRecord.performedOn);
                 const response = await axiosPrivate.patch(`/ServiceRecords/Edit/${id}`, {title, description, mileage, cost, vehicleId, performedOn})
                 navigate('/ServiceRecords')
-                NotificationHandler("Success", "Sucessfully added service record!",response.status);
+                NotificationHandler("Success", "Sucessfully edited service record!",response.status);
             }
 
         }
         catch (error) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             const {title, status} = error.response.data;
             NotificationHandler("Warning",title,status);
         }

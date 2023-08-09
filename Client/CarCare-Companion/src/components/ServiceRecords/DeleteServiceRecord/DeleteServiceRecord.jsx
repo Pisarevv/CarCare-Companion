@@ -27,11 +27,12 @@ const DeleteServiceRecord = () => {
       try {
         await axiosPrivate.delete(`/ServiceRecords/Delete/${id}`)
         navigate("/ServiceRecords")
-        NotificationHandler('Successful record removal');
+        NotificationHandler("Success", "Sucessfully deleted service record!", 200);
       } 
       catch (error) {
-        NotificationHandler(error)
-        navigate(`/ServiceRecords`)
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const {title, status} = error.response.data;
+        NotificationHandler("Warning",title,status);
       }
     }
 

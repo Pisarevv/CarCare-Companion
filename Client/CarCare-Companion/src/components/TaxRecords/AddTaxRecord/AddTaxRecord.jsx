@@ -17,7 +17,7 @@ import './AddTaxRecord.css'
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
     inputNotNumber: "This field accepts only valid numbers",
-    invalidDate : "The provided date is invalid - correct format example 25/03/2023"
+    invalidDate: "The provided date is invalid - correct format example 25/03/2023"
 }
 
 const ValidationRegexes = {
@@ -62,23 +62,23 @@ const AddTaxRecord = (props) => {
 
         const getVehicles = async () => {
             try {
-                const response = await axiosPrivate.get("/Vehicles",{
-                    signal : controller.signal
+                const response = await axiosPrivate.get("/Vehicles", {
+                    signal: controller.signal
                 });
 
-                if(isMounted){
-                    if(response.data.length > 0){
+                if (isMounted) {
+                    if (response.data.length > 0) {
                         setUserVehicles(userVehicles => response.data);
                         dispatch({ type: `SET_VEHICLEID`, payload: response.data[0].id })
                     }
                 }
-            } 
+            }
             catch (err) {
                 NotificationHandler(err);
                 navigate('/login', { state: { from: location }, replace: true });
             }
             finally {
-               setLoading(false);
+                setLoading(false);
             }
         }
 
@@ -88,7 +88,7 @@ const AddTaxRecord = (props) => {
             isMounted = false;
             isMounted && controller.abort();
         }
-    },[])
+    }, [])
 
 
     const onInputChange = (e) => {
@@ -141,19 +141,21 @@ const AddTaxRecord = (props) => {
 
             if (isTitleValid && isValidFromValid &&
                 isValidToValid && isVehicleValid &&
-                isCostValid)
-            {
+                isCostValid) {
                 const { title, description, vehicleId } = taxRecord;
                 const cost = DecimalSeparatorFormatter(taxRecord.cost);
                 const validFrom = StringToISODateString(taxRecord.validFrom);
                 const validTo = StringToISODateString(taxRecord.validTo);
-                await axiosPrivate.post("/TaxRecords", {title, description, validFrom, validTo, cost, vehicleId})
-                navigate('/taxRecords')
-            } 
+                const response = await axiosPrivate.post("/TaxRecords", { title, description, validFrom, validTo, cost, vehicleId })
+                navigate('/taxRecords');
+                NotificationHandler("Success", "Sucessfully added tax record!", response.status);
+            }
 
         }
         catch (error) {
-            NotificationHandler(error);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const { title, status } = error.response.data;
+            NotificationHandler("Warning", title, status);
         }
     }
 

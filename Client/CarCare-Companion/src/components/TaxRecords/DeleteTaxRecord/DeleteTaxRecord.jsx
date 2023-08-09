@@ -26,11 +26,12 @@ const DeleteTaxRecord = () => {
       try {
         await axiosPrivate.delete(`/TaxRecords/Delete/${id}`);
         navigate("/TaxRecords")
-        NotificationHandler('Successful record removal');
+        NotificationHandler("Success", "Sucessfully deleted tax record!", 200);
       } 
       catch (error) {
-        NotificationHandler(error)
-        navigate(`/TaxRecords`)
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const { title, status } = error.response.data;
+        NotificationHandler("Warning", title, status);
       }
     }
 

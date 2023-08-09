@@ -18,7 +18,7 @@ import './EditTaxRecord.css'
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
     inputNotNumber: "This field accepts only valid numbers",
-    invalidDate : "The provided date is invalid - correct format example 25/03/2023"
+    invalidDate: "The provided date is invalid - correct format example 25/03/2023"
 }
 
 const ValidationRegexes = {
@@ -66,31 +66,31 @@ const EditTaxRecord = (props) => {
         const getVehicles = async () => {
             try {
                 const requests = [
-                    axiosPrivate.get("/Vehicles",{
-                        signal : controller.signal
+                    axiosPrivate.get("/Vehicles", {
+                        signal: controller.signal
                     }),
-                    axiosPrivate.get(`/TaxRecords/Details/${id}`,{
-                        signal : controller.signal
+                    axiosPrivate.get(`/TaxRecords/Details/${id}`, {
+                        signal: controller.signal
                     })
                 ];
 
                 Promise.all(requests)
-                .then(responses => {
-                    const userVehicleResult = responses[0].data;
-                    const taxRecordDetails = responses[1].data;
+                    .then(responses => {
+                        const userVehicleResult = responses[0].data;
+                        const taxRecordDetails = responses[1].data;
 
-                    if(isMounted){
-                        setUserVehicles(userVehicles => userVehicleResult);
-                        setTaxRecordInitialDetails(taxRecordDetails);
-                    }
-                })          
-            } 
+                        if (isMounted) {
+                            setUserVehicles(userVehicles => userVehicleResult);
+                            setTaxRecordInitialDetails(taxRecordDetails);
+                        }
+                    })
+            }
             catch (err) {
                 NotificationHandler(err);
                 navigate('/login', { state: { from: location }, replace: true });
             }
             finally {
-               setLoading(false);
+                setLoading(false);
             }
         }
 
@@ -100,17 +100,17 @@ const EditTaxRecord = (props) => {
             isMounted = false;
             isMounted && controller.abort();
         }
-    },[])
+    }, [])
 
     const setTaxRecordInitialDetails = (vehicleDetails) => {
         for (const property in vehicleDetails) {
-          if(property == "validFrom" || property == "validTo"){
-            dispatch({ type: `SET_${(property).toUpperCase()}`, payload: ISODateStringToString.ddmmyyyy(vehicleDetails[property])});
-            continue;
-          }
-          dispatch({ type: `SET_${(property).toUpperCase()}`, payload: vehicleDetails[property] })
+            if (property == "validFrom" || property == "validTo") {
+                dispatch({ type: `SET_${(property).toUpperCase()}`, payload: ISODateStringToString.ddmmyyyy(vehicleDetails[property]) });
+                continue;
+            }
+            dispatch({ type: `SET_${(property).toUpperCase()}`, payload: vehicleDetails[property] })
         }
-      }
+    }
 
     const onInputChange = (e) => {
         dispatch({ type: `SET_${(e.target.name).toUpperCase()}`, payload: e.target.value })
@@ -162,19 +162,21 @@ const EditTaxRecord = (props) => {
 
             if (isTitleValid && isValidFromValid &&
                 isValidToValid && isVehicleValid &&
-                isCostValid)
-            {
+                isCostValid) {
                 const { title, description, vehicleId } = taxRecord;
                 const cost = DecimalSeparatorFormatter(taxRecord.cost);
                 const validFrom = StringToISODateString(taxRecord.validFrom);
                 const validTo = StringToISODateString(taxRecord.validTo);
-                await axiosPrivate.patch(`/TaxRecords/Edit/${id}`, {title, description, validTo,validFrom, cost, vehicleId});
+                const response = await axiosPrivate.patch(`/TaxRecords/Edit/${id}`, { title, description, validTo, validFrom, cost, vehicleId });
                 navigate('/taxRecords')
-            } 
+                NotificationHandler("Success", "Sucessfully edited tax record!", response.status);
+            }
 
         }
         catch (error) {
-            NotificationHandler(error);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const { title, status } = error.response.data;
+            NotificationHandler("Warning", title, status);
         }
     }
 
