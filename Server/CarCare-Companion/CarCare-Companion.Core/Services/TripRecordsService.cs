@@ -13,6 +13,7 @@ using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 using static Common.CacheKeysAndDurations.Trips;
+using CarCare_Companion.Core.Models.TripRecords;
 
 
 
@@ -36,7 +37,7 @@ public class TripRecordsService : ITripRecordsService
     /// </summary>
     /// <param name="model">The input model containing the trip information</param>
     /// <returns>String containing the newly created trip record Id</returns>
-    public async Task CreateAsync(string userId, TripFormRequestModel model)
+    public async Task<TripResponseModel> CreateAsync(string userId, TripFormRequestModel model)
     {
         TripRecord tripToAdd = new TripRecord()
         {
@@ -58,6 +59,17 @@ public class TripRecordsService : ITripRecordsService
         this.memoryCache.Remove(userId + UserTripsCacheKeyAddition);
         this.memoryCache.Remove(userId + UserTripsCostCacheKeyAddition);
         this.memoryCache.Remove(userId + UserTripsCountCacheKeyAddition);
+
+        return new TripResponseModel
+        {
+            Id = tripToAdd.Id.ToString(),
+            StartDestination = tripToAdd.StartDestination,
+            EndDestination = tripToAdd.EndDestination,
+            FuelPrice = tripToAdd.FuelPrice,
+            UsedFuel = tripToAdd.UsedFuel,
+            MileageTravelled = tripToAdd.MileageTravelled
+        };
+
     }
 
     /// <summary>
@@ -66,7 +78,7 @@ public class TripRecordsService : ITripRecordsService
     /// <param name="tripId">The trip record identifier</param>
     /// <param name="model">The input model containing the trip information</param>
     /// <returns></returns>
-    public async Task EditAsync(string tripId, string userId,TripFormRequestModel model)
+    public async Task<TripResponseModel> EditAsync(string tripId, string userId,TripFormRequestModel model)
     {
         TripRecord tripToEdit = await repository.GetByIdAsync<TripRecord>(Guid.Parse(tripId));
 
@@ -84,6 +96,16 @@ public class TripRecordsService : ITripRecordsService
         this.memoryCache.Remove(userId + UserTripsCacheKeyAddition);
         this.memoryCache.Remove(userId + UserTripsCostCacheKeyAddition);
         this.memoryCache.Remove(userId + UserTripsCountCacheKeyAddition);
+
+        return new TripResponseModel
+        {
+            Id = tripToEdit.Id.ToString(),
+            StartDestination = tripToEdit.StartDestination,
+            EndDestination = tripToEdit.EndDestination,
+            FuelPrice = tripToEdit.FuelPrice,
+            UsedFuel = tripToEdit.UsedFuel,
+            MileageTravelled = tripToEdit.MileageTravelled
+        };
     }
 
     /// <summary>

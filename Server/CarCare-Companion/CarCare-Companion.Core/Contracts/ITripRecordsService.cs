@@ -1,12 +1,13 @@
 ﻿namespace CarCare_Companion.Core.Contracts;
 
 using CarCare_Companion.Core.Models.Trip;
+using CarCare_Companion.Core.Models.TripRecords;
 
 public interface ITripRecordsService
 {
-    public Task CreateAsync(string userId, TripFormRequestModel model);
+    public Task<TripResponseModel> CreateAsync(string userId, TripFormRequestModel model);
 
-    public Task EditAsync(string tripId, string userId, TripFormRequestModel model);
+    public Task<TripResponseModel> EditAsync(string tripId, string userId, TripFormRequestModel model);
 
     public Task DeleteAsync(string tripId, string userId);
 

@@ -6,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using CarCare_Companion.Common;
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Trip;
+using CarCare_Companion.Core.Models.TripRecords;
 
 
 /// <summary>
@@ -35,7 +36,7 @@ public class TripsController : BaseController
     /// <param name="model">The model containing the trip details</param>
     /// <returns>The Id of the created trip</returns>
     [HttpPost]
-    [ProducesResponseType(200, Type = typeof(TripFormRequestModel))]
+    [ProducesResponseType(200, Type = typeof(TripResponseModel))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Create([FromBody] TripFormRequestModel model)
@@ -70,9 +71,9 @@ public class TripsController : BaseController
                 });
             }
 
-            await tripService.CreateAsync(userId, model);
+            TripResponseModel createdTrip =await tripService.CreateAsync(userId, model);
 
-            return StatusCode(200, model);
+            return StatusCode(200, createdTrip);
         }
         catch (SqlException ex)
         {
@@ -100,7 +101,7 @@ public class TripsController : BaseController
     /// <returns>A status message based on the result</returns>
     [HttpPatch]
     [Route("Edit/{tripId}")]
-    [ProducesResponseType(200, Type = typeof(TripFormRequestModel))]
+    [ProducesResponseType(200, Type = typeof(TripResponseModel))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Edit([FromRoute] string tripId, [FromBody] TripFormRequestModel model)
@@ -145,9 +146,9 @@ public class TripsController : BaseController
                 });
             }
 
-            await tripService.EditAsync(tripId, userId, model);
+            TripResponseModel editedTrip = await tripService.EditAsync(tripId, userId, model);
 
-            return StatusCode(200, model);
+            return StatusCode(200, editedTrip);
 
         }
         catch (SqlException ex)
