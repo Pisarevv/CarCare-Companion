@@ -82,7 +82,7 @@ public class TripRecordsServiceTests
     }
 
     /// <summary>
-    /// Tests the trip record adding functionality with correct data
+    /// Tests the trip record editing functionality with correct data
     /// </summary>
     [Test]
     public async Task EditAsync_WhenCalled_EditsAVehicle()
