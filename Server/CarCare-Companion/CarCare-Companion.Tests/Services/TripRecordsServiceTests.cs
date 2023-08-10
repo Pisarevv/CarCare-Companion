@@ -531,14 +531,14 @@ public class TripRecordsServiceTests
         string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
         decimal? expectedCost = 500;
 
-        object testData = 500;
+        object testData = 500m;
 
         mockMemoryCache
         .Setup(x => x.TryGetValue(It.IsAny<object>(), out testData))
         .Returns(true);
 
         //Act 
-        int result = await tripRecordsService.GetAllUserTripsCountAsync(userId);
+        decimal? result = await tripRecordsService.GetAllUserTripsCostAsync(userId);
 
         //Assert
         Assert.AreEqual(expectedCost, result);
