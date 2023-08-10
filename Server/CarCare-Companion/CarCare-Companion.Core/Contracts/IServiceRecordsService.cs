@@ -6,7 +6,7 @@ public interface IServiceRecordsService
 {
     public Task CreateAsync(string userId, ServiceRecordFormRequestModel model);
 
-    public Task<ICollection<ServiceRecordResponseModel>> GetAllByUserIdAsync(string userId);
+    public Task<ICollection<ServiceRecordDetailsResponseModel>> GetAllByUserIdAsync(string userId);
 
     public Task EditAsync(string serviceRecordId, string userId, ServiceRecordFormRequestModel model);
 
