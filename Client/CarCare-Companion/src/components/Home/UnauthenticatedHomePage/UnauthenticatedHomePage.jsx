@@ -58,7 +58,7 @@ const UnauthenticatedHomePage = (props) => {
         <div className="container">
             <div className="introduction-container">
                 <p>Welcome to CarCare Companion — your ultimate destination for all your car repair,trips and service management needs.</p>
-                <p>Discover expert advice, valuable resources, and a vibrant community of automotive enthusiasts. Start exploring now!</p>
+                <p>With our platform, effortlessly add and manage your vehicles, trips, tax details, and service records. </p>
             </div>
 
             <div className="video-container">
@@ -67,8 +67,8 @@ const UnauthenticatedHomePage = (props) => {
 
             <div className="join-container">
                 <h2>Join Us Today!</h2>
-                <p>Become a part of our dynamic community of car enthusiasts, mechanics, and DIYers.</p>
-                <p> By joining us, you'll gain access to a wealth of knowledge, valuable tips, and engaging discussions on car repairs and service management.</p>
+                <p>Become a part of our dynamic community.</p>
+                <p>By joining us, you will never miss another due date with our email reminder feature!.</p>
                 <Link to="/Register">Sign up.</Link>
             </div>
 
