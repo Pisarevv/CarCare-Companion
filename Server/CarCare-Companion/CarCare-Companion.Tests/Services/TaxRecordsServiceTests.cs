@@ -255,7 +255,7 @@ public class TaxRecordsServiceTests
     public async Task EditAsync_WhenCalled_EditsAVehicle()
     {
         //Assign   
-        SeedTaxRecord();
+        await SeedTaxRecord();
 
         TaxRecordFormRequestModel taxRecordToEdit = new TaxRecordFormRequestModel
         {
@@ -286,7 +286,7 @@ public class TaxRecordsServiceTests
     public async Task DeleteAsync_ShouldDeleteAEntity()
     {
         //Assign   
-        SeedTaxRecord();
+        await SeedTaxRecord();
 
         //Act 
         await taxRecordsService.DeleteAsync(taxRecordId, userId);
@@ -304,7 +304,7 @@ public class TaxRecordsServiceTests
     public async Task DoesRecordExistByIdAsync_ReturnTrue_WhenRecordExists()
     {
         //Assign   
-        SeedTaxRecord();
+        await SeedTaxRecord();
 
         //Act
         bool doesTaxRecordExists = await taxRecordsService.DoesRecordExistByIdAsync(taxRecordId);
