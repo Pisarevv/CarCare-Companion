@@ -46,13 +46,12 @@
 import { useContext, useState } from "react";
 import { NavLink, useNavigate } from 'react-router-dom';
 
-import { NotificationHandler } from '../../utils/NotificationHandler'
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 import { AuthContext } from "../../contexts/AuthContext";
 
+import { NotificationHandler } from "../../utils/NotificationHandler";
 import './Login.css';
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-
 
 
 const Login = () => {
@@ -83,10 +82,13 @@ const Login = () => {
         try {
             const returnedUserData = await axiosPrivate.post("/Login", {email,password});
             userLogin(returnedUserData.data);
-            navigate("/Home");      
+            navigate("/Home");     
+            NotificationHandler("Success","Welcome back!",returnedUserData.response.status); 
         } 
         catch (error) {
-            NotificationHandler(error);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const { title, status } = error.response.data;
+            NotificationHandler(title,title,status);
         }
     }
 

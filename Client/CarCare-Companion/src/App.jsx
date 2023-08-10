@@ -45,14 +45,12 @@ function App() {
         <main>
 
           <Routes>
-          <Route element={<PersistLogin/>}>
-            <Route path='/' element={<UnauthenticatedHomePage />} />
-            <Route path='/Register' element={<Register />} />
-            <Route path='/Login' element={<Login />} />
-            <Route path='/Logout' element={<Logout />} />
+            <Route element={<PersistLogin />}>
+              <Route path='/' element={<UnauthenticatedHomePage />} />
+              <Route path='/Logout' element={<Logout />} />
 
-           
-                <Route element={<PrivateGuard allowedRoles={["User", "Administrator"]} />}>
+
+              <Route element={<PrivateGuard allowedRoles={["User", "Administrator"]} />}>
                 <Route path='/Home' element={<AuthenticatedHomePage />} />
                 <Route path='/MyVehicles' element={<Vehicles />} />
                 <Route path='/Vehicle/Create' element={<AddVehicle />} />
@@ -75,14 +73,15 @@ function App() {
 
               <Route element={<PrivateGuard allowedRoles={["Administrator"]} />}>
                 <Route path='/AdministratorDashboard/' element={<AdminDashboard />} />
-                <Route path='/Administrator/ApplicationUsers' element={<ApplicationUsers/>}/>
-                <Route path='/Administrator/ApplicationUsers/:id' element={<ApplicationUserDetails/>}/>
-                <Route path='/Administrator/CarouselAds' element={<CarouselAds/>}/>
-                <Route path='/Administrator/CarouselAds/Edit/:id' element={<EditCarouselAd/>}/>
-                
+                <Route path='/Administrator/ApplicationUsers' element={<ApplicationUsers />} />
+                <Route path='/Administrator/ApplicationUsers/:id' element={<ApplicationUserDetails />} />
+                <Route path='/Administrator/CarouselAds' element={<CarouselAds />} />
+                <Route path='/Administrator/CarouselAds/Edit/:id' element={<EditCarouselAd />} />
+
               </Route>
             </Route>
-
+            <Route path='/Register' element={<Register />} />
+            <Route path='/Login' element={<Login />} />
           </Routes>
         </main>
       </div>

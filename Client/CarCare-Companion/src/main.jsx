@@ -9,6 +9,6 @@ import 'react-notifications-component/dist/theme.css'
 ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
     <ReactNotifications/>
-    <App />
+    <App/>
     </BrowserRouter>
 )

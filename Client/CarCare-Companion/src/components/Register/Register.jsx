@@ -1,12 +1,10 @@
 import './Register.css'
 
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 
-import { AuthContext } from '../../contexts/AuthContext';
-
-
 import { NotificationHandler } from '../../utils/NotificationHandler'
+
 import axios from '../../api/axios/axios';
 
 
@@ -18,13 +16,13 @@ const ValidationRegexes = {
 
     //This regex validates that the input has minimul 6 charecters and one of them 
     //must be a letter
-    passwordRegex: new RegExp( /^(?=.*[a-zA-Z]).{6,}$/)
+    passwordRegex: new RegExp(/^(?=.*[a-zA-Z]).{6,}$/)
 }
 
 const ValidationErrors = {
-    email : "Please enter a valid email address",
-    firstName : "First name cannot be less than two symbols",
-    lastName : "Last name cannot be less than two symbols",
+    email: "Please enter a valid email address",
+    firstName: "First name cannot be less than two symbols",
+    lastName: "Last name cannot be less than two symbols",
     password: "Password must contain minimum eight characters and at least one letter.",
     confirmPassword: "Passwords do not match"
 }
@@ -35,22 +33,22 @@ const Register = () => {
 
     //States
 
-    const [email,setEmail] = useState("");
+    const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState("");
 
     const [firstName, setFirstName] = useState("");
-    const [firstNameError,setFirstNameError] = useState("");
+    const [firstNameError, setFirstNameError] = useState("");
 
     const [lastName, setLastName] = useState("");
-    const [lastNameError,setLastNameError] = useState("");
+    const [lastNameError, setLastNameError] = useState("");
 
-    const [password,setPassword] = useState("");
+    const [password, setPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
-    const [confirmPassword,setConfirmPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
- 
+
     //Event handlers
     const onEmailChange = (e) => {
         setEmail(email => e.target.value);
@@ -72,8 +70,8 @@ const Register = () => {
         setConfirmPassword(confirmPassword => e.target.value)
     }
 
-    const validateEmailInput = () => {   
-        if(!ValidationRegexes.emailRegex.test(email)){
+    const validateEmailInput = () => {
+        if (!ValidationRegexes.emailRegex.test(email)) {
             setEmailError(emailError => ValidationErrors.email);
             return false;
         }
@@ -82,7 +80,7 @@ const Register = () => {
     }
 
     const validateFirstNameInput = () => {
-        if(firstName.length < 2){
+        if (firstName.length < 2) {
             setFirstNameError(firstName => ValidationErrors.firstName);
             return false;
         }
@@ -91,7 +89,7 @@ const Register = () => {
     }
 
     const validateLastNameInput = () => {
-        if(lastName.length < 2){
+        if (lastName.length < 2) {
             setLastNameError(lastName => ValidationErrors.lastName);
             return false;
         }
@@ -101,7 +99,7 @@ const Register = () => {
 
 
     const validatePasswordInput = () => {
-        if(!ValidationRegexes.passwordRegex.test(password)){
+        if (!ValidationRegexes.passwordRegex.test(password)) {
             setPasswordError(passwordError => ValidationErrors.password);
             return false;
         }
@@ -110,7 +108,7 @@ const Register = () => {
     }
 
     const validateConfirmPasswordInput = () => {
-        if(confirmPassword !== password){
+        if (confirmPassword !== password) {
             setConfirmPasswordError(confirmPassword => ValidationErrors.confirmPassword);
             return false;
         }
@@ -118,28 +116,28 @@ const Register = () => {
         return true;
     }
 
-    const registerHandler = async(e) => {
+    const registerHandler = async (e) => {
         e.preventDefault();
-        try{
+        try {
             let isEmailValid = validateEmailInput(email);
             let isFirstNameValid = validateFirstNameInput(firstName);
             let isLastNameValid = validateLastNameInput(lastName);
             let isPasswordValid = validatePasswordInput(password);
             let isConfirmPasswordValid = validateConfirmPasswordInput(confirmPassword);
 
-            if(isEmailValid && isPasswordValid && isConfirmPasswordValid && isFirstNameValid && isLastNameValid){
-                await axios.post("/Register", {email,firstName,lastName,password, confirmPassword});
+            if (isEmailValid && isPasswordValid && isConfirmPasswordValid && isFirstNameValid && isLastNameValid) {
+                await axios.post("/Register", { email, firstName, lastName, password, confirmPassword });
                 navigate('/Login');
             }
-            else{
-                throw("Invalid input fields")
-            }
+
         }
-        catch(error){
-            NotificationHandler(error);
+        catch (error) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const { title, status } = error.response.data;
+            NotificationHandler("Warning", title, status);
         }
-        
-       }
+
+    }
 
     return (
         <div className="user">
@@ -155,7 +153,7 @@ const Register = () => {
                 </div>
 
                 <div className="form__group">
-                    <input type="text" placeholder="First name" className="form__input" value={firstName} onChange={onFirstNameChange}/>
+                    <input type="text" placeholder="First name" className="form__input" value={firstName} onChange={onFirstNameChange} />
                     {firstNameError && <p className='input__error'>{firstNameError}</p>}
                 </div>
 

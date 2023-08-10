@@ -5,6 +5,7 @@
  * -----------------
 **/
 
+import { Store } from 'react-notifications-component';
 
 const responseStatusNotificationType = (responeStatus) => {
     if(Number(responeStatus) >= 100 && Number(responeStatus) <= 199){
