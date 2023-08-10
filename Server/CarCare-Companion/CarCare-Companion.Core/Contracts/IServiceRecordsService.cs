@@ -4,11 +4,11 @@ using CarCare_Companion.Core.Models.ServiceRecords;
 
 public interface IServiceRecordsService
 {
-    public Task CreateAsync(string userId, ServiceRecordFormRequestModel model);
+    public Task<ServiceRecordResponseModel> CreateAsync(string userId, ServiceRecordFormRequestModel model);
 
     public Task<ICollection<ServiceRecordDetailsResponseModel>> GetAllByUserIdAsync(string userId);
 
-    public Task EditAsync(string serviceRecordId, string userId, ServiceRecordFormRequestModel model);
+    public Task<ServiceRecordResponseModel> EditAsync(string serviceRecordId, string userId, ServiceRecordFormRequestModel model);
 
     public Task DeleteAsync(string serviceRecordId, string userId);
 

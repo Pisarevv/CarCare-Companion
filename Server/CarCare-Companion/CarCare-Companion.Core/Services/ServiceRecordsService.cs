@@ -35,7 +35,7 @@ public class ServiceRecordsService : IServiceRecordsService
     /// </summary>
     /// <param name="model">The input model containing the service record information</param>
     /// <returns>String containing the newly created service record Id</returns>
-    public async Task CreateAsync(string userId, ServiceRecordFormRequestModel model)
+    public async Task<ServiceRecordResponseModel> CreateAsync(string userId, ServiceRecordFormRequestModel model)
     {
         ServiceRecord serviceRecordToAdd = new ServiceRecord()
         {
@@ -58,6 +58,16 @@ public class ServiceRecordsService : IServiceRecordsService
         this.memoryCache.Remove(userId + UserServiceRecordsCostCacheKeyAddition);
         this.memoryCache.Remove(userId + UserServiceRecordsLastNCacheKeyAddition);
 
+        return new ServiceRecordResponseModel
+        {
+            Id = serviceRecordToAdd.Id.ToString(),
+            Title = serviceRecordToAdd.Title,
+            Cost = serviceRecordToAdd.Cost,
+            Description = serviceRecordToAdd.Description,
+            Mileage = serviceRecordToAdd.Mileage,
+            PerformedOn = serviceRecordToAdd.PerformedOn,
+            VehicleId = serviceRecordToAdd.VehicleId.ToString()
+        };
     }
 
 
@@ -66,7 +76,7 @@ public class ServiceRecordsService : IServiceRecordsService
     /// </summary>
     /// <param name="serviceRecordId">The service record identifier</param>
     /// <param name="model">The input model containing the service record information</param>
-    public async Task EditAsync(string serviceRecordId, string userId, ServiceRecordFormRequestModel model)
+    public async Task<ServiceRecordResponseModel> EditAsync(string serviceRecordId, string userId, ServiceRecordFormRequestModel model)
     {
         ServiceRecord recordToEdit = await repository.GetByIdAsync<ServiceRecord>(Guid.Parse(serviceRecordId));
 
@@ -83,6 +93,16 @@ public class ServiceRecordsService : IServiceRecordsService
         this.memoryCache.Remove(userId + UserServiceRecordsCacheKeyAddition);
         this.memoryCache.Remove(userId + UserServiceRecordsCostCacheKeyAddition);
 
+        return new ServiceRecordResponseModel
+        {
+            Id = recordToEdit.Id.ToString(),
+            Title = recordToEdit.Title,
+            Cost = recordToEdit.Cost,
+            Description = recordToEdit.Description,
+            Mileage = recordToEdit.Mileage,
+            PerformedOn = recordToEdit.PerformedOn,
+            VehicleId = recordToEdit.VehicleId.ToString()
+        };
     }
 
     /// <summary>
@@ -108,17 +128,17 @@ public class ServiceRecordsService : IServiceRecordsService
     /// </summary>
     /// <param name="userId">The user identifier</param>
     /// <returns>A collection of service records</returns>
-    public async Task<ICollection<ServiceRecordResponseModel>> GetAllByUserIdAsync(string userId)
+    public async Task<ICollection<ServiceRecordDetailsResponseModel>> GetAllByUserIdAsync(string userId)
     {
-        ICollection<ServiceRecordResponseModel>? serviceRecords =
-            this.memoryCache.Get<ICollection<ServiceRecordResponseModel>>(userId + UserServiceRecordsCacheKeyAddition);
+        ICollection<ServiceRecordDetailsResponseModel>? serviceRecords =
+            this.memoryCache.Get<ICollection<ServiceRecordDetailsResponseModel>>(userId + UserServiceRecordsCacheKeyAddition);
 
         if(serviceRecords == null)
         {
            serviceRecords = await repository.AllReadonly<ServiceRecord>()
                .Where(sr => sr.IsDeleted == false && sr.OwnerId == Guid.Parse(userId))
                .OrderByDescending(sr => sr.CreatedOn)
-               .Select(sr => new ServiceRecordResponseModel
+               .Select(sr => new ServiceRecordDetailsResponseModel
                {
                    Id = sr.Id.ToString(),
                    Title = sr.Title,

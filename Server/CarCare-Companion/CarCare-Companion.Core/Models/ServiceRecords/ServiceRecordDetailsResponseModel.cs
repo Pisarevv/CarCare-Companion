@@ -1,6 +1,6 @@
 ﻿namespace CarCare_Companion.Core.Models.ServiceRecords;
 
-public class ServiceRecordResponseModel
+public class ServiceRecordDetailsResponseModel
 {
     public string Id { get; set; } = null!;
 

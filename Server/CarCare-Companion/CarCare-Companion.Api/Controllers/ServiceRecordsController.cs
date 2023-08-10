@@ -30,7 +30,7 @@ public class ServiceRecordsController : BaseController
     /// </summary>
     /// <returns>A collection of user service records</returns>
     [HttpGet]
-    [ProducesResponseType(200, Type = typeof(ServiceRecordResponseModel))]
+    [ProducesResponseType(200, Type = typeof(ServiceRecordDetailsResponseModel))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> All()
@@ -55,7 +55,7 @@ public class ServiceRecordsController : BaseController
                 });
             }
 
-            ICollection<ServiceRecordResponseModel> serviceRecords = await serviceRecordsService.GetAllByUserIdAsync(userId);
+            ICollection<ServiceRecordDetailsResponseModel> serviceRecords = await serviceRecordsService.GetAllByUserIdAsync(userId);
 
             return StatusCode(200, serviceRecords);
 
@@ -162,7 +162,7 @@ public class ServiceRecordsController : BaseController
     /// <param name="model">The input data containing the service record information</param>
     /// <returns>The Id of the created service record</returns>
     [HttpPost]
-    [ProducesResponseType(201, Type = typeof(ServiceRecordFormRequestModel))]
+    [ProducesResponseType(201, Type = typeof(ServiceRecordResponseModel))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Create([FromBody] ServiceRecordFormRequestModel model)
@@ -197,9 +197,9 @@ public class ServiceRecordsController : BaseController
                 });
             }
 
-            await serviceRecordsService.CreateAsync(userId, model);
+            ServiceRecordResponseModel createdRecord = await serviceRecordsService.CreateAsync(userId, model);
 
-            return StatusCode(201, model);
+            return StatusCode(201, createdRecord);
         }
         catch (SqlException ex)
         {
@@ -227,7 +227,7 @@ public class ServiceRecordsController : BaseController
     /// <returns>A status message based on the result</returns>
     [HttpPatch]
     [Route("Edit/{recordId}")]
-    [ProducesResponseType(200, Type = typeof(ServiceRecordFormRequestModel))]
+    [ProducesResponseType(200, Type = typeof(ServiceRecordResponseModel))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Edit([FromRoute] string recordId, [FromBody] ServiceRecordFormRequestModel model)
@@ -272,9 +272,9 @@ public class ServiceRecordsController : BaseController
                 });
             }
 
-            await serviceRecordsService.EditAsync(recordId, userId, model);
+            ServiceRecordResponseModel editedRecord = await serviceRecordsService.EditAsync(recordId, userId, model);
 
-            return StatusCode(200, model);
+            return StatusCode(200, editedRecord);
         }
         catch (SqlException ex)
         {
