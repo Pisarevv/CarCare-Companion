@@ -31,7 +31,7 @@ public class TaxRecordsController : BaseController
     /// </summary>
     /// <returns>Collection of tax records</returns>
     [HttpGet]
-    [ProducesResponseType(200, Type = typeof(ICollection<TaxRecordResponseModel>))]
+    [ProducesResponseType(200, Type = typeof(ICollection<TaxRecordDetailsResponseModel>))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> All()
     {
@@ -47,7 +47,7 @@ public class TaxRecordsController : BaseController
                 });
             }
 
-            ICollection<TaxRecordResponseModel> taxRecords = await taxRecordsService.GetAllByUserIdAsync(userId);
+            ICollection<TaxRecordDetailsResponseModel> taxRecords = await taxRecordsService.GetAllByUserIdAsync(userId);
 
             return StatusCode(200, taxRecords);
         }
@@ -75,7 +75,7 @@ public class TaxRecordsController : BaseController
     /// <param name="model">The model containing the tax record details</param>
     /// <returns>The Id of the tax record trip</returns>
     [HttpPost]
-    [ProducesResponseType(201, Type = typeof(TaxRecordFormRequestModel))]
+    [ProducesResponseType(201, Type = typeof(TaxRecordResponseModel))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Create([FromBody] TaxRecordFormRequestModel model)
@@ -120,9 +120,9 @@ public class TaxRecordsController : BaseController
                 });
             }
 
-            await taxRecordsService.CreateAsync(userId, model);
+            TaxRecordResponseModel createdTaxRecord = await taxRecordsService.CreateAsync(userId, model);
 
-            return StatusCode(201, model);
+            return StatusCode(201, createdTaxRecord);
         }
         catch (SqlException ex)
         {
@@ -219,7 +219,7 @@ public class TaxRecordsController : BaseController
     /// <returns>A status message based on the result</returns>
     [HttpPatch]
     [Route("Edit/{recordId}")]
-    [ProducesResponseType(200, Type = typeof(TaxRecordFormRequestModel))]
+    [ProducesResponseType(200, Type = typeof(TaxRecordResponseModel))]
     [ProducesResponseType(400, Type = typeof(ProblemDetails))]
     [ProducesResponseType(401, Type = typeof(ProblemDetails))]
     [ProducesResponseType(403, Type = typeof(ProblemDetails))]
@@ -285,9 +285,9 @@ public class TaxRecordsController : BaseController
                 });
             }
 
-            await taxRecordsService.EditAsync(recordId, userId, model);
+            TaxRecordResponseModel editedTaxRecord = await taxRecordsService.EditAsync(recordId, userId, model);
 
-            return StatusCode(200, model);
+            return StatusCode(200, editedTaxRecord);
         }
         catch (SqlException ex)
         {

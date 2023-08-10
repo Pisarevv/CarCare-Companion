@@ -32,10 +32,10 @@ public class TaxRecordsService : ITaxRecordsService
     /// </summary>
     /// <param name="userId">The user identifier</param>
     /// <returns>Collection of tax records</returns>
-    public async Task<ICollection<TaxRecordResponseModel>> GetAllByUserIdAsync(string userId)
+    public async Task<ICollection<TaxRecordDetailsResponseModel>> GetAllByUserIdAsync(string userId)
     {
-        ICollection<TaxRecordResponseModel>? taxRecords = 
-            this.memoryCache.Get<ICollection<TaxRecordResponseModel>>(userId + UserTaxRecordsCacheKeyAddition);
+        ICollection<TaxRecordDetailsResponseModel>? taxRecords = 
+            this.memoryCache.Get<ICollection<TaxRecordDetailsResponseModel>>(userId + UserTaxRecordsCacheKeyAddition);
 
         if(taxRecords == null)
         {
@@ -43,7 +43,7 @@ public class TaxRecordsService : ITaxRecordsService
                .Where(tr => tr.IsDeleted == false)
                .Where(tr => tr.OwnerId == Guid.Parse(userId))
                .OrderByDescending(tr => tr.CreatedOn)
-               .Select(tr => new TaxRecordResponseModel()
+               .Select(tr => new TaxRecordDetailsResponseModel()
                {
                    Id = tr.Id.ToString(),
                    Title = tr.Title,
@@ -71,7 +71,7 @@ public class TaxRecordsService : ITaxRecordsService
     /// <param name="model">The input model containing the tax record information</param>
     /// <param name="userId">The user identifier</param>
     /// <returns>String containing the newly created tax record Id</returns>
-    public async Task CreateAsync(string userId, TaxRecordFormRequestModel model)
+    public async Task<TaxRecordResponseModel> CreateAsync(string userId, TaxRecordFormRequestModel model)
     {
         TaxRecord recordToAdd = new TaxRecord()
         {
@@ -93,6 +93,17 @@ public class TaxRecordsService : ITaxRecordsService
         this.memoryCache.Remove(userId + UserTaxRecordsCostCacheKeyAddition);
         this.memoryCache.Remove(userId + UserTaxRecordsCountCacheKeyAddition);
         this.memoryCache.Remove(userId + UserTaxRecordsUpcomingCacheKeyAddition);
+
+        return new TaxRecordResponseModel
+        {
+            Id = recordToAdd.Id.ToString(),
+            Title = recordToAdd.Title,
+            ValidFrom = recordToAdd.ValidFrom,
+            ValidTo = recordToAdd.ValidTo,
+            Cost = recordToAdd.Cost,
+            Description = recordToAdd.Description,
+            VehicleId = recordToAdd.VehicleId.ToString(),
+        };
     }
 
     /// <summary>
@@ -100,7 +111,7 @@ public class TaxRecordsService : ITaxRecordsService
     /// </summary>
     /// <param name="model">The input model containing the tax record information</param>
     /// <param name="recordId">The tax record identifier</param>
-    public async Task EditAsync(string recordId, string userId, TaxRecordFormRequestModel model)
+    public async Task<TaxRecordResponseModel> EditAsync(string recordId, string userId, TaxRecordFormRequestModel model)
     {
         TaxRecord recordToEdit = await repository.GetByIdAsync<TaxRecord>(Guid.Parse(recordId));
 
@@ -118,7 +129,16 @@ public class TaxRecordsService : ITaxRecordsService
         this.memoryCache.Remove(userId + UserTaxRecordsCostCacheKeyAddition);
         this.memoryCache.Remove(userId + UserTaxRecordsUpcomingCacheKeyAddition);
 
-
+        return new TaxRecordResponseModel
+        {
+            Id = recordToEdit.Id.ToString(),
+            Title = recordToEdit.Title,
+            ValidFrom = recordToEdit.ValidFrom,
+            ValidTo = recordToEdit.ValidTo,
+            Cost = recordToEdit.Cost,
+            Description = recordToEdit.Description,
+            VehicleId = recordToEdit.VehicleId.ToString(),
+        };
     }
 
     /// <summary>

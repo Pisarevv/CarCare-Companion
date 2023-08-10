@@ -1,7 +1,7 @@
 ﻿namespace CarCare_Companion.Core.Models.TaxRecords;
 
 
-public class TaxRecordResponseModel
+public class TaxRecordDetailsResponseModel
 {
     public string Id { get; set; } = null!;
 
@@ -13,7 +13,9 @@ public class TaxRecordResponseModel
 
     public decimal Cost { get; set; }
 
-    public string VehicleId { get; set; } = null!;
+    public string VehicleMake { get; set; } = null!;
+
+    public string VehicleModel { get; set;} = null!;
 
     public string? Description { get; set; }
 
