@@ -1,17 +1,18 @@
 ﻿namespace CarCare_Companion.Tests.Services;
 
-using CarCare_Companion.Core.Contracts;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+
+using Moq;
+
 using CarCare_Companion.Core.Models.ServiceRecords;
-using CarCare_Companion.Core.Models.Trip;
-using CarCare_Companion.Core.Models.TripRecords;
 using CarCare_Companion.Core.Services;
 using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using Moq;
+
+
 
 [TestFixture]
 public class ServiceRecordsServiceTests
@@ -88,6 +89,7 @@ public class ServiceRecordsServiceTests
 
         return serviceRecord;
     }
+
 
     /// <summary>
     /// Tests the service record adding functionality with correct data
