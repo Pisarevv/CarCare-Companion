@@ -274,12 +274,15 @@ public class TaxRecordsService : ITaxRecordsService
 
         if(upcomingTaxes == null)
         {
-            DateTime dateFilterStart = DateTime.UtcNow;
-            DateTime dateFilterEnd = dateFilterStart.AddMonths(2);
+            DateTime filterDay = DateTime.Today.AddMonths(2);
+
+            DateTime startDateFilter = DateTime.UtcNow;
+            DateTime endDateFilter = new DateTime(filterDay.Year, filterDay.Month, filterDay.Day, 23, 59, 59);
 
             upcomingTaxes =  await repository.AllReadonly<TaxRecord>()
                    .Where(tr => tr.IsDeleted == false && tr.OwnerId == Guid.Parse(userId))
-                   .Where(tr => tr.ValidTo >= dateFilterStart && tr.ValidTo <= dateFilterEnd)
+                   .Where(tr => tr.ValidTo >= startDateFilter && tr.ValidTo <= endDateFilter)
+                   .OrderBy(tr => tr.ValidTo)
                    .Take(count)
                    .Select(tr => new UpcomingTaxRecordResponseModel
                    {
@@ -302,7 +305,7 @@ public class TaxRecordsService : ITaxRecordsService
     }
 
     /// <summary>
-    /// Retrieves users and their taxes that are expiring the next day
+    /// Retrieves users and their taxes that are expiring the next day ordered by the time of record creation
     /// </summary>
     /// <returns>Collection of taxes that are expiring the next day</returns>
     public async Task<ICollection<UpcomingUserTaxResponseModel>> GetUpcomingUsersTaxesAsync()
@@ -316,6 +319,7 @@ public class TaxRecordsService : ITaxRecordsService
         return await repository.AllReadonly<TaxRecord>()
                .Where(tr => tr.IsDeleted == false)
                .Where(tr => tr.ValidTo >= startDateFilter && tr.ValidTo <= endDateFilter)
+               .OrderBy(tr => tr.CreatedOn)
                .Select(tr => new UpcomingUserTaxResponseModel
                {
                    Email = tr.Owner.Email,
