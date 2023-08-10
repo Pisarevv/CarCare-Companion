@@ -462,6 +462,10 @@ public class VehicleServiceTests
        .Setup(x => x.GetImageUrlAsync(It.IsAny<string>()))
        .Returns(Task<string>.FromResult(imageUrl));
 
+        mockMemoryCache
+       .Setup(x => x.TryGetValue(It.IsAny<object>(), out testData))
+       .Returns(true);
+
         //Act
         var result = await vehicleService.GetVehicleDetailsByIdAsync(vehicleId);
 
