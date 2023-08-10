@@ -289,7 +289,7 @@ public class ServiceRecordsService : IServiceRecordsService
 
          return await repository.AllReadonly<ServiceRecord>()
                .Where(sr => sr.IsDeleted == false)
-               .Where(sr => sr.OwnerId == Guid.Parse(vehicleId))
+               .Where(sr => sr.VehicleId == Guid.Parse(vehicleId))
                .OrderByDescending(sr => sr.CreatedOn)
                .Take(count)
                .Select(sr => new ServiceRecordBasicInformationResponseModel
