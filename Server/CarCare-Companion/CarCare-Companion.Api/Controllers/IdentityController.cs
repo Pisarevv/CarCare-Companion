@@ -124,7 +124,7 @@ public class IdentityController : BaseController
         catch (ArgumentNullException ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(401, new ProblemDetails
+            return StatusCode(403, new ProblemDetails
             {
                 Title = StatusResponses.InvalidCredentials
             });
@@ -132,9 +132,9 @@ public class IdentityController : BaseController
         catch (ArgumentException ex)
         {
             logger.LogInformation(ex.Message);
-            return StatusCode(401, new ProblemDetails
+            return StatusCode(403, new ProblemDetails
             {
-                Title = StatusResponses.InvalidCredentials
+                Title = ex.Message
             });
         }
         catch (SqlException ex)
