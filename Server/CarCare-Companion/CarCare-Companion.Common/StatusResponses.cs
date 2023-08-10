@@ -23,6 +23,8 @@ public static class StatusResponses
 
     public const string FileSizeTooBig = "The size of the file is too big";
 
+    public const string InvalidImageFormat = "Invalid image format. Please provide an image in image/jpeg.";
+
     public const string ResourceNotFound = "The resource does not exist";
 
     public const string Success = "Success";

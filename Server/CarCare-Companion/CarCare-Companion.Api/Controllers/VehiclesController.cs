@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
 using CarCare_Companion.Core.Contracts;
-using CarCare_Companion.Core.Models.Status;
 using CarCare_Companion.Core.Models.Vehicle;
 
 using CarCare_Companion.Common;
@@ -313,7 +312,7 @@ public class VehiclesController : BaseController
             {
                 return StatusCode(415, new ProblemDetails
                 {
-                    Title = StatusResponses.InvalidData
+                    Title = StatusResponses.InvalidImageFormat
                 });
             }
 
