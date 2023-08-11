@@ -13,6 +13,7 @@ import './RecentServiceCard.css'
  * @param {string} props.details.performedOn - Date the service was performed on.
  * @param {string} props.details.vehicleMake - Make of the vehicle.
  * @param {string} props.details.vehicleModel - Model of the vehicle.
+
  */
 const RecentServiceCard = ({details}) => {
     
@@ -23,13 +24,8 @@ const RecentServiceCard = ({details}) => {
     return (
         // Main container for the service card.
         <div className="user-recent-trip-card-container">
-            // Decorative border for the card.
-            <div className="recent-trip-card-border"></div>
-            
-            // Displaying the title of the service, the date it was performed on, and vehicle details.
+            <div className="recent-trip-card-border"></div>          
             <div>"{title}" performed on {ISODateStringToString.ddmmyyyy(performedOn)} on {vehicleMake} {vehicleModel} </div>
-            
-            // Another decorative border for the card.
             <div className="recent-trip-card-border"></div>
         </div>
     )

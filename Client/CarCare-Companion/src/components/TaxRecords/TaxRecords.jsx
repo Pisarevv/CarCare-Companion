@@ -5,10 +5,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // Custom hook for making authenticated Axios requests.
-import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
 // High-Order Component for loading state management.
-import IsLoadingHOC from '../../Common/IsLoadingHoc';
+import IsLoadingHOC from '../Common/IsLoadingHoc';
 
 // Utility functions for notifications
 import { NotificationHandler } from '../../utils/NotificationHandler';
