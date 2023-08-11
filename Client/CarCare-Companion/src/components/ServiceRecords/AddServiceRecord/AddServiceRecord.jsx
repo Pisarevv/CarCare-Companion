@@ -1,47 +1,64 @@
-import { useEffect, useReducer, useState } from 'react'
+// Import required hooks and utilities from React, React Router, custom hooks, and utilities.
+import { useEffect, useReducer, useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+// Custom Axios hook for authenticated requests.
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 
-import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
-import IsLoadingHOC from '../../Common/IsLoadingHoc'
+// Higher-order component (HOC) that wraps another component to show a loading state.
+import IsLoadingHOC from '../../Common/IsLoadingHoc';
 
-import serviceRecordReducer from '../../../reducers/serviceRecordReducer'
+// Reducer to handle service record updates.
+import serviceRecordReducer from '../../../reducers/serviceRecordReducer';
 
-import { NotificationHandler } from '../../../utils/NotificationHandler'
+// Helper utility for handling notifications.
+import { NotificationHandler } from '../../../utils/NotificationHandler';
 
-import StringToISODateString from '../../../utils/StringToISODateString'
-import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter'
+// Utilities to format and validate date strings.
+import StringToISODateString from '../../../utils/StringToISODateString';
+import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter';
 
-import './AddServiceRecord.css'
+// CSS styles specific to this component.
+import './AddServiceRecord.css';
 
-
+// Object containing possible validation error messages.
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
     inputNotNumber: "This field accepts only valid numbers",
-    invalidDate : "The provided date is invalid - correct format example 25/03/2023"
+    invalidDate: "The provided date is invalid - correct format example 25/03/2023"
 }
 
+// Regular expressions to validate certain types of input data.
 const ValidationRegexes = {
-    //Validates that the fuel price and travelled distance is a floating point  
+    // Validates that the fuel price and travelled distance is a floating point.
     floatNumbersRegex: new RegExp(/^\d+(?:[.,]\d+)?$/),
 
-    //Validates that the time format is dd/MM/yyyy
+    // Validates that the time format is dd/MM/yyyy.
     timeFormatRegex: new RegExp(/^(0[1-9]|[1-2]\d|3[0-1])\/(0[1-9]|1[0-2])\/(\d{4})$/)
-
 }
 
+/**
+ * AddServiceRecord component allows users to add a new service record.
+ * 
+ * @param {Object} props - Props passed to the component.
+ */
 const AddServiceRecord = (props) => {
-
+    // For programmatically navigating to different routes.
     const navigate = useNavigate();
-
+    
+    // Provides access to the current location (route).
     const location = useLocation();
 
+    // Extracting the setLoading function from the props.
     const { setLoading } = props;
 
+    // Custom hook for authenticated Axios requests.
     const axiosPrivate = useAxiosPrivate();
 
+    // State to hold the list of user vehicles.
     const [userVehicles, setUserVehicles] = useState([]);
 
+    // useReducer to manage the state of the service record and its associated validation errors.
     const [serviceRecord, dispatch] = useReducer(serviceRecordReducer, {
         title: "",
         performedOn: "",
@@ -49,50 +66,54 @@ const AddServiceRecord = (props) => {
         mileage: "",
         cost: "",
         vehicleId: "",
-
         titleError: "",
         performedOnError: "",
         descriptionError: "",
         mileageError: "",
         costError: "",
         vehicleIdError: ""
-
     });
 
-  useEffect(() => {
+    // Effect hook to fetch the list of user vehicles.
+    useEffect(() => {
+        // To ensure we don't set state for unmounted components.
         let isMounted = true;
+
+        // For handling aborted requests.
         const controller = new AbortController();
 
+        // Fetch user's vehicles.
         const getVehicles = async () => {
             try {
-                const response = await axiosPrivate.get("/Vehicles",{
-                    signal : controller.signal
+                const response = await axiosPrivate.get("/Vehicles", {
+                    signal: controller.signal
                 });
 
-                if(isMounted){
-                    if(response.data.length > 0){
-                        setUserVehicles(userVehicles => response.data);
-                        dispatch({ type: `SET_VEHICLEID`, payload: response.data[0].id })
+                if (isMounted) {
+                    if (response.data.length > 0) {
+                        setUserVehicles(response.data);
+                        dispatch({ type: 'SET_VEHICLEID', payload: response.data[0].id });
                     }
                 }
-            } 
-            catch (err) {
+            } catch (err) {
+                // Handle error and redirect to login in case of an error.
                 NotificationHandler(err);
                 navigate('/login', { state: { from: location }, replace: true });
-            }
-            finally {
-               setLoading(false);
+            } finally {
+                setLoading(false);
             }
         }
 
         getVehicles();
 
+        // Cleanup function.
         return () => {
             isMounted = false;
             isMounted && controller.abort();
         }
-    },[])
+    }, []);
 
+     // Event handlers, validations, and utility functions.
     const onInputChange = (e) => {
         dispatch({ type: `SET_${(e.target.name).toUpperCase()}`, payload: e.target.value })
     }

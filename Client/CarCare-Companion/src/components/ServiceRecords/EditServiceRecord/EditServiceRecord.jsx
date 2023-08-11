@@ -1,50 +1,71 @@
-import { useEffect, useReducer, useState } from 'react'
+// Importing necessary React hooks, React Router utilities, and utility functions.
+import { useEffect, useReducer, useState } from 'react';
+import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'
+// Reducer to handle service record updates.
+import serviceRecordReducer from '../../../reducers/serviceRecordReducer';
 
-import serviceRecordReducer from '../../../reducers/serviceRecordReducer'
+// Utility to handle notifications.
+import { NotificationHandler } from '../../../utils/NotificationHandler';
 
-import { NotificationHandler } from '../../../utils/NotificationHandler'
+// Custom Axios hook for authenticated requests.
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 
-import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
-import IsLoadingHOC from '../../Common/IsLoadingHoc'
+// A Higher-Order Component to display a loading spinner or the wrapped component.
+import IsLoadingHOC from '../../Common/IsLoadingHoc';
 
-import StringToISODateString from '../../../utils/StringToISODateString'
-import ISODateStringToString from '../../../utils/IsoDateStringToString'
-import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter'
+// Utilities to format and validate date strings.
+import StringToISODateString from '../../../utils/StringToISODateString';
+import ISODateStringToString from '../../../utils/IsoDateStringToString';
 
-import './EditServiceRecord.css'
+// Utility to format numbers.
+import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter';
 
+// CSS styles specific to this component.
+import './EditServiceRecord.css';
 
+// Error messages to display when input validation fails.
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
     inputNotNumber: "This field accepts only valid numbers",
     invalidDate: "The provided date is invalid - correct format example 25/03/2023"
-}
+};
 
+// Regular expressions to validate the input format for various fields.
 const ValidationRegexes = {
-    //Validates that the fuel price and travelled distance is a floating point  
+    // Validates that the fuel price and traveled distance is a floating point.
     floatNumbersRegex: new RegExp(/^\d+(?:[.,]\d+)?$/),
-
-    //Validates that the time format is dd/MM/yyyy
+    
+    // Validates that the time format is dd/MM/yyyy.
     timeFormatRegex: new RegExp(/^(0[1-9]|[1-2]\d|3[0-1])\/(0[1-9]|1[0-2])\/(\d{4})$/)
+};
 
-}
-
+/**
+ * EditServiceRecord is a component that provides an interface for users to edit details
+ * of a particular service record.
+ * 
+ * @param {Object} props - Props passed to the component.
+ */
 const EditServiceRecord = (props) => {
-
+    // React Router's navigate function to programmatically change routes.
     const navigate = useNavigate();
 
+    // Provides access to the current location (route).
     const location = useLocation();
 
+    // Extracting the setLoading function from the props.
     const { setLoading } = props;
 
+    // Custom hook for making authenticated Axios requests.
     const axiosPrivate = useAxiosPrivate();
 
+    // Fetching the 'id' parameter from the URL.
     const { id } = useParams();
 
+    // State to hold the list of user vehicles.
     const [userVehicles, setUserVehicles] = useState([]);
 
+    // useReducer to manage the state of the service record and its associated validation errors.
     const [serviceRecord, dispatch] = useReducer(serviceRecordReducer, {
         title: "",
         performedOn: "",
@@ -52,20 +73,23 @@ const EditServiceRecord = (props) => {
         mileage: "",
         cost: "",
         vehicleId: "",
-
         titleError: "",
         performedOnError: "",
         descriptionError: "",
         mileageError: "",
         costError: "",
         vehicleIdError: ""
-
     });
 
+    // Effect hook to fetch the list of user vehicles and the details of the service record to be edited.
     useEffect(() => {
+        // To ensure that we don't set the state of an unmounted component.
         let isMounted = true;
+
+        // To handle aborted requests.
         const controller = new AbortController();
 
+        // Function to fetch user vehicles and service record details.
         const getDetails = async () => {
             try {
                 const requests = [
@@ -82,33 +106,34 @@ const EditServiceRecord = (props) => {
                         const userVehiclesResult = responses[0].data;
                         const serviceRecordDetails = responses[1].data;
 
+                        // If the component is still mounted, update the states.
                         if (isMounted) {
-                            setUserVehicles(userVehicles => userVehiclesResult);
-                            setServiceRecordInitialDetails(serviceRecordDetails)
-
-                            dispatch({ type: `SET_VEHICLEID`, payload: serviceRecordDetails.vehicleId })
-                            dispatch({ type: `SET_PERFORMEDON`, payload: ISODateStringToString.ddmmyyyy(serviceRecordDetails.performedOn) })
+                            setUserVehicles(userVehiclesResult);
+                            setServiceRecordInitialDetails(serviceRecordDetails);
+                            dispatch({ type: 'SET_VEHICLEID', payload: serviceRecordDetails.vehicleId });
+                            dispatch({ type: 'SET_PERFORMEDON', payload: ISODateStringToString.ddmmyyyy(serviceRecordDetails.performedOn) });
                         }
                     });
-
             } catch (err) {
+                // On error, show a notification and redirect to the login page.
                 NotificationHandler(err);
                 navigate('/login', { state: { from: location }, replace: true });
-            }
-            finally {
+            } finally {
+                // Stop showing the loading spinner.
                 setLoading(false);
             }
         }
 
         getDetails();
 
+        // Cleanup function to abort the requests if the component is unmounted.
         return () => {
             isMounted = false;
             isMounted && controller.abort();
         }
-    }, [])
+    }, []);
 
-
+     // Event handlers, validations, and utility functions.
     const setServiceRecordInitialDetails = (vehicleIdDetails) => {
         for (const property in vehicleIdDetails) {
             if (property == "performedOn") {
