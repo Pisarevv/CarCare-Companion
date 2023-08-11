@@ -47,7 +47,7 @@ public class UsersController : BaseAdminController
                 });
             }
 
-            bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
+            bool isUserAdministrator = await identityService.IsUserInRoleAsync(userId, AdministratorRoleName);
 
             if (!isUserAdministrator)
             {
@@ -119,7 +119,7 @@ public class UsersController : BaseAdminController
                 });
             }
 
-            bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
+            bool isUserAdministrator = await identityService.IsUserInRoleAsync(userId, AdministratorRoleName);
 
             if (!isUserAdministrator)
             {
@@ -178,7 +178,7 @@ public class UsersController : BaseAdminController
                 });
             }
 
-            bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
+            bool isUserAdministrator = await identityService.IsUserInRoleAsync(userId, AdministratorRoleName);
 
             if (!isUserAdministrator)
             {
@@ -200,7 +200,7 @@ public class UsersController : BaseAdminController
                 });
             }
 
-            bool isIncomingUserAdmin = await identityService.IsUserInRole(id, AdministratorRoleName);
+            bool isIncomingUserAdmin = await identityService.IsUserInRoleAsync(id, AdministratorRoleName);
 
             if (isIncomingUserAdmin)
             {
@@ -210,7 +210,7 @@ public class UsersController : BaseAdminController
                 });
             }
 
-            bool isAddedToAdminRole = await identityService.AddAdmin(id);
+            bool isAddedToAdminRole = await identityService.AddAdminAsync(id);
 
 
             if (!isAddedToAdminRole)
@@ -259,7 +259,7 @@ public class UsersController : BaseAdminController
         {
             string userId = User.GetId()!;
 
-            bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
+            bool isUserAdministrator = await identityService.IsUserInRoleAsync(userId, AdministratorRoleName);
 
             if (!isUserAdministrator)
             {
@@ -281,7 +281,7 @@ public class UsersController : BaseAdminController
                 });
             }
 
-            bool isIncomingUserAdmin = await identityService.IsUserInRole(id, AdministratorRoleName);
+            bool isIncomingUserAdmin = await identityService.IsUserInRoleAsync(id, AdministratorRoleName);
 
             if (!isIncomingUserAdmin)
             {
@@ -292,7 +292,7 @@ public class UsersController : BaseAdminController
                 });
             }
 
-            bool isRemovedFromAdminRole = await identityService.RemoveAdmin(id);
+            bool isRemovedFromAdminRole = await identityService.RemoveAdminAsync(id);
 
 
             if (!isRemovedFromAdminRole)

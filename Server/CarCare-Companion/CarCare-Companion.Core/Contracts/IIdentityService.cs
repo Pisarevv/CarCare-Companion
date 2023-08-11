@@ -10,29 +10,29 @@ public interface IIdentityService
 
     public Task<bool> DoesUserExistByIdAsync(string userId);
 
-    public Task<bool> AddAdmin(string userId);
+    public Task<bool> AddAdminAsync(string userId);
 
-    public Task<bool> RemoveAdmin(string userId);
+    public Task<bool> RemoveAdminAsync(string userId);
 
-    public Task RegisterAsync(RegisterRequestModel model);
+    public Task<bool> RegisterAsync(RegisterRequestModel model);
 
-    public Task<bool> IsUserInRole(string username, string role);
+    public Task<bool> IsUserInRoleAsync(string username, string role);
 
     public Task<AuthDataInternalTransferModel> LoginAsync(LoginRequestModel model);
 
-    public Task<string> UpdateRefreshToken(ApplicationUser user);
+    public Task<string> UpdateRefreshTokenAsync(ApplicationUser user);
 
-    public Task<AuthDataModel> RefreshJWTToken(string username);
+    public Task<AuthDataModel> RefreshJWTTokenAsync(string username);
 
-    public Task<bool> IsUserRefreshTokenOwner(string username,  string refreshToken);
+    public Task<bool> IsUserRefreshTokenOwnerAsync(string username,  string refreshToken);
 
-    public Task<bool> IsUserRefreshTokenExpired(string refreshToken);
+    public Task<bool> IsUserRefreshTokenExpiredAsync(string refreshToken);
 
     public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
 
-    public Task<string?> GetRefreshTokenOwner(string refreshToken);
+    public Task<string?> GetRefreshTokenOwnerAsync(string refreshToken);
 
-    public Task TerminateUserRefreshToken(string userId);
+    public Task TerminateUserRefreshTokenAsync(string userId);
 
 
 

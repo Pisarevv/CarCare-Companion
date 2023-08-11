@@ -8,5 +8,4 @@ public interface IUserService
 
     public Task<UserDetailsResponseModel> GetUserDetailsByIdAsync(string userId);
 
-    public Task<int> GetRecentlyJoinedUsersCountAsync(int days);
 }

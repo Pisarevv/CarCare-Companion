@@ -86,23 +86,9 @@ public class UserService : IUserService
                })
                .FirstAsync();
 
-        user.IsAdmin = await identityService.IsUserInRole(userId, AdministratorRoleName);
+        user.IsAdmin = await identityService.IsUserInRoleAsync(userId, AdministratorRoleName);
 
         return user;
     }
 
-    /// <summary>
-    /// Retrieves the amount of recently joined users 
-    /// </summary>
-    /// <param name="days">The amount of days to look back</param>
-    /// <returns>An integer containing the count of users</returns>
-    public async Task<int> GetRecentlyJoinedUsersCountAsync(int days)
-    {
-        DateTime filterDateStart = DateTime.UtcNow;
-        DateTime filterDateEnd = DateTime.UtcNow.AddDays(-days);
-
-        return await repository.AllReadonly<ApplicationUser>()
-                     .Where(ap => ap.CreatedOn >= filterDateStart && ap.CreatedOn <= filterDateEnd)
-                     .CountAsync();
-    }
 }

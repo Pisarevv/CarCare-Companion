@@ -14,7 +14,6 @@ using Quartz;
 
 using Serilog;
 
-using CarCare_Companion.Api.ModelBinders;
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Services;
 using CarCare_Companion.Infrastructure.Data;
@@ -141,11 +140,7 @@ namespace CarCare_Companion.Api
             });
 
 
-            services.AddControllers(options =>
-            {
-                options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
-                options.ModelBinderProviders.Insert(1, new DoubleModelBinderProvider());
-            });
+            services.AddControllers();
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>

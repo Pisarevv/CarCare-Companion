@@ -106,7 +106,7 @@ public class IdentityService : IIdentityService
 
         var token = GenerateJwtToken(authClaims);
 
-        var refreshToken = await UpdateRefreshToken(user);
+        var refreshToken = await UpdateRefreshTokenAsync(user);
 
         return new AuthDataInternalTransferModel
         {
@@ -124,7 +124,7 @@ public class IdentityService : IIdentityService
     /// <param name="inputModel">The input model containing the user first name, 
     /// last name, email, password and confirm password</param>
     /// <exception cref="Exception">Thrown when the user creating is not successful</exception>
-    public async Task RegisterAsync(RegisterRequestModel inputModel)
+    public async Task<bool> RegisterAsync(RegisterRequestModel inputModel)
     {
      
         ApplicationUser user = new ApplicationUser()
@@ -144,6 +144,7 @@ public class IdentityService : IIdentityService
             throw new Exception(result.Errors.First().ToString());
         }
 
+        return result.Succeeded;
 
     }
 
@@ -153,7 +154,7 @@ public class IdentityService : IIdentityService
     /// <param name="userId">The user identifier</param>
     /// <returns>A boolen based on the result</returns>
     /// <exception cref="Exception">Exception thrown if an error occurs during the adding to role of the user</exception>
-    public async Task<bool> AddAdmin(string userId)
+    public async Task<bool> AddAdminAsync(string userId)
     {
         var user = await userManager.FindByIdAsync(userId);
 
@@ -164,7 +165,7 @@ public class IdentityService : IIdentityService
             throw new Exception(result.Errors.First().ToString());
         }
 
-        await TerminateUserRefreshToken(userId);
+        await TerminateUserRefreshTokenAsync(userId);
 
         return result.Succeeded;
 
@@ -177,7 +178,7 @@ public class IdentityService : IIdentityService
     /// <param name="userId">The user identifier</param>
     /// <returns>A boolen based on the result</returns>
     /// <exception cref="Exception">Exception thrown if an error occurs during the adding to role of the user</exception>
-    public async Task<bool> RemoveAdmin(string userId)
+    public async Task<bool> RemoveAdminAsync(string userId)
     {
         var user = await userManager.FindByIdAsync(userId);
 
@@ -188,7 +189,7 @@ public class IdentityService : IIdentityService
             throw new Exception(result.Errors.First().ToString());
         }
 
-        await TerminateUserRefreshToken(userId);
+        await TerminateUserRefreshTokenAsync(userId);
 
         return result.Succeeded;
     }
@@ -200,7 +201,7 @@ public class IdentityService : IIdentityService
     /// <param name="role">The role name</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException">Thrown when the user does not exist</exception>
-    public async Task<bool> IsUserInRole(string userId, string role)
+    public async Task<bool> IsUserInRoleAsync(string userId, string role)
     {
         var user = await userManager.FindByIdAsync(userId);
 
@@ -218,7 +219,7 @@ public class IdentityService : IIdentityService
     /// </summary>
     /// <param name="user">The application user</param>
     /// <returns></returns>
-    public async Task<string> UpdateRefreshToken(ApplicationUser user)
+    public async Task<string> UpdateRefreshTokenAsync(ApplicationUser user)
     {
         UserRefreshToken newToken = GenerateRefreshToken(user.Id.ToString());
 
@@ -249,7 +250,7 @@ public class IdentityService : IIdentityService
     /// <param name="username">The user username</param>
     /// <returns>AuthDataModel containing the new JWT token and user claims</returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public async Task<AuthDataModel> RefreshJWTToken(string username)
+    public async Task<AuthDataModel> RefreshJWTTokenAsync(string username)
     {
         var user = await userManager.FindByNameAsync(username);
 
@@ -277,7 +278,7 @@ public class IdentityService : IIdentityService
         };
     }
 
-    public async Task<string?> GetRefreshTokenOwner(string refreshToken)
+    public async Task<string?> GetRefreshTokenOwnerAsync(string refreshToken)
     {
         return await repository.AllReadonly<UserRefreshToken>()
                .Where(urf => urf.RefreshToken == refreshToken)
@@ -292,7 +293,7 @@ public class IdentityService : IIdentityService
     /// <param name="username">The user identifier</param>
     /// <param name="refreshToken">The refresh token</param>
     /// <returns>Boolean based on the search result</returns>
-    public async Task<bool> IsUserRefreshTokenOwner(string username, string refreshToken)
+    public async Task<bool> IsUserRefreshTokenOwnerAsync(string username, string refreshToken)
     {
         return await repository.AllReadonly<UserRefreshToken>()
                .Where(urt => urt.User.UserName == username && urt.RefreshToken == refreshToken)
@@ -304,7 +305,7 @@ public class IdentityService : IIdentityService
     /// </summary>
     /// <param name="refreshToken">The refresh token</param>
     /// <returns>Boolean based on the search result</returns>
-    public async Task<bool> IsUserRefreshTokenExpired(string refreshToken)
+    public async Task<bool> IsUserRefreshTokenExpiredAsync(string refreshToken)
     {
         DateTime? tokenExpirationDate = await repository.AllReadonly<UserRefreshToken>()
             .Where(urt => urt.RefreshToken == refreshToken)
@@ -408,7 +409,7 @@ public class IdentityService : IIdentityService
         return refreshToken;
     }
 
-    public async Task TerminateUserRefreshToken(string userId)
+    public async Task TerminateUserRefreshTokenAsync(string userId)
     {
         UserRefreshToken? refreshToken = await repository.All<UserRefreshToken>()
                          .Where(urt => urt.UserId == Guid.Parse(userId))

@@ -48,7 +48,7 @@ public class AdsController : BaseAdminController
                 });
             }
 
-            bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
+            bool isUserAdministrator = await identityService.IsUserInRoleAsync(userId, AdministratorRoleName);
 
             if (!isUserAdministrator)
             {
@@ -108,7 +108,7 @@ public class AdsController : BaseAdminController
                 });
             }
 
-            bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
+            bool isUserAdministrator = await identityService.IsUserInRoleAsync(userId, AdministratorRoleName);
 
             if (!isUserAdministrator)
             {
@@ -189,7 +189,7 @@ public class AdsController : BaseAdminController
                 });
             }
 
-            bool isUserAdministrator = await identityService.IsUserInRole(userId, AdministratorRoleName);
+            bool isUserAdministrator = await identityService.IsUserInRoleAsync(userId, AdministratorRoleName);
 
             if (!isUserAdministrator)
             {

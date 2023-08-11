@@ -178,7 +178,7 @@ public class IdentityController : BaseController
                 });
             }
 
-            await identityService.TerminateUserRefreshToken(userId);
+            await identityService.TerminateUserRefreshTokenAsync(userId);
 
             return StatusCode(200);
 
@@ -226,7 +226,7 @@ public class IdentityController : BaseController
                 });
             }
 
-            string? refreshTokenOwnerUsername = await identityService.GetRefreshTokenOwner(refreshToken);
+            string? refreshTokenOwnerUsername = await identityService.GetRefreshTokenOwnerAsync(refreshToken);
 
             if (refreshTokenOwnerUsername == null)
             {
@@ -237,7 +237,7 @@ public class IdentityController : BaseController
 
             }
 
-            bool isTokenExpired = await identityService.IsUserRefreshTokenExpired(refreshToken);
+            bool isTokenExpired = await identityService.IsUserRefreshTokenExpiredAsync(refreshToken);
 
             if (isTokenExpired)
             {
@@ -247,7 +247,7 @@ public class IdentityController : BaseController
                 });
             }
 
-            AuthDataModel authData = await identityService.RefreshJWTToken(refreshTokenOwnerUsername);
+            AuthDataModel authData = await identityService.RefreshJWTTokenAsync(refreshTokenOwnerUsername);
 
             return StatusCode(200, authData);
 
