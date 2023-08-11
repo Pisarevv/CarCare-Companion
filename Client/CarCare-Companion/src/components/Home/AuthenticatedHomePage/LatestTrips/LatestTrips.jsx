@@ -1,45 +1,64 @@
+// React's hooks for managing state and side-effects.
 import { useEffect, useState } from 'react';
 
+// Custom hook for making authenticated Axios requests.
 import useAxiosPrivate from '../../../../hooks/useAxiosPrivate';
 
+// Child component responsible for displaying individual trip record.
 import LatestTripsCard from './LatestTripsCard';
 
+// Higher-order component (HOC) that wraps another component to show a loading state.
 import IsLoadingHOC from '../../../Common/IsLoadingHoc';
 
+// CSS styles specific to this component.
 import './LatestTrips.css'
+
+/**
+ * LatestTrips Component
+ * This component fetches and displays the recent trips of the user.
+ */
 
 const LatestTrips = (props) => {
 
+    // Destructure the setLoading function from the props.
     const { setLoading } = props;
 
+    // Use the custom hook to get the Axios instance for making authenticated requests.
     const axiosPrivate = useAxiosPrivate();
 
+    // State variable to store the recent user trips.
     const [recentUserTrips, setRecentUserTrips] = useState([]);
 
+    // Effect hook to fetch the latest trips upon component mount.
     useEffect(() => {
         let isMounted = true;
         const controller = new AbortController();
 
         const getRecentTrips = async () => {
             try {
+                // Fetch the last 6 trips of the user.
                 const response = await axiosPrivate.get(`/Trips/Last/${6}`, {
                     signal: controller.signal
                 });
+                // If the component is still mounted, update the state with the fetched trips.
                 isMounted && setRecentUserTrips(recentUserTrips => response.data);
             } catch (err) {
+                // On error, notify the user and navigate them to the login page.
                 NotificationHandler(err);
                 navigate('/login', { state: { from: location }, replace: true });
             }
             finally{
+                // Set the loading state to false once the fetching process completes (either successfully or with an error).
                 setLoading(false);
             }
         }
 
         getRecentTrips();
 
+        // Cleanup function to abort the request if the component gets unmounted.
         return () => {
             isMounted = false;
-            isMounted && controller.abort()
+            isMounted && controller.abort();
         }
     }, [])
 
