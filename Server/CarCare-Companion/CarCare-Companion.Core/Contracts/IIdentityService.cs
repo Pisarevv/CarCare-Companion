@@ -2,7 +2,7 @@
 
 using CarCare_Companion.Core.Models.Identity;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
-using System.Security.Claims;
+
 
 public interface IIdentityService
 {
@@ -27,8 +27,6 @@ public interface IIdentityService
     public Task<bool> IsUserRefreshTokenOwnerAsync(string username,  string refreshToken);
 
     public Task<bool> IsUserRefreshTokenExpiredAsync(string refreshToken);
-
-    public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
 
     public Task<string?> GetRefreshTokenOwnerAsync(string refreshToken);
 

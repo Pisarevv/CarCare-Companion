@@ -315,32 +315,6 @@ public class IdentityService : IIdentityService
         return tokenExpirationDate < DateTime.UtcNow;
     }
 
-    /// <summary>
-    /// Retrieves the claims of the JWT token
-    /// </summary>
-    /// <param name="token"></param>
-    /// <returns>ClaimsPrincipal containing the user claims</returns>
-    /// <exception cref="SecurityTokenException"></exception>
-    public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
-    {
-        var tokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateAudience = false,
-            ValidateIssuer = false,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]!)),
-            ValidateLifetime = false
-        };
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
-        if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-            throw new SecurityTokenException("Invalid token");
-
-        return principal;
-
-    }
-
 
     /// <summary>
     /// Generates the authentication claims of the user for the JWT token
