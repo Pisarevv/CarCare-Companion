@@ -1,53 +1,25 @@
-/**
- * EditVehicle Component
- * ---------------------
- * This component displays a form that is available for registered user.
- * The user can edit the desired vehicle.
- * If all fields are valid the vehicle is edited.
- * ---------------------- 
- * 
- * States:
- * ----------------------
- * - userVehicle (object): This object contains the properties of the product
- *   and errors that can occur on them. The userVehicle is controlled by a reducer.
- * - vehicleImage (object): This object contains the vehicle image.
- * - vehicleImageError (object): Object containing an error based on the vehicleImage validity.
- * ---------------
- * 
- * Functions:
- * -----------------
- * - onInputChange:
- *  Generic function updating the userVehicle of a property.
- * - validateTextFields:
- *  Function that validates that a field is not blank.
- *  There is a possibility to add different validation.
- * - validateNumberFields:
- *  Function that validates fields that a field is not blank and contains digits only.
- *  There is a possibility to add different validation.
- * - onVehicleEdit:
- *  Function that edits the vehicle if all of the properties are valid.
- *  If the request is successful it redirects to the vehicle details.
- * -----------------
- * 
- * - ErrorHandler
- *  This is a custom function that handles errors thrown by the REST api  
- *  and based on the error shows the user notifications.
- * -----------------
-**/
-
+// Importing necessary hooks and modules from React and React Router.
 import { useEffect, useReducer, useState } from "react";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 
+// Utilities
 import { NotificationHandler } from "../../../utils/NotificationHandler";
+import dataURLtoFile from "../../../utils/URLtoFileConverter";
+import DecimalSeparatorFormatter from "../../../utils/DecimalSeparatorFormatter";
 
+// Custom hook for authenticated API requests.
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+
+// Higher Order Component to show loading status.
 import IsLoadingHOC from '../../Common/IsLoadingHoc';
 
+// Reducer for managing the vehicle's state.
 import userVehicleReducer from "../../../reducers/userVehicleReducer";
-import dataURLtoFile from "../../../utils/URLtoFileConverter";
 
+// Component-specific styling.
 import './EditVehicle.css'
-import DecimalSeparatorFormatter from "../../../utils/DecimalSeparatorFormatter";
+
+// Static validation messages and regex patterns.
 
 
 const ValidationErrors = {
@@ -64,18 +36,21 @@ const ValidationRegexes = {
   mileageRegex: new RegExp(/^[0-9]*$/)
 }
 
-
+// EditVehicle component which allows the user to update vehicle details.
 const EditVehicle = (props) => {
 
+  // Hooks for navigation and fetching the URL parameter.
   const navigate = useNavigate();
+  const { id } = useParams();
 
+   // Destructuring setLoading from props to control the loading status outside the component.
   const { setLoading } = props;
 
+   // Instance of the custom axios hook for authenticated requests.
   const axiosPrivate = useAxiosPrivate();
   const axiosPrivateFile = useAxiosPrivate();
 
-  const { id } = useParams();
-
+// State hooks for managing the vehicle's details and related information.
   const [vehicleImage, setVehicleImage] = useState(null);
   const [vehicleImageError, setVehicleImageError] = useState("");
 
@@ -99,8 +74,10 @@ const EditVehicle = (props) => {
     yearError: ""
   })
 
+  // UseEffect to load initial vehicle data on mount.
   useEffect(() => {
     let isMounted = true;
+    // Use of AbortController ensures cleanup on component unmount to prevent memory leaks.
     const controller = new AbortController();
 
     const getDetails = async () => {
@@ -147,6 +124,7 @@ const EditVehicle = (props) => {
     }
   }, [])
 
+  // Function to set initial vehicle details using the reducer.
   const setVehicleInitialDetails = (vehicleDetails) => {
     for (const property in vehicleDetails) {
       dispatch({ type: `SET_${(property).toUpperCase()}`, payload: vehicleDetails[property] })
@@ -154,7 +132,7 @@ const EditVehicle = (props) => {
   }
 
 
-  //Event handlers
+  // Event handlers, validations, and utility functions.
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -396,6 +374,6 @@ const EditVehicle = (props) => {
 
 }
 
-
+// Wrapping EditVehicle inside IsLoadingHOC to handle loading status and exporting the wrapped component.
 export default IsLoadingHOC(EditVehicle);
 

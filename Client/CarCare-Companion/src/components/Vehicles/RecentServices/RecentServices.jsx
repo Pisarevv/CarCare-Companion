@@ -1,67 +1,90 @@
+// Required React imports.
 import { useEffect, useState } from 'react';
 
-import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
-
-import RecentServiceCard from './RecentServiceCard';
-
+// Utility for displaying notifications.
 import { NotificationHandler } from '../../../utils/NotificationHandler';
 
+// Custom hook for making authenticated axios requests.
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
+
+// Child component import.
+import RecentServiceCard from './RecentServiceCard';
+
+// Higher Order Component for handling loading state.
 import IsLoadingHOC from '../../Common/IsLoadingHoc';
 
 import './RecentServices.css'
 
-
-
+/**
+ * The RecentServices component fetches and displays the latest service records.
+ * 
+ * @param {Object} props - Props received by the component.
+ * @param {Function} props.setLoading - Function to update the loading state.
+ */
 const RecentServices = (props) => {
- 
+
+    // Extract the setLoading function from the passed props.
     const { setLoading } = props;
 
+    // Initialize a custom hook for making authenticated axios requests.
     const axiosPrivate = useAxiosPrivate();
+
+    // State to store the fetched recent service records.
     const [recentServiceRecords, setRecentServiceRecords] = useState([]);
 
+    // Effect hook to run side effects after component mount. Here, fetching the data.
     useEffect(() => {
+        // Flag to check if the component is still mounted when updating state.
         let isMounted = true;
+
+        // Controller for the Abort API, useful for cancelling promises.
         const controller = new AbortController();
 
+        // Function to fetch the recent services data.
         const getRecentServices = async () => {
             try {
                 const response = await axiosPrivate.get(`/ServiceRecords/Last/${3}`, {
-                    signal: controller.signal
+                    signal: controller.signal // Attach signal for potential aborting of request.
                 });
-                isMounted && setRecentServiceRecords(recentServiceRecords => response.data);
+
+                // Only update the state if the component is still mounted.
+                isMounted && setRecentServiceRecords(response.data);
             } catch (err) {
+                // Handle errors, send notifications and redirect.
                 NotificationHandler(err);
                 navigate('/login', { state: { from: location }, replace: true });
             }
-            finally{
+            finally {
+                // Set loading to false once data is fetched, or an error has occurred.
                 setLoading(false);
             }
         }
 
+        // Invoke the data fetching function.
         getRecentServices();
 
+        // Cleanup function to update the isMounted flag and potentially abort ongoing requests.
         return () => {
             isMounted = false;
-            isMounted && controller.abort();
+            controller.abort();
         }
-    }, [])
+    }, []) // Dependency array is empty, so this effect runs only on mount and unmount.
 
-    
     return (
+        // Container for the recent services.
         <div className="recent-services-container">
             <div className="services-header">Recently added service records</div>
             <div className="services-list">
                 {
+                    // Display the services if present, else show a placeholder message.
                     recentServiceRecords.length > 0
-                        ?
-                        recentServiceRecords.map(rs => <RecentServiceCard key = {rs.id} details = {rs}/> )
-                        :
-                        <div>You haven't added any service records yet.</div>
+                        ? recentServiceRecords.map(rs => <RecentServiceCard key={rs.id} details={rs} />)
+                        : <div>You haven't added any service records yet.</div>
                 }
             </div>
         </div>
     )
 }
 
-
+// Export the RecentServices component wrapped with a Higher Order Component (HOC) for loading state.
 export default IsLoadingHOC(RecentServices);

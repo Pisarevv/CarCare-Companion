@@ -1,56 +1,26 @@
-/**
- * AddVehicle Component
- * ---------------------
- * This component displays a form that is available for registered user.
- * The user can add a vehicle to his collection of vehicles.
- * If all fields are valid the vehicle is created and added.
- * ---------------------- 
- * 
- * States:
- * ----------------------
- * - userVehicle (object): This object contains the properties of the product
- *   and errors that can occur on them. The userVehicle is controlled by a reducer.
- * - vehicleImage (object): This object contains the vehicle image.
- * - vehicleImageError (object): Object containing an error based on the vehicleImage validity.
- * ---------------
- * 
- * Functions:
- * -----------------
- * - onInputChange:
- *  Generic function updating the userVehicle of a property.
- * - validateTextFields:
- *  Function that validates that a field is not blank.
- *  There is a possibility to add different validation.
- * - validateNumberFields:
- *  Function that validates fields that a field is not blank and contains digits only.
- *  There is a possibility to add different validation.
- * - onVehicleAdd:
- *  Function that creates the vehicle if all of the properties are valid.
- *  If the request is successful it redirects to the user vehiclles collection.
- * -----------------
- * 
- * - ErrorHandler
- *  This is a custom function that handles errors thrown by the REST api  
- *  and based on the error shows the user notifications.
- * -----------------
-**/
-
+// Importing necessary hooks and modules from React and React Router.
 import { useEffect, useReducer, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 
+// Utilities
 import { NotificationHandler } from "../../../utils/NotificationHandler";
-
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import IsLoadingHOC from '../../Common/IsLoadingHoc';
-
-import userVehicleReducer from "../../../reducers/userVehicleReducer";
 import dataURLtoFile from "../../../utils/URLtoFileConverter";
-
-import './AddVehicle.css'
 import DecimalSeparatorFormatter from "../../../utils/DecimalSeparatorFormatter";
 
+// Custom hook for authenticated API requests.
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+
+// Higher Order Component to show loading status.
+import IsLoadingHOC from '../../Common/IsLoadingHoc';
+
+// Reducer for managing the vehicle's state.
+import userVehicleReducer from "../../../reducers/userVehicleReducer";
+
+// Component-specific styling.
+import './AddVehicle.css'
 
 
+// Static validation messages and regex patterns.
 const ValidationErrors = {
   emptyInput: "This field cannot be empty",
   inputNotNumber: "This field accepts only valid numbers",
@@ -65,23 +35,31 @@ const ValidationRegexes = {
   mileageRegex: new RegExp(/^\d+(?:[.,]\d+)?$/)
 }
 
-
+// Component for adding a new vehicle.
 const AddVehicle = (props) => {
 
+  // Use the `useNavigate` hook from React Router to programmatically navigate between routes.
   const navigate = useNavigate();
 
+  // Hooks for making authorized API requests.
   const axiosPrivate = useAxiosPrivate();
   const axiosPrivateFile = useAxiosPrivate();
+
+  // Destructure the setLoading function from props, which controls the loading state.
   const { setLoading } = props;
 
+  // State variables for the vehicle image and any associated error.
   const [vehicleImage, setVehicleImage] = useState(null);
   const [vehicleImageError, setVehicleImageError] = useState("");
 
+  // State variables for storing available fuel types and vehicle types.
   const [fuelTypes, setFuelTypes] = useState([]);
   const [vehicleTypes, setVehicleTypes] = useState([]);
 
+  // State to track whether the first step of adding a vehicle has been completed.
   const [stepOneFinished, setStepOneFinished] = useState(false);
 
+  // Use the `userVehicleReducer` to manage the state of user's vehicle and related errors.
   const [userVehicle, dispatch] = useReducer(userVehicleReducer, {
     make: "",
     mileage: "",
@@ -96,54 +74,62 @@ const AddVehicle = (props) => {
     modelError: "",
     vehicleTypeIdError: "",
     yearError: ""
-  })
+  });
 
+  // useEffect hook that runs when the component mounts.
   useEffect(() => {
+    // Flag to check if the component is still mounted when updating state.
     let isMounted = true;
+
+    // Create an instance of AbortController to potentially cancel fetch requests.
     const controller = new AbortController();
 
+    // Asynchronous function to fetch necessary details for the vehicle addition form.
     const getDetails = async () => {
       try {
+        // Perform parallel API requests to fetch fuel types and vehicle types.
         const requests = [
-          axiosPrivate.get('/Vehicles/FuelTypes', {
-            signal: controller.signal
-          }),
-          axiosPrivate.get('/Vehicles/Types', {
-            signal: controller.signal
-          })
-        ]
+          axiosPrivate.get('/Vehicles/FuelTypes', { signal: controller.signal }),
+          axiosPrivate.get('/Vehicles/Types', { signal: controller.signal })
+        ];
+
         Promise.all(requests)
           .then(responses => {
-
             const fuelTypesResult = responses[0].data;
             const vehicleTypesResult = responses[1].data;
 
-            dispatch({ type: `SET_FUELTYPEID`, payload: fuelTypesResult[0].id })
-            dispatch({ type: `SET_VEHICLETYPEID`, payload: vehicleTypesResult[0].id })
+            // Dispatch actions to set default selected fuel type and vehicle type.
+            dispatch({ type: `SET_FUELTYPEID`, payload: fuelTypesResult[0].id });
+            dispatch({ type: `SET_VEHICLETYPEID`, payload: vehicleTypesResult[0].id });
+
+            // Update state variables with fetched data if the component is still mounted.
             if (isMounted) {
-              setFuelTypes(fuelTypes => fuelTypesResult);
-              setVehicleTypes(vehicleTypes => vehicleTypesResult);
+              setFuelTypes(fuelTypesResult);
+              setVehicleTypes(vehicleTypesResult);
             }
-          })
+          });
       } catch (err) {
+        // Handle any error by showing a notification and redirecting to the login page.
         NotificationHandler(err);
         navigate('/login', { state: { from: location }, replace: true });
-      }
-      finally {
+      } finally {
+        // Stop the loading state regardless of success or error.
         setLoading(false);
       }
-    }
+    };
 
+    // Invoke the `getDetails` function.
     getDetails();
 
+    // Effect cleanup function.
     return () => {
       isMounted = false;
-      isMounted && controller.abort();
+      controller.abort();
     }
-  }, [])
+  }, []);
 
 
-  //Event handlers
+  // Event handlers, validations, and utility functions.
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -299,13 +285,13 @@ const AddVehicle = (props) => {
         })
       }
       navigate('/MyVehicles');
-      NotificationHandler("Success", "Sucessfully added vehicle!",response.status);
+      NotificationHandler("Success", "Sucessfully added vehicle!", response.status);
     }
 
     catch (error) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      const {title, status} = error.response.data;
-      NotificationHandler("Warning",title,status);
+      const { title, status } = error.response.data;
+      NotificationHandler("Warning", title, status);
     }
   }
 
