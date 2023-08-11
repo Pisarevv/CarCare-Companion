@@ -1,3 +1,11 @@
+/**
+ * Converts a Base64 Data URL into a File object.
+ * 
+ * @param {string} dataURL - The Base64 Data URL to convert.
+ * @param {string} filename - The desired filename for the resulting File object.
+ * @returns {File} - A File object representing the given Data URL.
+ */
+
 const dataURLtoFile = (dataURL, filename) =>{
     const arr = dataURL.split(',');
     const mime = arr[0].match(/:(.*?);/)[1];
