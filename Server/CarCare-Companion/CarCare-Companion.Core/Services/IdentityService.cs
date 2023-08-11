@@ -409,7 +409,7 @@ public class IdentityService : IIdentityService
         return refreshToken;
     }
 
-    public async Task TerminateUserRefreshTokenAsync(string userId)
+    public async Task<bool> TerminateUserRefreshTokenAsync(string userId)
     {
         UserRefreshToken? refreshToken = await repository.All<UserRefreshToken>()
                          .Where(urt => urt.UserId == Guid.Parse(userId))
@@ -417,13 +417,16 @@ public class IdentityService : IIdentityService
 
         if(refreshToken == null)
         {
-            return;
+            return false;
         }
 
         refreshToken.RefreshToken = null;
         refreshToken.RefreshTokenExpiration = DateTime.UtcNow;
 
-        await repository.SaveChangesAsync();
+         await repository.SaveChangesAsync();
+
+        return true;
+
     }
 
    

@@ -32,7 +32,7 @@ public interface IIdentityService
 
     public Task<string?> GetRefreshTokenOwnerAsync(string refreshToken);
 
-    public Task TerminateUserRefreshTokenAsync(string userId);
+    public Task<bool> TerminateUserRefreshTokenAsync(string userId);
 
 
 
