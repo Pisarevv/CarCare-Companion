@@ -1,47 +1,66 @@
-import { useEffect, useReducer, useState } from 'react'
+// React hooks for side-effects, state management and reducer pattern
+import { useEffect, useReducer, useState } from 'react';
 
-import { NavLink, useNavigate, useParams } from 'react-router-dom'
+// React-router-dom hooks for navigation and accessing route parameters
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 
-import taxRecordReducer from '../../../reducers/taxRecordReducer'
+// Reducer function for tax record state management
+import taxRecordReducer from '../../../reducers/taxRecordReducer';
 
-import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
-import IsLoadingHOC from '../../Common/IsLoadingHoc'
+// Custom Axios hook for making private (authenticated) requests
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 
-import { NotificationHandler } from '../../../utils/NotificationHandler'
+// Higher-Order Component for loading state
+import IsLoadingHOC from '../../Common/IsLoadingHoc';
 
-import StringToISODateString from '../../../utils/StringToISODateString'
-import ISODateStringToString from '../../../utils/IsoDateStringToString'
-import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter'
+// Notification handling utility
+import { NotificationHandler } from '../../../utils/NotificationHandler';
 
-import './EditTaxRecord.css'
+// Utility functions for date string manipulation and formatting
+import StringToISODateString from '../../../utils/StringToISODateString';
+import ISODateStringToString from '../../../utils/IsoDateStringToString';
+import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter';
 
+// Component specific styles
+import './EditTaxRecord.css';
+
+// Object containing error messages for validation
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
     inputNotNumber: "This field accepts only valid numbers",
     invalidDate: "The provided date is invalid - correct format example 25/03/2023"
-}
+};
 
+// Regexes for float numbers and date validation
 const ValidationRegexes = {
-    //Validates that the fuel price and travelled distance is a floating point  
     floatNumbersRegex: new RegExp(/^\d+(?:[.,]\d+)?$/),
-
-    //Validates that the time format is dd/MM/yyyy
     timeFormatRegex: new RegExp(/^(0[1-9]|[1-2]\d|3[0-1])\/(0[1-9]|1[0-2])\/(\d{4})$/)
+};
 
-}
-
+/**
+ * EditTaxRecord component allows users to edit a specific tax record.
+ * The record details are fetched from an API and can be updated.
+ *
+ * @param {Object} props - Props passed to the component.
+ */
 const EditTaxRecord = (props) => {
 
+    // For programmatic navigation
     const navigate = useNavigate();
 
+    // Extract tax record ID from the URL
     const { id } = useParams();
 
+    // setLoading function from props, used by HOC
     const { setLoading } = props;
 
+    // Axios instance for authenticated requests
     const axiosPrivate = useAxiosPrivate();
 
+    // State for user vehicles
     const [userVehicles, setUserVehicles] = useState([]);
 
+    // State for tax record and its related errors using reducer pattern
     const [taxRecord, dispatch] = useReducer(taxRecordReducer, {
         title: "",
         validFrom: "",
@@ -49,16 +68,15 @@ const EditTaxRecord = (props) => {
         description: "",
         cost: "",
         vehicleId: "",
-
         titleError: "",
         validFromError: "",
         validToError: "",
         descriptionError: "",
         costError: "",
         vehicleIdError: ""
-
     });
 
+    // useEffect hook to fetch vehicles and tax record details on component mount
     useEffect(() => {
         let isMounted = true;
         const controller = new AbortController();
@@ -80,7 +98,7 @@ const EditTaxRecord = (props) => {
                         const taxRecordDetails = responses[1].data;
 
                         if (isMounted) {
-                            setUserVehicles(userVehicles => userVehicleResult);
+                            setUserVehicles(userVehicleResult);
                             setTaxRecordInitialDetails(taxRecordDetails);
                         }
                     })
@@ -96,22 +114,31 @@ const EditTaxRecord = (props) => {
 
         getVehicles();
 
+        // Clean-up function to abort any pending requests
         return () => {
             isMounted = false;
             isMounted && controller.abort();
         }
-    }, [])
+    }, []);
 
+    // Function to set the initial details of the tax record fetched
     const setTaxRecordInitialDetails = (vehicleDetails) => {
         for (const property in vehicleDetails) {
-            if (property == "validFrom" || property == "validTo") {
-                dispatch({ type: `SET_${(property).toUpperCase()}`, payload: ISODateStringToString.ddmmyyyy(vehicleDetails[property]) });
+            if (property === "validFrom" || property === "validTo") {
+                dispatch({ 
+                    type: `SET_${(property).toUpperCase()}`,
+                    payload: ISODateStringToString.ddmmyyyy(vehicleDetails[property])
+                });
                 continue;
             }
-            dispatch({ type: `SET_${(property).toUpperCase()}`, payload: vehicleDetails[property] })
+            dispatch({
+                type: `SET_${(property).toUpperCase()}`,
+                payload: vehicleDetails[property]
+            });
         }
     }
 
+    // Event handlers, validations, and utility functions.
     const onInputChange = (e) => {
         dispatch({ type: `SET_${(e.target.name).toUpperCase()}`, payload: e.target.value })
     }
