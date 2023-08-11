@@ -1,24 +1,26 @@
-import './Register.css'
-
+// React's useState hook for managing component local state.
 import { useState } from 'react';
+
+// React-router's NavLink for creating navigation links within the app.
 import { NavLink, useNavigate } from 'react-router-dom';
 
-import { NotificationHandler } from '../../utils/NotificationHandler'
+// Helper utility for handling notifications.
+import { NotificationHandler } from '../../utils/NotificationHandler';
 
+// Axios instance specifically configured for the app.
 import axios from '../../api/axios/axios';
 
+// CSS styles specific to the Register component.
+import './Register.css';
 
+
+// Object containing regexes for validation of email and password.
 const ValidationRegexes = {
-    //The current regex validates that the input email address 
-    //begins with a string, contains a "@" symbol and "." after the domain
-    // and end with a top-level-domain TLD
     emailRegex: new RegExp('^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]+$'),
-
-    //This regex validates that the input has minimul 6 charecters and one of them 
-    //must be a letter
     passwordRegex: new RegExp(/^(?=.*[a-zA-Z]).{6,}$/)
 }
 
+// Object containing error messages for validation.
 const ValidationErrors = {
     email: "Please enter a valid email address",
     firstName: "First name cannot be less than two symbols",
@@ -27,116 +29,99 @@ const ValidationErrors = {
     confirmPassword: "Passwords do not match"
 }
 
+/**
+ * Register Component: Allows users to register on the platform.
+ */
 const Register = () => {
-
     const navigate = useNavigate();
 
-    //States
-
+    // State management for form inputs and their errors.
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState("");
-
     const [firstName, setFirstName] = useState("");
     const [firstNameError, setFirstNameError] = useState("");
-
     const [lastName, setLastName] = useState("");
     const [lastNameError, setLastNameError] = useState("");
-
     const [password, setPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
-
     const [confirmPassword, setConfirmPassword] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
+    // Handlers for input changes.
+    const onEmailChange = (e) => setEmail(e.target.value);
+    const onFirstNameChange = (e) => setFirstName(e.target.value);
+    const onLastNameChange = (e) => setLastName(e.target.value);
+    const onPasswordChange = (e) => setPassword(e.target.value);
+    const onConfirmPasswordChange = (e) => setConfirmPassword(e.target.value);
 
-    //Event handlers
-    const onEmailChange = (e) => {
-        setEmail(email => e.target.value);
-    }
-
-    const onFirstNameChange = (e) => {
-        setFirstName(firstName => e.target.value);
-    }
-
-    const onLastNameChange = (e) => {
-        setLastName(lastName => e.target.value);
-    }
-
-    const onPasswordChange = (e) => {
-        setPassword(password => e.target.value);
-    }
-
-    const onConfirmPasswordChange = (e) => {
-        setConfirmPassword(confirmPassword => e.target.value)
-    }
-
+    // Validation functions.
     const validateEmailInput = () => {
         if (!ValidationRegexes.emailRegex.test(email)) {
-            setEmailError(emailError => ValidationErrors.email);
+            setEmailError(ValidationErrors.email);
             return false;
         }
-        setEmailError(emailError => "");
+        setEmailError("");
         return true;
     }
 
     const validateFirstNameInput = () => {
         if (firstName.length < 2) {
-            setFirstNameError(firstName => ValidationErrors.firstName);
+            setFirstNameError(ValidationErrors.firstName);
             return false;
         }
-        setFirstNameError(firstName => "");
+        setFirstNameError("");
         return true;
     }
 
     const validateLastNameInput = () => {
         if (lastName.length < 2) {
-            setLastNameError(lastName => ValidationErrors.lastName);
+            setLastNameError(ValidationErrors.lastName);
             return false;
         }
-        setLastNameError(lastName => "");
+        setLastNameError("");
         return true;
     }
 
-
     const validatePasswordInput = () => {
         if (!ValidationRegexes.passwordRegex.test(password)) {
-            setPasswordError(passwordError => ValidationErrors.password);
+            setPasswordError(ValidationErrors.password);
             return false;
         }
-        setPasswordError(passwordError => "");
+        setPasswordError("");
         return true;
     }
 
     const validateConfirmPasswordInput = () => {
         if (confirmPassword !== password) {
-            setConfirmPasswordError(confirmPassword => ValidationErrors.confirmPassword);
+            setConfirmPasswordError(ValidationErrors.confirmPassword);
             return false;
         }
-        setConfirmPasswordError(confirmPassword => "");
+        setConfirmPasswordError("");
         return true;
     }
 
+    /**
+     * Handler for the register form submission.
+     * Validates input, makes API request to register, and navigates to login upon success.
+     */
     const registerHandler = async (e) => {
         e.preventDefault();
-        try {
-            let isEmailValid = validateEmailInput(email);
-            let isFirstNameValid = validateFirstNameInput(firstName);
-            let isLastNameValid = validateLastNameInput(lastName);
-            let isPasswordValid = validatePasswordInput(password);
-            let isConfirmPasswordValid = validateConfirmPasswordInput(confirmPassword);
+        let isEmailValid = validateEmailInput();
+        let isFirstNameValid = validateFirstNameInput();
+        let isLastNameValid = validateLastNameInput();
+        let isPasswordValid = validatePasswordInput();
+        let isConfirmPasswordValid = validateConfirmPasswordInput();
 
-            if (isEmailValid && isPasswordValid && isConfirmPasswordValid && isFirstNameValid && isLastNameValid) {
+        if (isEmailValid && isPasswordValid && isConfirmPasswordValid && isFirstNameValid && isLastNameValid) {
+            try {
                 await axios.post("/Register", { email, firstName, lastName, password, confirmPassword });
                 navigate('/Login');
+            } catch (error) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);
             }
-
         }
-        catch (error) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            const { title, status } = error.response.data;
-            NotificationHandler("Warning", title, status);
-        }
-
     }
 
     return (

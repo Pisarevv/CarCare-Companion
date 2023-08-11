@@ -1,99 +1,61 @@
-/**
- * Login Component
- * ---------------------
- * This component displays the login form for the user
- * to authenticate.
- * ---------------------- 
- * 
- * States:
- * ----------------------
- * - email (string): Holding the user email input.
- * - password (string): Holding hte user password input.
- * ----------------------
- * 
- * Contexts:
- * ----------------
- * - useAuthContext
- *  In this component this context provides the "userLogin" function.
- *  The purpose of this function is to set the user data after successful login 
- *  in the custom localStorage hook.
- *  
- *  - useCartContext
- *  In this component this context provides the "addProductToCart" function.
- *  The purpose of this function is to set the user cart products after successful login.
- * -----------------
- * 
- * Functions:
- * -----------------
- * - onEmailChange:
- *  Function for handling user input for email.
- * - onPasswordChange:
- *  Function for handling user input for password.
- * - loginHandler:
- *   Function that sends the user input.
- *   If the sent data is valid the user is authenticated and redircted.
- * 
- * - ErrorHandler
- *  This is a custom function that handles errors thrown by the REST api  
- *  and based on the error shows the user notifications.
- *  In the current case with a invalid access  token the user recieves a 
- *  notification containing :
- *  title : "Invalid access token"
- *  message : "Your session has expired. Please log in again."
- * -----------------
-**/
-
+// React's hooks for managing component state and accessing the context.
 import { useContext, useState } from "react";
+
+// React-router's NavLink for creating navigation links and useNavigate for programmatic navigation.
 import { NavLink, useNavigate } from 'react-router-dom';
 
+// Custom hook for making authenticated Axios requests. This ensures that API requests made from this component are authenticated.
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
+// React's context for user authentication. This provides functions and data related to user authentication across the app.
 import { AuthContext } from "../../contexts/AuthContext";
 
+// Helper utility for displaying notifications to the user. This can show success, error, or other types of messages.
 import { NotificationHandler } from "../../utils/NotificationHandler";
+
+// CSS styles specific to this component, enhancing its visual appearance.
 import './Login.css';
 
 
+/**
+ * Login Component: Allows users to log into the platform.
+ */
 const Login = () => {
-    
-    const {userLogin} = useContext(AuthContext);
 
+    // Retrieve the userLogin function from the AuthContext to authenticate and set user data.
+    const { userLogin } = useContext(AuthContext);
+
+    // React Router's navigate hook for programmatic navigation.
     const navigate = useNavigate();
 
+    // Use the custom hook to fetch data in a secure way.
     const axiosPrivate = useAxiosPrivate();
 
-    //States
+    // States to manage input fields.
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const [email,setEmail] = useState("");
+    // Event handlers for input changes.
+    const onEmailChange = (e) => setEmail(e.target.value);
+    const onPasswordChange = (e) => setPassword(e.target.value);
 
-    const [password,setPassword] = useState("");
-
-    //Event handlers
-    const onEmailChange = (e) => {
-        setEmail(email => e.target.value);
-    }
-
-    const onPasswordChange = (e) => {
-        setPassword(password => e.target.value);
-    }
-
+    /**
+     * loginHandler: Handles form submission for login.
+     * Makes an API request to validate user credentials, updates the user context on success, and redirects to the home page.
+     */
     const loginHandler = async (e) => {
         e.preventDefault();
         try {
-            const returnedUserData = await axiosPrivate.post("/Login", {email,password});
+            const returnedUserData = await axiosPrivate.post("/Login", { email, password });
             userLogin(returnedUserData.data);
-            navigate("/Home");     
-            NotificationHandler("Success","Welcome back!",returnedUserData.response.status); 
-        } 
-        catch (error) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigate("/Home");
+            NotificationHandler("Success", "Welcome back!", returnedUserData.response.status);
+        } catch (error) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });  // Scroll to top for visibility of any notifications.
             const { title, status } = error.response.data;
-            NotificationHandler(title,title,status);
+            NotificationHandler(title, title, status);  // Display notification using the handler.
         }
     }
-
-
-
 
 
     return (
