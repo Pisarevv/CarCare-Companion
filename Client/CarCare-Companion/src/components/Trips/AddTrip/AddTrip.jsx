@@ -1,42 +1,56 @@
+// Importing necessary hooks and components from React and react-router-dom
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useEffect, useReducer, useState } from 'react'
 
+// Reducer for handling the trip state
 import tripReducer from '../../../reducers/tripReducer'
 
+// Custom hook for authenticated axios requests
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+
+// Higher order component to display a loading spinner
 import IsLoadingHOC from '../../Common/IsLoadingHoc'
 
+// Utility to handle notifications
 import { NotificationHandler } from '../../../utils/NotificationHandler'
 
+// Utility to format decimals with separators
 import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter';
 
+// Component specific styles
 import './AddTrip.css'
 
-
+// Static validation error messages
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
     inputNotNumber: "This field accepts only valid numbers",
     fuelFields: "Both fields related to fuel have to be listed."
 }
 
+// Regular expressions for validation
 const ValidationRegexes = {
-    //Validates that the fuel price and travelled distance is a floating point  
+    // Validates that the fuel price and travelled distance are floating points
     floatNumbersRegex: new RegExp(/^\d+(?:[.,]\d+)?$/),
 }
 
 const AddTrip = (props) => {
 
+    // Hook to programmatically navigate
     const navigate = useNavigate();
 
+    // Initializing axios with authentication
     const axiosPrivate = useAxiosPrivate();
 
+    // Destructuring the setLoading function from props
     const { setLoading } = props;
 
+    // State to hold the list of user vehicles
     const [userVehicles, setUserVehicles] = useState([]);
 
+    // State to determine if the first step of the form is complete
     const [stepOneFinished, setStepOneFinished] = useState(false);
 
-
+    // Using the reducer to manage the state of the trip details
     const [trip, dispatch] = useReducer(tripReducer, {
         startDestination: "",
         endDestination: "",
@@ -45,48 +59,60 @@ const AddTrip = (props) => {
         usedFuel: "",
         vehicleId: "",
 
+        // Error states for each input field
         startDestinationError: "",
         endDestinationError: "",
         mileageTravelledError: "",
         fuelPriceError: "",
         usedFuelError: "",
         vehicleIdError: ""
-
     });
 
+    // Effect hook that runs once on component mount
     useEffect(() => {
+        // A flag to check if the component is still mounted before updating its state
         let isMounted = true;
+        // Initialization of AbortController for aborting fetch requests
         const controller = new AbortController();
 
+        // Asynchronous function to fetch user vehicle IDs from the server
         const getUservehicleIds = async () => {
             try {
                 const response = await axiosPrivate.get('/Vehicles', {
                     signal: controller.signal
                 });
 
-                if(isMounted){
-                    if(response.data.length > 0){
+                // Setting user vehicles if component is still mounted
+                if(isMounted) {
+                    if(response.data.length > 0) {
                         setUserVehicles(userVehicles => response.data);
                         dispatch({ type: `SET_VEHICLEID`, payload: response.data[0].id })
                     }
                 }
             } catch (err) {
+                // Handling any errors during the fetch and notifying the user
                 NotificationHandler(err);
+                // Redirecting to login page on error (ensure you have 'location' in scope)
                 navigate('/login', { state: { from: location }, replace: true });
             }
-            finally{
+            finally {
+                // Setting the loading state to false after data fetch completes
                 setLoading(false);
             }
         }
 
+        // Call the asynchronous function
         getUservehicleIds();
 
+        // Cleanup function to run when the component unmounts
         return () => {
             isMounted = false;
+            // Abort the fetch request if component is no longer mounted
             isMounted && controller.abort();
         }
-    }, [])
+    }, []) 
 
+  // Event handlers, validations, and utility functions.
     const onInputChange = (e) => {
         dispatch({ type: `SET_${(e.target.name).toUpperCase()}`, payload: e.target.value })
     }

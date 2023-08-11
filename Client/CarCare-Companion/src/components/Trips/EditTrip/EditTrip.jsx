@@ -1,18 +1,26 @@
-import { useEffect, useReducer, useState } from 'react'
+// Required React imports.
+import { useEffect, useReducer, useState } from 'react';
 
-import { NavLink, useNavigate, useParams } from 'react-router-dom'
+// React-router imports for navigation and accessing route parameters.
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 
-import tripReducer from '../../../reducers/tripReducer'
+// Reducer function to manage the trip's state and validation errors.
+import tripReducer from '../../../reducers/tripReducer';
 
-import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
-import IsLoadingHOC from '../../Common/IsLoadingHoc'
+// Custom hook for making authenticated Axios requests.
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 
-import { NotificationHandler } from '../../../utils/NotificationHandler'
+// High-Order Component for loading state management.
+import IsLoadingHOC from '../../Common/IsLoadingHoc';
 
-import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter'
+// Utility functions for notifications and formatting.
+import { NotificationHandler } from '../../../utils/NotificationHandler';
+import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter';
 
-import './EditTrip.css'
+// Component-specific styles.
+import './EditTrip.css';
 
+// Validation error messages and regular expressions for input validation.
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
     inputNotNumber: "This field accepts only valid numbers",
@@ -24,20 +32,30 @@ const ValidationRegexes = {
     floatNumbersRegex: new RegExp(/^\d+(?:[.,]\d+)?$/),
 }
 
+/**
+ * The EditTrip component allows the user to edit details of a particular trip.
+ * This component fetches the necessary details from the server, and provides
+ * a form to allow the user to make changes, and then handles updating the trip.
+ * 
+ * @param {Object} props - Component properties.
+ * @param {Function} props.setLoading - Function to set the loading state.
+ */
 const EditTrip = (props) => {
 
-    const navigate = useNavigate();
-
+ 
+   // Initializing the axios instance for authenticated requests and React-router hooks.
     const axiosPrivate = useAxiosPrivate()
 
+    // Destructuring for easier props access.
     const { setLoading } = props;
 
+    // React-router hooks for navigation and location management.
+    const navigate = useNavigate();
     const { id } = useParams();
 
+    // State initialization and reducers setup.
     const [userVehicles, setUserVehicles] = useState([]);
-
     const [stepOneFinished, setStepOneFinished] = useState(false);
-
     const [trip, dispatch] = useReducer(tripReducer, {
         startDestination: "",
         endDestination: "",
@@ -55,9 +73,10 @@ const EditTrip = (props) => {
 
     });
 
+   // Effect to fetch user vehicles and trip details on component mount.
     useEffect(() => {
-        let isMounted = true;
-        const controller = new AbortController();
+        let isMounted = true;  // Flag to handle component unmount scenario.
+        const controller = new AbortController();  // For aborting the fetch request.
 
         const getTripDetails = async () => {
             try {
@@ -80,23 +99,31 @@ const EditTrip = (props) => {
                     isMounted && setUserVehicles(userVehicles => userVehiclesResult);
                 })             
             } catch (err) {
+                // Handling errors and redirecting to login in case of failure.
                 NotificationHandler(err);
                 navigate('/login', { state: { from: location }, replace: true });
             }
             finally{
+                // Set loading state to false after data fetching.
                 setLoading(false);
             }
         }
 
         getTripDetails();
 
+         // Clean up function to handle component unmount.
         return () => {
             isMounted = false;
             isMounted && controller.abort();
         }
     }, [])
 
-
+     /**
+     * Helper function to initialize the trip details in the state 
+     * by dispatching the corresponding actions.
+     * 
+     * @param {Object} userTripDetails - Details of the fetched trip.
+     */
     const setTripInitialDetails = (userTripDetails) => {
         for (const property in userTripDetails) {
           if(userTripDetails[property] == null){
@@ -106,6 +133,7 @@ const EditTrip = (props) => {
         }
       }
 
+    // Event handlers, validations, and utility functions.
     const onInputChange = (e) => {
         dispatch({ type: `SET_${(e.target.name).toUpperCase()}`, payload: e.target.value })
     }
