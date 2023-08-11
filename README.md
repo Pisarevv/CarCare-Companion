@@ -62,7 +62,9 @@ Example of how the configuration should look: <br/>
 ### Running the Application
 
 1. Start the backend server:
-- Open it with Visual Studio and run the application.
+- Open it with Visual Studio and open the application.
+- Update the database with the Package Manager Console - Open the Packet Manager Console and type "Update database" command.
+- Start the application
 
 2. Start the client server:
 - Open Visual Studio Code terminal and type "npm run dev"
