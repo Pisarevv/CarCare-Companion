@@ -1,62 +1,76 @@
-import { useEffect, useReducer } from 'react'
+// React's hooks for managing side-effects and state.
+import { useEffect, useReducer } from 'react';
 
-import { NavLink, useNavigate, useParams } from 'react-router-dom'
+// React Router hooks and components for navigation and retrieving route parameters.
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 
-import carouselAdReducer from '../../../../../reducers/carouselAdReducer'
+// Reducer function specific to the carousel ad's operations.
+import carouselAdReducer from '../../../../../reducers/carouselAdReducer';
 
-import useAxiosPrivate from '../../../../../hooks/useAxiosPrivate'
-import IsLoadingHOC from '../../.././../Common/IsLoadingHoc'
+// Custom hook to make authenticated Axios requests.
+import useAxiosPrivate from '../../../../../hooks/useAxiosPrivate';
 
-import { NotificationHandler } from '../../../../../utils/NotificationHandler'
+// Higher-order component (HOC) that wraps another component to show a loading state.
+import IsLoadingHOC from '../../.././../Common/IsLoadingHoc';
 
+// Utility to handle notifications.
+import { NotificationHandler } from '../../../../../utils/NotificationHandler';
 
-import './EditCarouselAd.css'
+// CSS styles specific to this component.
+import './EditCarouselAd.css';
 
-
-
+// Validation constants and regular expressions.
 const ValidationErrors = {
     emptyInput: "This field cannot be empty",
     inputNotNumber: "This field accepts only numbers between 1 and 5",
-}
+};
 
 const ValidationRegexes = {
-    //Validates that the stars rating is an integer between 1 and 5
+    // Validates that the stars rating is an integer between 1 and 5.
     floatNumbersRegex: new RegExp(/^[1-5]$/),
-}
+};
 
 const EditCarouselAd = (props) => {
 
+    // Hooks to navigate programmatically and retrieve route parameters.
     const navigate = useNavigate();
-
     const { id } = useParams();
 
+    // Extract the setLoading function from the props, which controls the loading state.
     const { setLoading } = props;
 
+    // Instantiate the useAxiosPrivate hook to get an instance of Axios with authentication headers.
     const axiosPrivate = useAxiosPrivate();
 
+    // Using useReducer to manage state related to the carousel ad.
     const [carouselAd, dispatch] = useReducer(carouselAdReducer, {
         userFirstName: "",
         starsRating: "",
         description: "",
-
         userFirstNameError: "",
         starsRatingError: "",
         descriptionError: "",
     });
 
+    // UseEffect hook to fetch the carousel ad details when the component mounts.
     useEffect(() => {
+        // Flag to ensure asynchronous tasks don't update state after the component is unmounted.
         let isMounted = true;
+
+        // Create an AbortController to cancel the fetch request in case of unmounting.
         const controller = new AbortController();
 
         const getCarouselAd = async () => {
             try {
-                const request = await axiosPrivate.get(`/Ads/CarouselAds/Details/${id}`,{
-                    signal : controller.signal
+                const request = await axiosPrivate.get(`/Ads/CarouselAds/Details/${id}`, {
+                    signal: controller.signal
                 });
 
+                // If the component is still mounted, update the state.
                 isMounted && setCarouselAdInitialDetails(request.data);
             } 
             catch (err) {
+                // Handle any error that arises during the fetch operation.
                 NotificationHandler(err);
                 navigate('/login', { state: { from: location }, replace: true });
             }
@@ -65,8 +79,10 @@ const EditCarouselAd = (props) => {
             }
         }
 
+        // Call the function to fetch the carousel ad details.
         getCarouselAd();
 
+        // Cleanup function: run this if the component unmounts.
         return () => {
             isMounted = false;
             isMounted && controller.abort();
@@ -77,7 +93,9 @@ const EditCarouselAd = (props) => {
         for (const property in vehicleDetails) {
           dispatch({ type: `SET_${(property).toUpperCase()}`, payload: vehicleDetails[property] })
         }
-      }
+    }
+}
+
 
     const onInputChange = (e) => {
         dispatch({ type: `SET_${(e.target.name).toUpperCase()}`, payload: e.target.value })

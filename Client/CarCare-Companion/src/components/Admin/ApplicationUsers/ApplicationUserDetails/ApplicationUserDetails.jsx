@@ -1,50 +1,81 @@
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+// React Router hooks for obtaining router state and navigation.
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import useAxiosPrivate from '../../../../hooks/useAxiosPrivate';
-import IsLoadingHOC from '../../../Common/IsLoadingHoc';
+// React's hooks for managing side-effects and state.
 import { useEffect, useState } from 'react';
+
+// Custom hook to make authenticated Axios requests.
+import useAxiosPrivate from '../../../../hooks/useAxiosPrivate';
+
+// Higher-order component (HOC) that wraps another component to show a loading state.
+import IsLoadingHOC from '../../../Common/IsLoadingHoc';
+
+// Utility for showing notifications on errors or other events.
 import { NotificationHandler } from '../../../../utils/NotificationHandler';
 
-import './ApplicationUserDetails.css'
+// CSS styles specific to this component.
+import './ApplicationUserDetails.css';
 
 const ApplicationUserDetails = (props) => {
 
+    // Extract the setLoading function from the props, which controls the loading state.
     const { setLoading } = props;
 
+    // Obtain the 'id' parameter from the route.
     const { id } = useParams();
 
+    // Hook to get access to the current location (URL) state.
     const location = useLocation();
 
+    // Hook to programmatically navigate to other routes.
     const navigate = useNavigate();
 
-    const axiosPrivate = useAxiosPrivate()
+    // Instantiate the useAxiosPrivate hook to get an instance of Axios with authentication headers.
+    const axiosPrivate = useAxiosPrivate();
 
+    // State to hold the details of the application user.
     const [userDetails, setUserDetails] = useState([]);
 
+    // UseEffect hook to fetch the user details when the component mounts.
     useEffect(() => {
+
+        // Flag to ensure asynchronous tasks don't update state after the component is unmounted.
         let isMounted = true;
+
+        // Create an AbortController to cancel the fetch request in case of unmounting.
         const controller = new AbortController();
 
         const getUserDetails = async () => {
             try {
+
+                // Fetch the details of the application user.
                 const response = await axiosPrivate.get(`/Users/ApplicationUsers/${id}`, {
                     signal: controller.signal
                 });
 
+                // If the component is still mounted, update the state.
                 isMounted && setUserDetails(userDetails => response.data);
             } catch (error) {
+
+                // Handle any error that arises during the fetch operation.
                 NotificationHandler(error);
+
+                // Redirect to the list of application users.
                 navigate(to = "/Users/ApplicationUsers", { state: { from: location }, replace: true });
             }
             finally {
+
+                // Stop showing the loading state.
                 setLoading(false);
             }
         }
 
+        // Call the function to fetch the user details.
         getUserDetails();
 
+        // Cleanup function: run this if the component unmounts.
         return () => {
-            isMounted = false
+            isMounted = false;
             isMounted && controller.abort();
         }
     }, []);
