@@ -62,6 +62,8 @@ public class IdentityServiceTests
 
         this.identityService = new IdentityService(userManager, roleManager, configuration, repository);
 
+        applicationDbContext.Database.EnsureDeleted();
+        applicationDbContext.Database.EnsureCreated();
     }
 
     /// <summary>
@@ -915,6 +917,12 @@ public class IdentityServiceTests
             .Build();
 
         return configuration;
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        applicationDbContext.Dispose();
     }
 }
     
