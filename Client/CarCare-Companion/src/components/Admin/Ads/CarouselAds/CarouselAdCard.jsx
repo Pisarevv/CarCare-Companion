@@ -26,7 +26,6 @@ const CarouselAdCard = ({reviewInfo}) => {
             </div>
             <div className="description">{description}</div>
             
-            // Link to edit the specific carousel ad based on its id.
             <div className="ad-card-buttons">
                 <Link to={`/Administrator/CarouselAds/Edit/${id}`}>Edit</Link>
             </div>
