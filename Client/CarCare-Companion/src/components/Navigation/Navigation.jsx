@@ -47,7 +47,7 @@ const Navigation = () => {
                             ?
                             <>
                                 <li><Link to="/Home">Home</Link></li>
-                                {user?.role == "Administrator" &&  <li><Link to="/AdministratorDashboard">Dashboard</Link></li>}
+                                {user?.role == "Administrator" &&  <li><Link to="/Administrator/Dashboard">Dashboard</Link></li>}
                                 <li><Link to="/MyVehicles">My vehicles</Link></li>
                                 <li><Link to="/Trips">Trips manager</Link></li>
                                 <li><Link to="/ServiceRecords">Services manager</Link></li>

@@ -58,7 +58,7 @@ const ApplicationUsers = (props) => {
             catch (error) {
                 // Handle any error that arises during the fetch operation.
                 NotificationHandler(error);
-                navigate('/Administrator', { state: { from: location }, replace: true });
+                navigate('/Administrator/Dashboard', { state: { from: location }, replace: true });
             }
             finally {
                 // Stop showing the loading state.

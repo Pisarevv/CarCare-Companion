@@ -34,6 +34,8 @@ import CarouselAds from './components/Admin/Ads/CarouselAds/CarouselAds';
 import EditCarouselAd from './components/Admin/Ads/CarouselAds/EditCarouselAd/EditCarouselAd';
 
 import './App.css'
+import Unauthorized from './components/Unauthorized/Unauthorized';
+import NotFound from './components/NotFound/NotFound';
 
 
 
@@ -73,16 +75,18 @@ function App() {
               </Route>
 
               <Route element={<PrivateGuard allowedRoles={["Administrator"]} />}>
-                <Route path='/AdministratorDashboard/' element={<AdminDashboard />} />
+                <Route path='/Administrator/Dashboard' element={<AdminDashboard />} />
                 <Route path='/Administrator/ApplicationUsers' element={<ApplicationUsers />} />
                 <Route path='/Administrator/ApplicationUsers/:id' element={<ApplicationUserDetails />} />
                 <Route path='/Administrator/CarouselAds' element={<CarouselAds />} />
-                <Route path='/Administrator/CarouselAds/Edit/:id' element={<EditCarouselAd />} />
-
+                <Route path='/Administrator/CarouselAds/Edit/:id' element={<EditCarouselAd />} /> 
               </Route>
+              <Route path='*' element={<NotFound/>}/>
             </Route>
             <Route path='/Register' element={<Register />} />
             <Route path='/Login' element={<Login />} />
+            <Route path='/Unauthorized' element={<Unauthorized/>}/>
+           
           </Routes>
         </main>
       </div>
