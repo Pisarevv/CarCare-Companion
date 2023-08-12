@@ -764,4 +764,10 @@ public class TaxRecordsServiceTests
         Assert.AreEqual(users[1].LastName, result[1].LastName);
         Assert.AreEqual(users[1].Email, result[1].Email);
     }
+
+    [TearDown]
+    public void TearDown()
+    {
+        applicationDbContext.Dispose();
+    }
 }

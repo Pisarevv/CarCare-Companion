@@ -672,4 +672,10 @@ public class TripRecordsServiceTests
 
 
     }
+
+    [TearDown]
+    public void TearDown()
+    {
+        applicationDbContext.Dispose();
+    }
 }
