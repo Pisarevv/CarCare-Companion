@@ -94,7 +94,7 @@ const EditCarouselAd = (props) => {
           dispatch({ type: `SET_${(property).toUpperCase()}`, payload: vehicleDetails[property] })
         }
     }
-}
+
 
 
     const onInputChange = (e) => {
