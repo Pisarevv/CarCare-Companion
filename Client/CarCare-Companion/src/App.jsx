@@ -32,10 +32,11 @@ import ApplicationUserDetails from './components/Admin/ApplicationUsers/Applicat
 import AdminDashboard from './components/Admin/AdminDashboard/AdminDashboard';
 import CarouselAds from './components/Admin/Ads/CarouselAds/CarouselAds';
 import EditCarouselAd from './components/Admin/Ads/CarouselAds/EditCarouselAd/EditCarouselAd';
-
-import './App.css'
 import Unauthorized from './components/Unauthorized/Unauthorized';
 import NotFound from './components/NotFound/NotFound';
+
+import './App.css'
+
 
 
 
