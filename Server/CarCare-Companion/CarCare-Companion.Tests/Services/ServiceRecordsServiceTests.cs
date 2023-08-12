@@ -11,8 +11,7 @@ using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
-
-
+using CarCare_Companion.Core.Contracts;
 
 [TestFixture]
 public class ServiceRecordsServiceTests
