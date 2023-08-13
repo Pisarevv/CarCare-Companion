@@ -59,6 +59,8 @@ Follow the steps shown in the article - https://docs.aws.amazon.com/toolkit-for-
 Example of how the configuration should look: <br/>
 ![secretsExample](Assets/secretsExample.png) <br />
 
+6. Configure the CORS policy to accept request from the frontend application based on the localhost port that is running.
+
 ### Running the Application
 
 1. Start the backend server:
