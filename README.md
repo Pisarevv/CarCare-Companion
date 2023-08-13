@@ -21,6 +21,8 @@ CarCare Companion isn't just a tool, it's your all-in-one personal vehicle manag
 - Cloud Storage : Amazon S3
 - Scheduler : Quartz.NET
 
+## Database diagram
+![databaseDiagram](Assets/DatabaseDiagram.png) <br />
 ## Getting Started
 
 ### Prerequisites
