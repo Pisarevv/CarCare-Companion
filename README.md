@@ -94,6 +94,7 @@ This project is licensed under the GNU General Public License. See the [LICENSE.
 Special thanks to the creators and communities of our utilized technologies: <br/>
 - [ASP.NET Core Web API](https://learn.microsoft.com/en-us/aspnet/core/?view=aspnetcore-6.0)
 - [MS SQL Server](https://www.microsoft.com/en-us/sql-server)
+- [Serilog](https://serilog.net/)
 - [React](https://reactjs.org/) and [Vite](https://vitejs.dev/) for the project setup.
 - [ASP.NET Core Template by Nikolay Kostov, Vladislav Karamfilov and Stoyan Shopov](https://github.com/NikolayIT/ASP.NET-Core-Template)
 - [React router](https://reactrouter.com/en/main)
