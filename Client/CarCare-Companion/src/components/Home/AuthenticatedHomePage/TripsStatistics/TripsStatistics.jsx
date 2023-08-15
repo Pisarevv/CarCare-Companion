@@ -1,6 +1,12 @@
 // React core dependencies for handling side effects and state.
 import { useEffect, useState } from "react";
 
+//React-router hook for managing location
+import { useLocation } from 'react-router-dom';
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../../../hooks/useDeauthenticate';
+
 // High-Order Component for loading state management.
 import IsLoadingHOC from "../../../Common/IsLoadingHoc";
 
@@ -22,6 +28,12 @@ import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
  * @param {Function} props.setLoading - Function to manage the loading state in the parent component.
  */
 const TripsStatistics = (props) => {
+
+    // React-router hook for location management.
+    const location = useLocation();
+
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
 
     // Initialization of the custom hook to make authenticated Axios requests.
     const axiosPrivate = useAxiosPrivate();
@@ -58,7 +70,9 @@ const TripsStatistics = (props) => {
             } catch (err) {
                 // Handling errors and redirecting to login in case of failure.
                 NotificationHandler(err);
-                navigate('/login', { state: { from: location }, replace: true });
+                if(err.response.status == 401){
+                    logUserOut(location);
+                } 
             } finally {
               // Set loading state to false after data fetching.
                 setLoading(false);

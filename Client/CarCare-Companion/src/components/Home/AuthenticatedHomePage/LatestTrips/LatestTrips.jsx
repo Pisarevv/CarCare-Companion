@@ -1,17 +1,29 @@
 // React's hooks for managing state and side-effects.
 import { useEffect, useState } from 'react';
 
+//React-router hook for managing location
+import { useLocation } from 'react-router-dom';
+
 // Custom hook for making authenticated Axios requests.
 import useAxiosPrivate from '../../../../hooks/useAxiosPrivate';
 
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../../../hooks/useDeauthenticate';
+
 // Child component responsible for displaying individual trip record.
 import LatestTripsCard from './LatestTripsCard';
+
+//Notification component responsible for displaying notifications
+import { NotificationHandler } from '../../../../utils/NotificationHandler';
 
 // Higher-order component (HOC) that wraps another component to show a loading state.
 import IsLoadingHOC from '../../../Common/IsLoadingHoc';
 
 // CSS styles specific to this component.
 import './LatestTrips.css'
+
+
+
 
 /**
  * LatestTrips Component
@@ -22,6 +34,12 @@ const LatestTrips = (props) => {
 
     // Destructure the setLoading function from the props.
     const { setLoading } = props;
+
+    // React-router hook for location management.
+    const location = useLocation();
+
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
 
     // Use the custom hook to get the Axios instance for making authenticated requests.
     const axiosPrivate = useAxiosPrivate();
@@ -44,8 +62,10 @@ const LatestTrips = (props) => {
                 isMounted && setRecentUserTrips(recentUserTrips => response.data);
             } catch (err) {
                 // On error, notify the user and navigate them to the login page.
-                NotificationHandler(err);
-                navigate('/login', { state: { from: location }, replace: true });
+                NotificationHandler("Something went wrong","Plese log in again", 400);
+                if(err.response.status == 401){
+                    logUserOut(location);
+                }             
             }
             finally{
                 // Set the loading state to false once the fetching process completes (either successfully or with an error).

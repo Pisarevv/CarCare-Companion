@@ -1,9 +1,12 @@
 // Importing necessary React hooks and React Router utilities.
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 // Custom Axios hook for authenticated requests.
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../../../hooks/useDeauthenticate';
 
 // A Higher-Order Component to display a loading spinner or the wrapped component.
 import IsLoadingHOC from "../../../Common/IsLoadingHoc";
@@ -25,11 +28,15 @@ const ServiceRecordsStatistics = (props) => {
     // Destructuring the setLoading function from the props.
     const { setLoading } = props;
 
+     // React-router hook for location management.
+     const location = useLocation();
+
+     //Use custom hook to get logUseOut function
+     const logUserOut = useDeauthenticate();
+
     // Custom hook for making authenticated Axios requests.
     const axiosPrivate = useAxiosPrivate();
 
-    // React Router's navigate function to programmatically change routes.
-    const navigate = useNavigate();
 
     // State variables to hold the count and cost of the service records.
     const [serviceRecordsCount, setServiceRecordsCount] = useState(null);
@@ -71,7 +78,9 @@ const ServiceRecordsStatistics = (props) => {
             } catch (err) {
                 // On error, show a notification and redirect to the login page.
                 NotificationHandler(err);
-                navigate('/login', { state: { from: location }, replace: true });
+                if(err.response.status == 401){
+                    logUserOut(location);
+                } 
             } finally {
                 // Stop showing the loading spinner.
                 setLoading(false);

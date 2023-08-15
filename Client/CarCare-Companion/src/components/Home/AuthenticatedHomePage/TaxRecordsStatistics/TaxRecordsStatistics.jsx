@@ -1,11 +1,17 @@
 // React hooks for side-effects and state management
 import { useEffect, useState } from "react";
 
+//React-router hook for managing location
+import { useLocation } from 'react-router-dom';
+
 // Hook from react-router-dom for programmatic navigation
 import { useNavigate } from "react-router-dom";
 
 // Custom Axios hook for making private (authenticated) requests
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../../../hooks/useDeauthenticate';
 
 // Higher-Order Component to handle loading state
 import IsLoadingHOC from "../../../Common/IsLoadingHoc";
@@ -29,6 +35,13 @@ const TaxRecordsStatistics = (props) => {
 
     // Hook for programmatic navigation
     const navigate = useNavigate();
+
+     // React-router hook for location management.
+     const location = useLocation();
+
+     //Use custom hook to get logUseOut function
+     const logUserOut = useDeauthenticate();
+ 
 
     // Axios instance for authenticated requests
     const axiosPrivate = useAxiosPrivate();
@@ -66,7 +79,9 @@ const TaxRecordsStatistics = (props) => {
                 })
             } catch (err) {
                 NotificationHandler(err);
-                navigate('/login', { state: { from: location }, replace: true });
+                if(err.response.status == 401){
+                    logUserOut(location);
+                } 
             }
             finally {
                 setLoading(false);
