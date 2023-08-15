@@ -49,7 +49,7 @@ const Login = () => {
             const returnedUserData = await axiosPrivate.post("/Login", { email, password });
             userLogin(returnedUserData.data);
             navigate("/Home");
-            NotificationHandler("Success", "Welcome back!", returnedUserData.response.status);
+            NotificationHandler("Success", "Welcome back!", returnedUserData.status);
         } catch (error) {
             window.scrollTo({ top: 0, behavior: 'smooth' });  // Scroll to top for visibility of any notifications.
             const { title, status } = error.response.data;
