@@ -2,7 +2,10 @@
 import { useEffect, useState } from 'react';
 
 // React-router imports for navigation and accessing route parameters.
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../hooks/useDeauthenticate';
 
 // Custom hook for making authenticated Axios requests.
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
@@ -24,6 +27,12 @@ const TaxRecords = (props) => {
 
     // Destructuring the setLoading function from props
     const { setLoading } = props;
+
+    // Provides access to the current location (route).
+    const location = useLocation();
+   
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
 
     // Using a custom hook to make private authenticated axios requests
     const axiosPrivate = useAxiosPrivate();
@@ -47,10 +56,14 @@ const TaxRecords = (props) => {
                 // Setting tax records if component is still mounted
                 isMounted && setTaxRecords(taxRecords => response.data);
             } catch (err) {
-                // Handling any errors during the fetch and notifying the user
-                NotificationHandler(err);
-                // Redirecting to login page on error (ensure you have 'navigate' and 'location' in scope)
-                navigate('/login', { state: { from: location }, replace: true });
+                // Handle error and redirect to login in case of an error.
+                if(err.response.status == 401){
+                    // On error, show a notification and redirect to the login page.
+                   NotificationHandler("Something went wrong","Plese log in again", 400);
+                   logUserOut(location);
+               }   
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);
             }
             finally {
                 // Setting the loading state to false after data fetch completes

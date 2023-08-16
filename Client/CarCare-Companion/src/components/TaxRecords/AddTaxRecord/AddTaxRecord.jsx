@@ -2,13 +2,16 @@
 import { useEffect, useReducer, useState } from 'react';
 
 // React-router-dom hooks for navigation
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 // Reducer function for managing tax record state
 import taxRecordReducer from '../../../reducers/taxRecordReducer';
 
 // Higher-Order Component for showing a loading state
 import IsLoadingHOC from '../../Common/IsLoadingHoc';
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../../hooks/useDeauthenticate';
 
 // Custom Axios hook for making authenticated requests
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
@@ -45,11 +48,14 @@ const ValidationRegexes = {
  */
 const AddTaxRecord = (props) => {
 
-    // Hook for programmatic navigation
-    const navigate = useNavigate();
-
     // Extract setLoading function from props to control loading state
     const { setLoading } = props;
+
+    // Provides access to the current location (route).
+    const location = useLocation();
+
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
 
     // Axios instance for authenticated requests
     const axiosPrivate = useAxiosPrivate();
@@ -91,8 +97,14 @@ const AddTaxRecord = (props) => {
                 }
             }
             catch (err) {
-                NotificationHandler(err);
-                navigate('/login', { state: { from: location }, replace: true });
+                // Handle error and redirect to login in case of an error.
+                if(err.response.status == 401){
+                    // On error, show a notification and redirect to the login page.
+                   NotificationHandler("Something went wrong","Plese log in again", 400);
+                   logUserOut(location);
+               }   
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);
             }
             finally {
                 setLoading(false); // Turn off loading state
