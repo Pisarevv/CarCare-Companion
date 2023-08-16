@@ -2,7 +2,10 @@
 import { useEffect, useReducer, useState } from 'react';
 
 // React-router imports for navigation and accessing route parameters.
-import { NavLink, useNavigate, useParams } from 'react-router-dom';
+import { NavLink, useLocation, useParams } from 'react-router-dom';
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../../hooks/useDeauthenticate';
 
 // Reducer function to manage the trip's state and validation errors.
 import tripReducer from '../../../reducers/tripReducer';
@@ -50,8 +53,12 @@ const EditTrip = (props) => {
     const { setLoading } = props;
 
     // React-router hooks for navigation and location management.
-    const navigate = useNavigate();
     const { id } = useParams();
+    const location = useLocation();
+   
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
+    
 
     // State initialization and reducers setup.
     const [userVehicles, setUserVehicles] = useState([]);
@@ -99,9 +106,14 @@ const EditTrip = (props) => {
                     isMounted && setUserVehicles(userVehicles => userVehiclesResult);
                 })             
             } catch (err) {
-                // Handling errors and redirecting to login in case of failure.
-                NotificationHandler(err);
-                navigate('/login', { state: { from: location }, replace: true });
+                // Handle error and redirect to login in case of an error.
+                if(err.response.status == 401){
+                    // On error, show a notification and redirect to the login page.
+                   NotificationHandler("Something went wrong","Plese log in again", 400);
+                   logUserOut(location);
+               }   
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);
             }
             finally{
                 // Set loading state to false after data fetching.

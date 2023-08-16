@@ -7,6 +7,9 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 // Utility for displaying notifications.
 import { NotificationHandler } from '../../utils/NotificationHandler';
 
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../hooks/useDeauthenticate';
+
 // Custom hook to make authenticated API requests using Axios.
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
@@ -31,6 +34,9 @@ const Trips = (props) => {
     const navigate = useNavigate();
     const location = useLocation();
 
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
+
     // State variable for storing the trips of a user.
     const [userTrips, setUserTrips] = useState([]);
 
@@ -51,9 +57,14 @@ const Trips = (props) => {
                 });
                 isMounted && setUserTrips(userTrips => response.data);
             } catch (err) {
-                // Handle any error by showing a notification and redirecting to the login page.
-                NotificationHandler(err);
-                navigate('/login', { state: { from: location }, replace: true });
+                // Handle error and redirect to login in case of an error.
+                if(err.response.status == 401){
+                    // On error, show a notification and redirect to the login page.
+                   NotificationHandler("Something went wrong","Plese log in again", 400);
+                   logUserOut(location);
+               }   
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);
             } finally {
                 // Stop the loading state regardless of success or error.
                 setLoading(false);

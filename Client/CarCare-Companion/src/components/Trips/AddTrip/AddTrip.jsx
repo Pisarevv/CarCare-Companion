@@ -1,9 +1,12 @@
 // Importing necessary hooks and components from React and react-router-dom
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useEffect, useReducer, useState } from 'react'
 
 // Reducer for handling the trip state
 import tripReducer from '../../../reducers/tripReducer'
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../../hooks/useDeauthenticate';
 
 // Custom hook for authenticated axios requests
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
@@ -35,8 +38,11 @@ const ValidationRegexes = {
 
 const AddTrip = (props) => {
 
-    // Hook to programmatically navigate
-    const navigate = useNavigate();
+    // Provides access to the current location (route).
+    const location = useLocation();
+
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
 
     // Initializing axios with authentication
     const axiosPrivate = useAxiosPrivate();
@@ -90,10 +96,14 @@ const AddTrip = (props) => {
                     }
                 }
             } catch (err) {
-                // Handling any errors during the fetch and notifying the user
-                NotificationHandler(err);
-                // Redirecting to login page on error (ensure you have 'location' in scope)
-                navigate('/login', { state: { from: location }, replace: true });
+                // Handle error and redirect to login in case of an error.
+                if(err.response.status == 401){
+                    // On error, show a notification and redirect to the login page.
+                   NotificationHandler("Something went wrong","Plese log in again", 400);
+                   logUserOut(location);
+               }   
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);
             }
             finally {
                 // Setting the loading state to false after data fetch completes
