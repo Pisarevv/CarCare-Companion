@@ -62,10 +62,13 @@ const LatestTrips = (props) => {
                 isMounted && setRecentUserTrips(recentUserTrips => response.data);
             } catch (err) {
                 // On error, notify the user and navigate them to the login page.
-                NotificationHandler("Something went wrong","Plese log in again", 400);
                 if(err.response.status == 401){
-                    logUserOut(location);
-                }             
+                    // On error, show a notification and redirect to the login page.
+                   NotificationHandler("Something went wrong","Plese log in again", 400);
+                   logUserOut(location);
+               }   
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);        
             }
             finally{
                 // Set the loading state to false once the fetching process completes (either successfully or with an error).

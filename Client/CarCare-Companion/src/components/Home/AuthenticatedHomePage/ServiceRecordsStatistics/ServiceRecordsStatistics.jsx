@@ -76,11 +76,13 @@ const ServiceRecordsStatistics = (props) => {
                 });
 
             } catch (err) {
-                // On error, show a notification and redirect to the login page.
-                NotificationHandler(err);
                 if(err.response.status == 401){
-                    logUserOut(location);
-                } 
+                    // On error, show a notification and redirect to the login page.
+                   NotificationHandler("Something went wrong","Plese log in again", 400);
+                   logUserOut(location);
+               }   
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);   
             } finally {
                 // Stop showing the loading spinner.
                 setLoading(false);

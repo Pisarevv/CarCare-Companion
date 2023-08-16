@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 //React-router hook for managing location
 import { useLocation } from 'react-router-dom';
 
-// Hook from react-router-dom for programmatic navigation
-import { useNavigate } from "react-router-dom";
 
 // Custom Axios hook for making private (authenticated) requests
 import useAxiosPrivate from "../../../../hooks/useAxiosPrivate";
@@ -33,15 +31,11 @@ const TaxRecordsStatistics = (props) => {
     // Destructure setLoading from props, used to set the loading state in the HOC
     const { setLoading } = props;
 
-    // Hook for programmatic navigation
-    const navigate = useNavigate();
+    // React-router hook for location management.
+    const location = useLocation();
 
-     // React-router hook for location management.
-     const location = useLocation();
-
-     //Use custom hook to get logUseOut function
-     const logUserOut = useDeauthenticate();
- 
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
 
     // Axios instance for authenticated requests
     const axiosPrivate = useAxiosPrivate();
@@ -78,10 +72,13 @@ const TaxRecordsStatistics = (props) => {
                     }
                 })
             } catch (err) {
-                NotificationHandler(err);
                 if(err.response.status == 401){
-                    logUserOut(location);
-                } 
+                    // On error, show a notification and redirect to the login page.
+                   NotificationHandler("Something went wrong","Plese log in again", 400);
+                   logUserOut(location);
+               }   
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status); 
             }
             finally {
                 setLoading(false);
