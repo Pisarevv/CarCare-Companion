@@ -8,6 +8,9 @@ import serviceRecordReducer from '../../../reducers/serviceRecordReducer';
 // Utility to handle notifications.
 import { NotificationHandler } from '../../../utils/NotificationHandler';
 
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../../hooks/useDeauthenticate';
+
 // Custom Axios hook for authenticated requests.
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 
@@ -55,6 +58,9 @@ const EditServiceRecord = (props) => {
 
     // Extracting the setLoading function from the props.
     const { setLoading } = props;
+    
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
 
     // Custom hook for making authenticated Axios requests.
     const axiosPrivate = useAxiosPrivate();
@@ -115,9 +121,13 @@ const EditServiceRecord = (props) => {
                         }
                     });
             } catch (err) {
-                // On error, show a notification and redirect to the login page.
-                NotificationHandler(err);
-                navigate('/login', { state: { from: location }, replace: true });
+                if(err.response.status == 401){
+                    // On error, show a notification and redirect to the login page.
+                   NotificationHandler("Something went wrong","Plese log in again", 400);
+                   logUserOut(location);
+               }   
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);
             } finally {
                 // Stop showing the loading spinner.
                 setLoading(false);

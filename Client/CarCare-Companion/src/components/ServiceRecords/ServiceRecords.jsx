@@ -4,6 +4,12 @@ import { useEffect, useState } from 'react';
 // React-router's Link component for creating navigation links.
 import { Link } from 'react-router-dom';
 
+//React-router hook for managing location
+import { useLocation } from 'react-router-dom';
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../hooks/useDeauthenticate';
+
 // Helper utility for handling notifications.
 import { NotificationHandler } from '../../utils/NotificationHandler';
 
@@ -29,6 +35,12 @@ const ServiceRecords = (props) => {
     // Destructure the setLoading function from props (likely passed from IsLoadingHOC).
     const { setLoading } = props;
 
+    // React-router hook for location management.
+    const location = useLocation();
+
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
+
     // Custom hook to get an Axios instance for authenticated requests.
     const axiosPrivate = useAxiosPrivate();
 
@@ -48,8 +60,13 @@ const ServiceRecords = (props) => {
                 // Only update state if the component is still mounted.
                 isMounted && setServiceRecords(response.data);
             } catch (err) {
-                NotificationHandler(err);
-                navigate('/login', { state: { from: location }, replace: true });  // Redirect to login on error.
+                if(err.response.status == 401){
+                    // On error, show a notification and redirect to the login page.
+                   NotificationHandler("Something went wrong","Plese log in again", 400);
+                   logUserOut(location);
+               }   
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);
             } finally {
                 // Always set loading to false at the end.
                 setLoading(false);
@@ -77,7 +94,6 @@ const ServiceRecords = (props) => {
                 </div>
                 <div className="service-records-list">
                     {
-                        // Display service records if any, otherwise show a message.
                         serviceRecords.length > 0
                             ? serviceRecords.map(sr => <ServiceRecordCard key={sr.id} serviceRecordDetails={sr} />)
                             : <div>You haven't added any service records yet.</div>
