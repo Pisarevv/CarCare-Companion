@@ -2,21 +2,24 @@
 import { useEffect, useState } from 'react';
 
 // React-router imports for navigation and routing.
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../hooks/useDeauthenticate';
+
+// Custom hook for making authenticated axios requests.
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+
+// Utility for displaying notifications.
+import { NotificationHandler } from '../../utils/NotificationHandler'
+
+// Higher Order Component for handling loading state.
+import IsLoadingHOC from '../Common/IsLoadingHoc';
 
 // Child components imports.
 import VehicleCard from './VehicleCard';
 import RecentTrips from './RecentTrips/RecentTrips';
 import RecentServices from './RecentServices/RecentServices';
-
-// Utility for displaying notifications.
-import { NotificationHandler } from '../../utils/NotificationHandler'
-
-// Custom hook for making authenticated axios requests.
-import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-
-// Higher Order Component for handling loading state.
-import IsLoadingHOC from '../Common/IsLoadingHoc';
 
 // Component-specific styles.
 import './Vehicles.css';
@@ -39,8 +42,10 @@ const Vehicles = (props) => {
     const [userVehicles, setUserVehicles] = useState([]);
 
     // React-router hooks for navigation and location management.
-    const navigate = useNavigate();
     const location = useLocation();
+
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
 
     // Effect to fetch user vehicles on component mount.
     useEffect(() => {
@@ -54,9 +59,14 @@ const Vehicles = (props) => {
                 });
                 isMounted && setUserVehicles(response.data);
             } catch (err) {
-                // Handling errors and redirecting to login in case of failure.
-                NotificationHandler(err);
-                navigate('/login', { state: { from: location }, replace: true });
+                // Handle error and redirect to login in case of an error.
+                if (err.response.status == 401) {
+                    // On error, show a notification and redirect to the login page.
+                    NotificationHandler("Something went wrong", "Plese log in again", 400);
+                    logUserOut(location);
+                }
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);
             }
             finally {
                 // Set loading state to false after data fetching.
@@ -80,14 +90,14 @@ const Vehicles = (props) => {
                     <div className="add-vehicle-button">
                         <NavLink to="/Vehicle/Create">Add vehicle</NavLink>
                     </div>
-                    <RecentTrips/>
-                    <RecentServices/>
+                    <RecentTrips />
+                    <RecentServices />
                 </div>
                 <div className="user-vehicles">
                     {/* Mapping through user vehicles to display each one */}
                     {userVehicles.map(uv => <VehicleCard key={uv.id} vehicleData={uv} />)}
                 </div>
-            </div>  
+            </div>
         </section>
     );
 }

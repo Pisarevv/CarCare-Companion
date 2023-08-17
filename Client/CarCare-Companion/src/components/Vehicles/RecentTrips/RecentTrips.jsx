@@ -1,6 +1,12 @@
 // React hooks.
 import { useEffect, useState } from 'react';
 
+//React-router hook for managing location
+import { useLocation } from 'react-router-dom';
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../../hooks/useDeauthenticate';
+
 // Custom hook for making authenticated Axios calls.
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 
@@ -24,6 +30,12 @@ const RecentTrips = (props) => {
     // Destructure `setLoading` from props.
     const { setLoading } = props;
 
+    // Provides access to the current location (route).
+    const location = useLocation();
+
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
+
     // Custom hook instance for making authenticated Axios calls.
     const axiosPrivate = useAxiosPrivate();
 
@@ -43,10 +55,14 @@ const RecentTrips = (props) => {
                 });
                 isMounted && setRecentUserTrips(recentUserTrips => response.data);
             } catch (err) {
-                // Handle any errors, such as network issues or token expiry, with a NotificationHandler.
-                NotificationHandler(err);
-                // On error, navigate to login page (Note: `navigate` and `location` are not defined in the provided code).
-                navigate('/login', { state: { from: location }, replace: true });
+                // Handle error and redirect to login in case of an error.
+                if (err.response.status == 401) {
+                    // On error, show a notification and redirect to the login page.
+                    NotificationHandler("Something went wrong", "Plese log in again", 400);
+                    logUserOut(location);
+                }
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);
             }
             finally {
                 // Set the loading state to false after fetching is complete.

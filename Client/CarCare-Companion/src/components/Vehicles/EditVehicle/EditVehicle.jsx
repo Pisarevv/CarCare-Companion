@@ -1,11 +1,14 @@
 // Importing necessary hooks and modules from React and React Router.
 import { useEffect, useReducer, useState } from "react";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { NavLink, useLocation, useParams } from "react-router-dom";
 
 // Utilities
 import { NotificationHandler } from "../../../utils/NotificationHandler";
 import dataURLtoFile from "../../../utils/URLtoFileConverter";
 import DecimalSeparatorFormatter from "../../../utils/DecimalSeparatorFormatter";
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../../hooks/useDeauthenticate';
 
 // Custom hook for authenticated API requests.
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
@@ -40,11 +43,14 @@ const ValidationRegexes = {
 const EditVehicle = (props) => {
 
   // Hooks for navigation and fetching the URL parameter.
-  const navigate = useNavigate();
   const { id } = useParams();
 
    // Destructuring setLoading from props to control the loading status outside the component.
   const { setLoading } = props;
+  const location = useLocation();
+
+  //Use custom hook to get logUseOut function
+  const logUserOut = useDeauthenticate();
 
    // Instance of the custom axios hook for authenticated requests.
   const axiosPrivate = useAxiosPrivate();
@@ -108,8 +114,14 @@ const EditVehicle = (props) => {
           }        
         })
       } catch (err) {
-        NotificationHandler(err);
-        navigate('/login', { state: { from: location }, replace: true });
+          // Handle error and redirect to login in case of an error.
+          if(err.response.status == 401){
+            // On error, show a notification and redirect to the login page.
+           NotificationHandler("Something went wrong","Plese log in again", 400);
+           logUserOut(location);
+       }   
+        const { title, status } = error.response.data;
+        NotificationHandler("Warning", title, status);
       }
       finally {
         setLoading(false);

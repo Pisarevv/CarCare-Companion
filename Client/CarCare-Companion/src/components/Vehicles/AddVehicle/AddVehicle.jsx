@@ -1,11 +1,14 @@
 // Importing necessary hooks and modules from React and React Router.
 import { useEffect, useReducer, useState } from "react";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 // Utilities
 import { NotificationHandler } from "../../../utils/NotificationHandler";
 import dataURLtoFile from "../../../utils/URLtoFileConverter";
 import DecimalSeparatorFormatter from "../../../utils/DecimalSeparatorFormatter";
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../../hooks/useDeauthenticate';
 
 // Custom hook for authenticated API requests.
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
@@ -38,8 +41,11 @@ const ValidationRegexes = {
 // Component for adding a new vehicle.
 const AddVehicle = (props) => {
 
-  // Use the `useNavigate` hook from React Router to programmatically navigate between routes.
-  const navigate = useNavigate();
+  // Provides access to the current location (route).
+  const location = useLocation();
+
+  //Use custom hook to get logUseOut function
+  const logUserOut = useDeauthenticate();
 
   // Hooks for making authorized API requests.
   const axiosPrivate = useAxiosPrivate();
@@ -109,9 +115,14 @@ const AddVehicle = (props) => {
             }
           });
       } catch (err) {
-        // Handle any error by showing a notification and redirecting to the login page.
-        NotificationHandler(err);
-        navigate('/login', { state: { from: location }, replace: true });
+        // Handle error and redirect to login in case of an error.
+        if (err.response.status == 401) {
+          // On error, show a notification and redirect to the login page.
+          NotificationHandler("Something went wrong", "Plese log in again", 400);
+          logUserOut(location);
+        }
+        const { title, status } = error.response.data;
+        NotificationHandler("Warning", title, status);
       } finally {
         // Stop the loading state regardless of success or error.
         setLoading(false);

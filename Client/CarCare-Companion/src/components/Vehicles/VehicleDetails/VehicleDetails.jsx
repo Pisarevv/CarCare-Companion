@@ -1,11 +1,14 @@
-// React-router imports for navigation, routing, and extracting route parameters.
-import { Link, useParams } from 'react-router-dom';
-
 // Required React imports.
 import { useEffect, useState } from 'react';
 
+// React-router imports for navigation, routing, and extracting route parameters.
+import { Link, useParams, useLocation } from 'react-router-dom';
+
 // Utility for displaying notifications.
 import { NotificationHandler } from '../../../utils/NotificationHandler'
+
+//Custom hook for deauthentication of the user
+import useDeauthenticate from '../../../hooks/useDeauthenticate';
 
 // Higher Order Component for handling loading state.
 import IsLoadingHOC from '../../Common/IsLoadingHoc';
@@ -34,6 +37,12 @@ const VehicleDetails = (props) => {
     // Initializing the axios instance for authenticated requests.
     const axiosPrivate = useAxiosPrivate();
 
+    // Provides access to the current location (route).
+    const location = useLocation();
+
+    //Use custom hook to get logUseOut function
+    const logUserOut = useDeauthenticate();
+
     // Extracting the vehicle ID from the URL parameters.
     const { id } = useParams();
 
@@ -52,9 +61,14 @@ const VehicleDetails = (props) => {
                 });
                 isMounted && setVehicleDetails(vehicleDetails => response.data);
             } catch (err) {
-                // Handling errors and redirecting to login in case of failure.
-                NotificationHandler(err);
-                navigate('/login', { state: { from: location }, replace: true });
+                // Handle error and redirect to login in case of an error.
+                if (err.response.status == 401) {
+                    // On error, show a notification and redirect to the login page.
+                    NotificationHandler("Something went wrong", "Plese log in again", 400);
+                    logUserOut(location);
+                }
+                const { title, status } = error.response.data;
+                NotificationHandler("Warning", title, status);
             }
             finally {
                 // Set loading state to false after data fetching.
@@ -74,8 +88,8 @@ const VehicleDetails = (props) => {
     return (
         <section className="vehicle-details">
             <div className="vehicle-details-container">
-                <div className="recent-actions-information"> 
-                    <RecentVehicleServices/>
+                <div className="recent-actions-information">
+                    <RecentVehicleServices />
                 </div>
                 <div className="vehicle-information">
                     <div className="vehicl-details-card">
