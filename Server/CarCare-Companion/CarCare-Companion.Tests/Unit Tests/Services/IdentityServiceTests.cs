@@ -23,6 +23,8 @@ using static Common.GlobalConstants;
 public class IdentityServiceTests
 {
     private IIdentityService identityService;
+    private IJWTService jwtService;
+    private IRefreshTokenService refreshTokenService;
     private IConfiguration configuration;
     private IRepository repository;
     private UserManager<ApplicationUser> userManager;
@@ -59,8 +61,9 @@ public class IdentityServiceTests
         applicationDbContext = new CarCareCompanionDbContext(contextOptions);
 
         this.repository = new Repository(applicationDbContext);
+        this.jwtService = new JWTService(userManager, repository, configuration);
 
-        this.identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        this.identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService,refreshTokenService);
 
         applicationDbContext.Database.EnsureDeleted();
         applicationDbContext.Database.EnsureCreated();
@@ -91,7 +94,7 @@ public class IdentityServiceTests
 
         roleManager = roleManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
 
         //Act
         bool result = await identityService.RegisterAsync(registerRequestModel);
@@ -125,7 +128,7 @@ public class IdentityServiceTests
 
         roleManager = roleManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration,repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
 
         //Act && Assert
         Task Act() => identityService.RegisterAsync(registerRequestModel);
@@ -164,7 +167,7 @@ public class IdentityServiceTests
 
         roleManager = roleManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
 
         //Act
         var result = await identityService.LoginAsync(loginRequestModel);
@@ -208,7 +211,7 @@ public class IdentityServiceTests
 
         roleManager = roleManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
 
         //Act && Assert
         Task Act() => identityService.LoginAsync(loginRequestModel);
@@ -247,7 +250,7 @@ public class IdentityServiceTests
 
         roleManager = roleManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
 
         //Act && Assert
         Task Act() => identityService.LoginAsync(loginRequestModel);
@@ -287,7 +290,7 @@ public class IdentityServiceTests
 
         roleManager = roleManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration,repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
 
         //Act
         var result = await identityService.LoginAsync(loginRequestModel);
@@ -301,7 +304,7 @@ public class IdentityServiceTests
     /// <summary>
     /// Test the searching by username functionality
     /// </summary>
-    [Test] 
+    [Test]
     public async Task DoesUserExistByUsernameAsync_ShouldReturnTrue_IfUserExists()
     {
         //Arrange
@@ -314,7 +317,7 @@ public class IdentityServiceTests
 
         userManager = userManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
         //Act
         bool doesUserExist = await identityService.DoesUserExistByUsernameAsync(user.UserName);
 
@@ -338,7 +341,7 @@ public class IdentityServiceTests
 
         userManager = userManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
         //Act
         bool doesUserExist = await identityService.DoesUserExistByUsernameAsync(nonExistingUser);
 
@@ -363,7 +366,7 @@ public class IdentityServiceTests
 
         userManager = userManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
         //Act
         bool doesUserExist = await identityService.DoesUserExistByIdAsync(user.UserName);
 
@@ -387,7 +390,7 @@ public class IdentityServiceTests
 
         userManager = userManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
 
         //Act
         bool doesUserExist = await identityService.DoesUserExistByIdAsync(nonExistingUser);
@@ -453,7 +456,7 @@ public class IdentityServiceTests
 
         userManager = userManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
         //Act
         bool isUserInRole = await identityService.IsUserInRoleAsync(user.UserName, wrongRole);
 
@@ -461,271 +464,7 @@ public class IdentityServiceTests
         Assert.IsFalse(isUserInRole);
     }
 
-    /// <summary>
-    /// Tests refresh token updating when user doesn't have a previous token
-    /// </summary>
-    [Test]
-    public async Task UpdateRefreshTokenAsync_ShouldGenerateAToken_WhenUserDoesntHave()
-    {
-        //Arange
-        string userId = "908953a5-e4dc-4d82-9f0b-b2cbb7504fb0";
-        var user = new ApplicationUser { Id = Guid.Parse(userId), UserName = "exampleUser", Email = loginRequestModel.Email };
 
-
-        //Act 
-        string result = await identityService.UpdateRefreshTokenAsync(user);
-
-        //Assert
-        Assert.IsNotNull(result);
-    }
-
-    /// <summary>
-    /// Tests refresh token updating when user has a previous token
-    /// </summary>
-    [Test]
-    public async Task UpdateRefreshTokenAsync_ShouldRefreshTheToken_WhenUserHasOne()
-    {
-        //Arange
-        string userId = "908953a5-e4dc-4d82-9f0b-b2cbb7504fb0";
-        string oldRefreshToken = "TestTestTestTest";
-        var user = new ApplicationUser { Id = Guid.Parse(userId), UserName = "exampleUser", Email = loginRequestModel.Email };
-
-
-        UserRefreshToken newToken = new UserRefreshToken
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.Parse(userId),
-            RefreshToken = oldRefreshToken,
-            RefreshTokenExpiration = DateTime.UtcNow.AddDays(1)
-        };
-
-        await repository.AddAsync<UserRefreshToken>(newToken);
-        await repository.SaveChangesAsync();
-
-
-        //Act 
-        string result = await identityService.UpdateRefreshTokenAsync(user);
-
-        //Assert
-        Assert.AreNotEqual(oldRefreshToken, result);
-    }
-
-    /// <summary>
-    /// Tests if user is refresh token owner
-    /// </summary>
-    [Test]
-    public async Task IsUserRefreshTokenOwnerAsync_ShouldReturnTrue_WhenUserIsTokenOwner()
-    {
-        //Arrange
-        string userId = "908953a5-e4dc-4d82-9f0b-b2cbb7504fb0";
-        var user = new ApplicationUser { Id = Guid.Parse(userId), UserName = "exampleUser", Email = loginRequestModel.Email };
-
-        await repository.AddAsync(user);
-
-        UserRefreshToken token = new UserRefreshToken
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.Parse(userId),
-            RefreshToken = "TestTestTestTest",
-            RefreshTokenExpiration = DateTime.UtcNow.AddDays(1)
-        };
-
-        await repository.AddAsync<UserRefreshToken>(token);
-        await repository.SaveChangesAsync();
-
-        //Act
-        bool result = await identityService.IsUserRefreshTokenOwnerAsync(user.UserName, token.RefreshToken);
-
-        //Assert
-        Assert.IsTrue(result);
-
-    }
-
-
-    /// <summary>
-    /// Tests if user is refresh token owner
-    /// </summary>
-    [Test]
-    public async Task IsUserRefreshTokenOwnerAsync_ShouldReturnFalse_WhenUserIsNotTokenOwner()
-    {
-        //Arrange
-        string userId = "908953a5-e4dc-4d82-9f0b-b2cbb7504fb0";
-        string otherUserName = "OtherUser";
-        var user = new ApplicationUser { Id = Guid.Parse(userId), UserName = "exampleUser", Email = loginRequestModel.Email };
-
-        await repository.AddAsync(user);
-
-        UserRefreshToken token = new UserRefreshToken
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.Parse(userId),
-            RefreshToken = "TestTestTestTest",
-            RefreshTokenExpiration = DateTime.UtcNow.AddDays(1)
-        };
-
-        await repository.AddAsync<UserRefreshToken>(token);
-        await repository.SaveChangesAsync();
-
-        //Act
-        bool result = await identityService.IsUserRefreshTokenOwnerAsync(otherUserName, token.RefreshToken);
-
-        //Assert
-        Assert.IsFalse(result);
-
-    }
-
-    /// <summary>
-    /// Tests if refresh token is expired
-    /// </summary>
-    [Test]
-    public async Task IsUserRefreshTokenExpiredAsync_ShouldReturnTrue_WhenTokenIsExpired()
-    {
-        //Assign
-        UserRefreshToken token = new UserRefreshToken
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.NewGuid(),
-            RefreshToken = "TestTestTestTest",
-            RefreshTokenExpiration = DateTime.UtcNow.AddDays(-1)
-        };
-
-        await repository.AddAsync<UserRefreshToken>(token);
-        await repository.SaveChangesAsync();
-
-        //Act 
-        bool result = await identityService.IsUserRefreshTokenExpiredAsync(token.RefreshToken);
-
-        //Assert
-        Assert.IsTrue(result);
-    }
-
-    /// <summary>
-    /// Tests if refresh token is expired
-    /// </summary>
-    [Test]
-    public async Task IsUserRefreshTokenExpiredAsync_ShouldReturnFalse_WhenTokenIsNotExpired()
-    {
-        //Assign
-        UserRefreshToken token = new UserRefreshToken
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.NewGuid(),
-            RefreshToken = "TestTestTestTest",
-            RefreshTokenExpiration = DateTime.UtcNow.AddDays(+1)
-        };
-
-        await repository.AddAsync<UserRefreshToken>(token);
-        await repository.SaveChangesAsync();
-
-        //Act 
-        bool result = await identityService.IsUserRefreshTokenExpiredAsync(token.RefreshToken);
-
-        //Assert
-        Assert.IsFalse(result);
-    }
-
-    /// <summary>
-    /// Tests the refresh token termination
-    /// </summary>
-    [Test]
-    public async Task TerminateUserRefreshTokenAsync_ShouldReturnTrue_WhenUserHasOne()
-    {
-        //Arrange
-        string userId = "908953a5-e4dc-4d82-9f0b-b2cbb7504fb0";
-        var user = new ApplicationUser { Id = Guid.Parse(userId), UserName = "exampleUser", Email = loginRequestModel.Email };
-
-        await repository.AddAsync(user);
-
-        UserRefreshToken token = new UserRefreshToken
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.Parse(userId),
-            RefreshToken = "TestTestTestTest",
-            RefreshTokenExpiration = DateTime.UtcNow.AddDays(1)
-        };
-
-        await repository.AddAsync<UserRefreshToken>(token);
-        await repository.SaveChangesAsync();
-
-        //Act
-        bool result = await identityService.TerminateUserRefreshTokenAsync(userId);
-
-        Assert.IsTrue(result);
-    }
-
-    /// <summary>
-    /// Tests the refresh token termination
-    /// </summary>
-    [Test]
-    public async Task TerminateUserRefreshTokenAsync_ShouldReturnFalse_WhenUserDoesntHaveOne()
-    {
-        //Arrange
-        string userId = "908953a5-e4dc-4d82-9f0b-b2cbb7504fb0";
-    
-        //Act
-        bool result = await identityService.TerminateUserRefreshTokenAsync(userId);
-
-        Assert.IsFalse(result);
-    }
-
-    /// <summary>
-    /// Tests the username finding based on a refresh token
-    /// </summary>
-    [Test]
-    public async Task GetRefreshTokenOwnerAsync_ShouldReturnUsername_WhenUserExists()
-    {
-        //Arrange
-        string userId = "908953a5-e4dc-4d82-9f0b-b2cbb7504fb0";
-        var user = new ApplicationUser { Id = Guid.Parse(userId), UserName = "exampleUser", Email = loginRequestModel.Email };
-
-        await repository.AddAsync(user);
-
-        UserRefreshToken token = new UserRefreshToken
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.Parse(userId),
-            RefreshToken = "TestTestTestTest",
-            RefreshTokenExpiration = DateTime.UtcNow.AddDays(1)
-        };
-
-        await repository.AddAsync<UserRefreshToken>(token);
-        await repository.SaveChangesAsync();
-
-        //Act
-        string? result = await identityService.GetRefreshTokenOwnerAsync(token.RefreshToken);
-
-        //Assert
-        Assert.AreEqual(user.UserName, result);
-    }
-
-    /// <summary>
-    /// Tests the username finding based on a refresh token
-    /// </summary>
-    [Test]
-    public async Task GetRefreshTokenOwnerAsync_ShouldReturnNull_WhenUserDoesntExists()
-    {
-        //Arrange
-        string userId = "908953a5-e4dc-4d82-9f0b-b2cbb7504fb0";
-        string testUserName = "Test";
- 
-
-        UserRefreshToken token = new UserRefreshToken
-        {
-            Id = Guid.NewGuid(),
-            UserId = Guid.Parse(userId),
-            RefreshToken = "TestTestTestTest",
-            RefreshTokenExpiration = DateTime.UtcNow.AddDays(1)
-        };
-
-        await repository.AddAsync<UserRefreshToken>(token);
-        await repository.SaveChangesAsync();
-
-        //Act
-        string? result = await identityService.GetRefreshTokenOwnerAsync(token.RefreshToken);
-
-        //Assert
-        Assert.IsNull(result);
-    }
 
     /// <summary>
     /// Tests JWT token refreshing
@@ -747,10 +486,10 @@ public class IdentityServiceTests
 
         userManager = userManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
 
         //Act
-        var result = await identityService.RefreshJWTTokenAsync(user.UserName);
+        var result = await jwtService.RefreshJWTTokenAsync(user.UserName);
 
         //Assert
         Assert.IsNotNull(result.AccessToken);
@@ -758,28 +497,6 @@ public class IdentityServiceTests
         Assert.IsNotNull(result.Role);
     }
 
-    /// <summary>
-    /// Tests JWT token refreshing
-    /// </summary>
-    [Test]
-    public async Task RefreshJWTTokenAsync_ShouldThrowException_WhenUserDoesntExist()
-    {
-        //Arrange
-        var user = new ApplicationUser { Id = Guid.NewGuid(), UserName = "exampleUser", Email = loginRequestModel.Email };
-        var userManagerMock = GenerateUserManagerMock();
-
-        userManagerMock
-       .Setup(userManager => userManager.FindByNameAsync(It.IsAny<string>()))
-       .ReturnsAsync((ApplicationUser)null);
-
-        userManager = userManagerMock.Object;
-
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
-
-        //Act
-        //Assert
-        Assert.ThrowsAsync<ArgumentNullException>(() => identityService.RefreshJWTTokenAsync(user.UserName));
-    }
 
     [Test]
     public async Task AddAdminAsync_ShouldAddUser_ToAdminRole()
@@ -799,7 +516,7 @@ public class IdentityServiceTests
 
         userManager = userManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
 
         //Act
         bool result = await identityService.AddAdminAsync(userId);
@@ -821,11 +538,11 @@ public class IdentityServiceTests
 
         userManagerMock
        .Setup(userManager => userManager.AddToRoleAsync(It.IsAny<ApplicationUser>(), AdministratorRoleName))
-       .ReturnsAsync(IdentityResult.Failed(new IdentityError[]{ new IdentityError { Code ="123", Description= "Test"}}));
+       .ReturnsAsync(IdentityResult.Failed(new IdentityError[] { new IdentityError { Code = "123", Description = "Test" } }));
 
         userManager = userManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
 
         //Act 
         //Assert
@@ -850,7 +567,7 @@ public class IdentityServiceTests
 
         userManager = userManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
 
         //Act
         bool result = await identityService.RemoveAdminAsync(userId);
@@ -876,7 +593,7 @@ public class IdentityServiceTests
 
         userManager = userManagerMock.Object;
 
-        identityService = new IdentityService(userManager, roleManager, configuration, repository);
+        identityService = new IdentityService(userManager, roleManager, configuration, repository, jwtService, refreshTokenService);
 
         //Act 
         //Assert
@@ -902,12 +619,12 @@ public class IdentityServiceTests
 
     private Mock<RoleManager<ApplicationRole>> GenerateRoleManagerMock()
     {
-       return new Mock<RoleManager<ApplicationRole>>(
-             new Mock<IRoleStore<ApplicationRole>>().Object,
-             new IRoleValidator<ApplicationRole>[0],
-             new Mock<ILookupNormalizer>().Object,
-             new Mock<IdentityErrorDescriber>().Object,
-             new Mock<ILogger<RoleManager<ApplicationRole>>>().Object);
+        return new Mock<RoleManager<ApplicationRole>>(
+              new Mock<IRoleStore<ApplicationRole>>().Object,
+              new IRoleValidator<ApplicationRole>[0],
+              new Mock<ILookupNormalizer>().Object,
+              new Mock<IdentityErrorDescriber>().Object,
+              new Mock<ILogger<RoleManager<ApplicationRole>>>().Object);
     }
 
     private IConfiguration GetTestConfiguration()
@@ -925,4 +642,4 @@ public class IdentityServiceTests
         applicationDbContext.Dispose();
     }
 }
-    
+
