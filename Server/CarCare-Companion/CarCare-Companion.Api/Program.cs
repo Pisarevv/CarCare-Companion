@@ -120,6 +120,8 @@ namespace CarCare_Companion.Api
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailSender, GmailEmailSender>();
             services.AddScoped<IMessagingService, MessagingService>();
+            services.AddScoped<IJWTService, JWTService>();
+            services.AddScoped<IRefreshTokenService,RefreshTokenService>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
