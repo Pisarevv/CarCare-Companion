@@ -2,7 +2,7 @@
 import { useEffect, useReducer, useState } from 'react';
 
 // React-router-dom hooks for navigation and accessing route parameters
-import { NavLink, useLocation, useParams } from 'react-router-dom';
+import { NavLink, useLocation, useParams, useNavigate } from 'react-router-dom';
 
 // Reducer function for tax record state management
 import taxRecordReducer from '../../../reducers/taxRecordReducer';
@@ -48,14 +48,16 @@ const ValidationRegexes = {
  */
 const EditTaxRecord = (props) => {
 
-    // Provides access to the current location (route).
+    // Provides access to the current location (route) and navigation function.
     const location = useLocation();
-   
+    const navigate = useNavigate();
+    
     //Use custom hook to get logUseOut function
     const logUserOut = useDeauthenticate();
 
     // Extract tax record ID from the URL
     const { id } = useParams();
+    
 
     // setLoading function from props, used by HOC
     const { setLoading } = props;

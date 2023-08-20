@@ -2,7 +2,7 @@
 import { useEffect, useReducer, useState } from 'react';
 
 // React-router imports for navigation and accessing route parameters.
-import { NavLink, useLocation, useParams } from 'react-router-dom';
+import { NavLink, useLocation, useParams , useNavigate} from 'react-router-dom';
 
 //Custom hook for deauthentication of the user
 import useDeauthenticate from '../../../hooks/useDeauthenticate';
@@ -45,7 +45,9 @@ const ValidationRegexes = {
  */
 const EditTrip = (props) => {
 
- 
+    // Provides access to the react router navigation function.
+    const navigate = useNavigate();
+
    // Initializing the axios instance for authenticated requests and React-router hooks.
     const axiosPrivate = useAxiosPrivate()
 

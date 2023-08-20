@@ -1,5 +1,5 @@
 // Importing necessary hooks and components from React and react-router-dom
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useReducer, useState } from 'react'
 
 // Reducer for handling the trip state
@@ -38,8 +38,9 @@ const ValidationRegexes = {
 
 const AddTrip = (props) => {
 
-    // Provides access to the current location (route).
+    // Provides access to the current location (route) and navigation function.
     const location = useLocation();
+    const navigate = useNavigate();
 
     //Use custom hook to get logUseOut function
     const logUserOut = useDeauthenticate();

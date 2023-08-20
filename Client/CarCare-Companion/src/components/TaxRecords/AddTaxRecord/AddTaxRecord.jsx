@@ -2,7 +2,7 @@
 import { useEffect, useReducer, useState } from 'react';
 
 // React-router-dom hooks for navigation
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 // Reducer function for managing tax record state
 import taxRecordReducer from '../../../reducers/taxRecordReducer';
@@ -51,8 +51,9 @@ const AddTaxRecord = (props) => {
     // Extract setLoading function from props to control loading state
     const { setLoading } = props;
 
-    // Provides access to the current location (route).
+    // Provides access to the current location (route) and navigation function.
     const location = useLocation();
+    const navigate = useNavigate();
 
     //Use custom hook to get logUseOut function
     const logUserOut = useDeauthenticate();
