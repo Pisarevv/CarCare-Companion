@@ -19,12 +19,17 @@ using CarCare_Companion.Common;
 public class IdentityController : BaseController
 {
     private readonly IIdentityService identityService;
+    private readonly IJWTService jwtService;
+    private readonly IRefreshTokenService refreshTokenService;
     private readonly ILogger<IdentityController> logger;
 
-    public IdentityController(IIdentityService identityService, ILogger<IdentityController> logger)
+    public IdentityController(IIdentityService identityService, IRefreshTokenService refreshTokenService, IJWTService jwtService, ILogger<IdentityController> logger)
     {
         this.identityService = identityService;
+        this.refreshTokenService = refreshTokenService;
+        this.jwtService = jwtService;
         this.logger = logger;
+        this.refreshTokenService = refreshTokenService;
     }
 
     /// <summary>
@@ -178,7 +183,7 @@ public class IdentityController : BaseController
                 });
             }
 
-            await identityService.TerminateUserRefreshTokenAsync(userId);
+            await refreshTokenService.TerminateUserRefreshTokenAsync(userId);
 
             return StatusCode(200);
 
@@ -226,7 +231,7 @@ public class IdentityController : BaseController
                 });
             }
 
-            string? refreshTokenOwnerUsername = await identityService.GetRefreshTokenOwnerAsync(refreshToken);
+            string? refreshTokenOwnerUsername = await refreshTokenService.GetRefreshTokenOwnerAsync(refreshToken);
 
             if (refreshTokenOwnerUsername == null)
             {
@@ -237,7 +242,7 @@ public class IdentityController : BaseController
 
             }
 
-            bool isTokenExpired = await identityService.IsUserRefreshTokenExpiredAsync(refreshToken);
+            bool isTokenExpired = await refreshTokenService.IsUserRefreshTokenExpiredAsync(refreshToken);
 
             if (isTokenExpired)
             {
@@ -247,7 +252,7 @@ public class IdentityController : BaseController
                 });
             }
 
-            AuthDataModel authData = await identityService.RefreshJWTTokenAsync(refreshTokenOwnerUsername);
+            AuthDataModel authData = await jwtService.RefreshJWTTokenAsync(refreshTokenOwnerUsername);
 
             return StatusCode(200, authData);
 
