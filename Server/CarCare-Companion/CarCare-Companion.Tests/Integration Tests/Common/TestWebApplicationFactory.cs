@@ -1,11 +1,13 @@
 ﻿namespace CarCare_Companion.Tests.Integration_Tests;
 
-using CarCare_Companion.Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+using CarCare_Companion.Infrastructure.Data;
+
 
 public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
 {
