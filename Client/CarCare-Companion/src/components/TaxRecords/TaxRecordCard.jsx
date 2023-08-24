@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 
 // Utility for converting ISO date strings to human-readable format
-import ISODateStringToString from '../../utils/IsoDateStringToString';
+import ISODateStringToString from '../../utils/ISODateStringToString';
 
 // Component-specific styles
 import './TaxRecordCard.css'

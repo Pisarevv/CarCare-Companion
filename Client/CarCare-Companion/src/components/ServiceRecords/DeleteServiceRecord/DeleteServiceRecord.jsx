@@ -8,7 +8,7 @@ import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { NotificationHandler } from '../../../utils/NotificationHandler'
 
 // Utilities to format and validate date strings.
-import ISODateStringToString from '../../../utils/IsoDateStringToString';
+import ISODateStringToString from '../../../utils/ISODateStringToString';
 
 // CSS styles specific to this component.
 import './DeleteServiceRecord.css';

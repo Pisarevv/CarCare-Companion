@@ -21,7 +21,7 @@ import { NotificationHandler } from '../../../utils/NotificationHandler';
 
 // Utility functions for date string manipulation and formatting
 import StringToISODateString from '../../../utils/StringToISODateString';
-import ISODateStringToString from '../../../utils/IsoDateStringToString';
+import ISODateStringToString from '../../../utils/ISODateStringToString';
 import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter';
 
 // Component specific styles

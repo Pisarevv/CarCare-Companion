@@ -1,5 +1,5 @@
 // Utility import for converting ISO date strings to a readable format.
-import ISODateStringToString from '../../../../utils/IsoDateStringToString';
+import ISODateStringToString from '../../../../utils/ISODateStringToString';
 
 // Component-specific styles.
 import './RecentVehicleServiceCard.css'

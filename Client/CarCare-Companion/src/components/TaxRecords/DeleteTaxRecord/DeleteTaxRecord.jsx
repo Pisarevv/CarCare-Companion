@@ -8,7 +8,7 @@ import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
 import { NotificationHandler } from '../../../utils/NotificationHandler';
 
 // Utility function for converting ISO date strings to human-readable format.
-import ISODateStringToString from '../../../utils/IsoDateStringToString';
+import ISODateStringToString from '../../../utils/ISODateStringToString';
 
 // Component specific styles.
 import './DeleteTaxRecord.css';

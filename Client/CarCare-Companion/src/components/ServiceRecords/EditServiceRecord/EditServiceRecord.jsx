@@ -19,7 +19,7 @@ import IsLoadingHOC from '../../Common/IsLoadingHoc';
 
 // Utilities to format and validate date strings.
 import StringToISODateString from '../../../utils/StringToISODateString';
-import ISODateStringToString from '../../../utils/IsoDateStringToString';
+import ISODateStringToString from '../../../utils/ISODateStringToString';
 
 // Utility to format numbers.
 import DecimalSeparatorFormatter from '../../../utils/DecimalSeparatorFormatter';

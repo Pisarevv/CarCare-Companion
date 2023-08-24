@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 
 // Utility function to convert ISO date strings to formatted strings.
-import ISODateStringToString from '../../utils/IsoDateStringToString';
+import ISODateStringToString from '../../utils/ISODateStringToString';
 
 // CSS styles specific to this component.
 import './ServiceRecordCard.css'

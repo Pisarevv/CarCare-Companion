@@ -1,5 +1,5 @@
 // Import utility function to convert ISO date string to a specific format.
-import ISODateStringToString from '../../../utils/IsoDateStringToString';
+import ISODateStringToString from '../../../utils/ISODateStringToString';
 
 // Importing associated styles for this component.
 import './RecentServiceCard.css'
