@@ -11,6 +11,7 @@ using CarCare_Companion.Infrastructure.Data;
 
 public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
 {
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
@@ -27,10 +28,25 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
             {
                 services.Remove(descriptor);
             }
+
             services.AddDbContext<CarCareCompanionDbContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("TestDatabaseConnection"));
             });
+
+            var sp = services.BuildServiceProvider();
+
+            //Create database if it doesn't exist
+            using (var scope = sp.CreateScope())
+            {
+
+                var scopedServices = scope.ServiceProvider;
+                var db = scopedServices.GetRequiredService<CarCareCompanionDbContext>();
+                db.Database.EnsureCreated();
+
+            }
         });
     }
+
+
 }
