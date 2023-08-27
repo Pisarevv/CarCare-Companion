@@ -1,4 +1,4 @@
-﻿namespace CarCare_Companion.Tests.Integration_Tests.SeedData;
+﻿namespace CarCare_Companion.Tests.Integration_Tests.Seeding.Data;
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using static Integration_Tests.Common.TestDataConstants;
 
 public static class TripRecordsData
 {
-    public static ICollection<TripRecord> tripRecords = new HashSet<TripRecord>()
+    public static ICollection<TripRecord> TripRecords = new HashSet<TripRecord>()
     {
         new TripRecord
             {

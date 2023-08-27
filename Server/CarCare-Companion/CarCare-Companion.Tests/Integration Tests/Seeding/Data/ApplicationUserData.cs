@@ -1,4 +1,4 @@
-﻿namespace CarCare_Companion.Tests.Integration_Tests.SeedData;
+﻿namespace CarCare_Companion.Tests.Integration_Tests.Seeding.Data;
 
 using System;
 

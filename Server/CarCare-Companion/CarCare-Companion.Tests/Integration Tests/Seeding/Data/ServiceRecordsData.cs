@@ -1,4 +1,4 @@
-﻿namespace CarCare_Companion.Tests.Integration_Tests.SeedData;
+﻿namespace CarCare_Companion.Tests.Integration_Tests.Seeding.Data;
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using static Integration_Tests.Common.TestDataConstants;
 
 public static class ServiceRecordsData
 {
-    public static ICollection<ServiceRecord> serviceRecords = new HashSet<ServiceRecord>()
+    public static ICollection<ServiceRecord> ServiceRecords = new HashSet<ServiceRecord>()
     {
         new ServiceRecord()
         {
