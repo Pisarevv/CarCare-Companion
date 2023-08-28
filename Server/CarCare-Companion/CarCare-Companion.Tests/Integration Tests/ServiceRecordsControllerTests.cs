@@ -1,15 +1,24 @@
 ﻿namespace CarCare_Companion.Tests.Integration_Tests;
 
-using CarCare_Companion.Api;
-using CarCare_Companion.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore.Storage;
-
-using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Threading.Tasks;
+
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
+
+using Newtonsoft.Json;
+
+using CarCare_Companion.Api;
+using CarCare_Companion.Core.Contracts;
+using CarCare_Companion.Core.Models.ServiceRecords;
+using CarCare_Companion.Infrastructure.Data;
+using CarCare_Companion.Infrastructure.Data.Models.Identity;
+using CarCare_Companion.Tests.Integration_Tests.Seeding;
+
+using static Seeding.Data.ApplicationUserData;
 
 [TestFixture]
 public class ServiceRecordsControllerTests
@@ -20,10 +29,16 @@ public class ServiceRecordsControllerTests
     private IDbContextTransaction transaction;
     private IServiceProvider serviceProvider;
 
+    private IJWTService jwtService;
+
+    private List<ApplicationUser> users;
+
 
     [OneTimeSetUp]
-    public async Task SetupDatabase()
+    public async Task InitialSetup()
     {
+        
+
         factory = new TestWebApplicationFactory<Program>();
         client = factory.CreateClient();
 
@@ -35,11 +50,13 @@ public class ServiceRecordsControllerTests
             await dbContext.Database.EnsureDeletedAsync();
             await dbContext.Database.EnsureCreatedAsync();
 
+            jwtService = serviceProvider.GetService<IJWTService>();
+
             // Seed the database
-            //await TestDataSeeder.SeedTestData(dbContext);
+            await new TestDataSeeder().SeedAsync(dbContext, serviceProvider);
         }
 
-
+        users = Users;
     }
 
     [SetUp]
@@ -57,6 +74,33 @@ public class ServiceRecordsControllerTests
         }
     }
 
+    /// <summary>
+    /// Tests the GET endpoint of the ServiceRecords Controller
+    /// </summary>
+    [Test]
+    public async Task GET_ReturnsSuccessAndCorrectContentType_WithData_WhenUserIsValid()
+    {
+        //Assert
+        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<Claim> claims = jwtService.GenerateUserAuthClaims(users[0], userRoles);
+
+        var rawToken = jwtService.GenerateJwtToken(claims);
+        string token = new JwtSecurityTokenHandler().WriteToken(rawToken);
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "/ServiceRecords");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        //Act
+        var response = await client.SendAsync(request);
+
+        var data = await response.Content.ReadAsStringAsync();
+        ICollection<ServiceRecordDetailsResponseModel> resposeData = JsonConvert.DeserializeObject<ICollection<ServiceRecordDetailsResponseModel>>(data);
+
+        //Assert
+        Assert.That(response.IsSuccessStatusCode, Is.True);
+        Assert.That(response.Content.Headers.ContentType.ToString(), Is.EqualTo("application/json; charset=utf-8"));
+        Assert.IsNotNull(data);
+    }
 
     [TearDown]
     public void TearDown()
