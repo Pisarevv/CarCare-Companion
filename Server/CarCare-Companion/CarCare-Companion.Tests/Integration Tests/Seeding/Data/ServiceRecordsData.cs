@@ -13,6 +13,7 @@ public static class ServiceRecordsData
     {
         new ServiceRecord()
         {
+            Id = Guid.Parse("48736248-6983-4f3f-a912-518effece9e1"),
             Title = "Oil Change",
             Description = "Changed engine oil and oil filter.",
             Cost = 50.00M,
@@ -24,6 +25,7 @@ public static class ServiceRecordsData
         },
         new ServiceRecord
         {
+            Id = Guid.Parse("188f7b9f-5c91-474d-b8ea-95ac1a03f4c6"),
             Title = "Tire Rotation",
             Description = "Rotated all four tires.",
             Cost = 30.00M,
@@ -35,6 +37,7 @@ public static class ServiceRecordsData
         },
         new ServiceRecord
         {
+            Id = Guid.Parse("c8730cd6-6543-4745-9977-308462648e9d"),
             Title = "Brake Pad Replacement",
             Description = "Replaced front brake pads.",
             Cost = 120.00M,
@@ -46,6 +49,7 @@ public static class ServiceRecordsData
         },
         new ServiceRecord
         {
+            Id = Guid.Parse("5af2d69f-bad8-490c-8562-2e9abcac7242"),
             Title = "Air Filter Replacement",
             Description = "Replaced air filter.",
             Cost = 20.00M,
