@@ -47,14 +47,6 @@ public class ServiceRecordsController : BaseController
                 });
             }
 
-            if (!ModelState.IsValid)
-            {
-                return StatusCode(400, new ProblemDetails
-                {
-                    Title = StatusResponses.InvalidData
-                });
-            }
-
             ICollection<ServiceRecordDetailsResponseModel> serviceRecords = await serviceRecordsService.GetAllByUserIdAsync(userId);
 
             return StatusCode(200, serviceRecords);
