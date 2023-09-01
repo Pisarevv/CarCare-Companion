@@ -19,8 +19,10 @@ using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using CarCare_Companion.Tests.Integration_Tests.Seeding;
 
 using static Seeding.Data.ApplicationUserData;
-using Microsoft.AspNetCore.Http;
+using static Seeding.Data.ServiceRecordsData;
+
 using System.Net;
+using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 [TestFixture]
 public class ServiceRecordsControllerTests
@@ -125,6 +127,40 @@ public class ServiceRecordsControllerTests
 
         //Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+    }
+
+    [Test]
+    public async Task ServiceRecordDetails_ShouldReturnRecord_WhenUserIsCreator_AndRecordExists()
+    {
+        //Assert 
+        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<Claim> claims = jwtService.GenerateUserAuthClaims(users[0], userRoles);
+        ServiceRecord serviceRecordData = ServiceRecords.Where(sr => sr.OwnerId == users[0].Id).First();
+
+        var rawToken = jwtService.GenerateJwtToken(claims);
+        string token = new JwtSecurityTokenHandler().WriteToken(rawToken);
+
+        //Act
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/ServiceRecords/Details/{serviceRecordData.Id.ToString()}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        //Act
+        var response = await client.SendAsync(request);
+
+        var data = await response.Content.ReadAsStringAsync();
+        ServiceRecordDetailsResponseModel responseData = JsonConvert.DeserializeObject<ServiceRecordDetailsResponseModel>(data);
+
+        //Assert
+        Assert.That(response.IsSuccessStatusCode, Is.True);
+        Assert.That(response.Content.Headers.ContentType.ToString(), Is.EqualTo("application/json; charset=utf-8"));
+
+        Assert.AreEqual(serviceRecordData.Id.ToString().ToUpper(), responseData.Id);
+        Assert.AreEqual(serviceRecordData.Title, responseData.Title );
+        Assert.AreEqual(serviceRecordData.Mileage, responseData.Mileage);
+        Assert.AreEqual(serviceRecordData.PerformedOn, responseData.PerformedOn);
+        Assert.AreEqual(serviceRecordData.Cost, responseData.Cost);
+        Assert.AreEqual(serviceRecordData.Description, responseData.Description);
+
     }
 
     [TearDown]
