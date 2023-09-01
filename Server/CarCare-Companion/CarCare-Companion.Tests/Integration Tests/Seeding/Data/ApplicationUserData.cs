@@ -8,7 +8,7 @@ using static Integration_Tests.Common.TestDataConstants;
 
 public static class ApplicationUserData
 {
-    public static ICollection<ApplicationUser> Users = new HashSet<ApplicationUser>()
+    public static List<ApplicationUser> Users = new List<ApplicationUser>()
     {
         new ApplicationUser()
         {
