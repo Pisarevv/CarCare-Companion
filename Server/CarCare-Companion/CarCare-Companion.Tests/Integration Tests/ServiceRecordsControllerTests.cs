@@ -19,6 +19,8 @@ using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using CarCare_Companion.Tests.Integration_Tests.Seeding;
 
 using static Seeding.Data.ApplicationUserData;
+using Microsoft.AspNetCore.Http;
+using System.Net;
 
 [TestFixture]
 public class ServiceRecordsControllerTests
@@ -75,7 +77,7 @@ public class ServiceRecordsControllerTests
     }
 
     /// <summary>
-    /// Tests the GET endpoint of the ServiceRecords Controller
+    /// Tests the GET endpoint of the ServiceRecords Controller with valid user claims
     /// </summary>
     [Test]
     public async Task GET_ReturnsSuccessAndCorrectContentType_WithData_WhenUserIsValid()
@@ -100,6 +102,29 @@ public class ServiceRecordsControllerTests
         Assert.That(response.IsSuccessStatusCode, Is.True);
         Assert.That(response.Content.Headers.ContentType.ToString(), Is.EqualTo("application/json; charset=utf-8"));
         Assert.IsNotNull(data);
+    }
+
+    /// <summary>
+    /// Tests the GET endpoint of the ServiceRecords Controller with valid missing user claims 
+    /// </summary>
+    [Test]
+    public async Task GET_ReturnsStatusCode403_WhenUserClaims_AreMissing()
+    {
+        //Assert
+        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<Claim> claims = new List<Claim>();
+   
+        var rawToken = jwtService.GenerateJwtToken(claims);
+        string token = new JwtSecurityTokenHandler().WriteToken(rawToken);
+
+        var request = new HttpRequestMessage(HttpMethod.Get, "/ServiceRecords");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        //Act
+        var response = await client.SendAsync(request);
+
+        //Assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
     }
 
     [TearDown]
