@@ -129,8 +129,9 @@ public class ServiceRecordsControllerTests
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
     }
 
+    //Test the GET end point for record details of ServiceRecords Controller with valid user and record
     [Test]
-    public async Task ServiceRecordDetails_ShouldReturnRecord_WhenUserIsCreator_AndRecordExists()
+    public async Task GET_ServiceRecordDetails_ShouldReturnRecord_WhenUserIsCreator_AndRecordExists()
     {
         //Assert 
         ICollection<string> userRoles = new HashSet<string>();
@@ -160,6 +161,55 @@ public class ServiceRecordsControllerTests
         Assert.AreEqual(serviceRecordData.PerformedOn, responseData.PerformedOn);
         Assert.AreEqual(serviceRecordData.Cost, responseData.Cost);
         Assert.AreEqual(serviceRecordData.Description, responseData.Description);
+
+    }
+
+    //Test the GET end point for record details of ServiceRecords Controller with invalid user claims 
+    [Test]
+    public async Task GET_ServiceRecordDetails_ReturnsStatusCode403_WhenUserClaims_AreMissing()
+    {
+     
+        //Assert
+        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<Claim> claims = new List<Claim>();
+
+        var rawToken = jwtService.GenerateJwtToken(claims);
+        string token = new JwtSecurityTokenHandler().WriteToken(rawToken);
+
+        ServiceRecord serviceRecordData = ServiceRecords.Where(sr => sr.OwnerId == users[0].Id).First();
+
+        //Act
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/ServiceRecords/Details/{serviceRecordData.Id.ToString()}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        //Act
+        var response = await client.SendAsync(request);
+
+        //Assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+
+    }
+
+    //Test the GET end point for record details of ServiceRecords Controller with valid user and record
+    [Test]
+    public async Task GET_ServiceRecordDetails_ReturnsStatusCode403_WhenRecordDoesntExist()
+    {
+        //Assert 
+        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<Claim> claims = jwtService.GenerateUserAuthClaims(users[0], userRoles);
+        string nonExistingServiceRecordId = Guid.NewGuid().ToString();
+
+        var rawToken = jwtService.GenerateJwtToken(claims);
+        string token = new JwtSecurityTokenHandler().WriteToken(rawToken);
+
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/ServiceRecords/Details/{nonExistingServiceRecordId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        //Act
+        var response = await client.SendAsync(request);
+
+        //Assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
 
     }
 
