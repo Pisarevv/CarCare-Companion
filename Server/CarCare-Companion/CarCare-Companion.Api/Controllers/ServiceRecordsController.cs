@@ -94,14 +94,6 @@ public class ServiceRecordsController : BaseController
                 });
             }
 
-            if (!ModelState.IsValid)
-            {
-                return StatusCode(400, new ProblemDetails
-                {
-                    Title = StatusResponses.InvalidData
-                });
-            }
-
             bool doesServiceRecordExist = await serviceRecordsService.DoesRecordExistByIdAsync(recordId);
 
             if(!doesServiceRecordExist)
