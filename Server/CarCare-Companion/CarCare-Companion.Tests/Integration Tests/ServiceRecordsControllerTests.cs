@@ -213,6 +213,30 @@ public class ServiceRecordsControllerTests
 
     }
 
+    //Test the GET end point for record details of ServiceRecords Controller with valid user but the not owner of the record
+    [Test]
+    public async Task GET_ServiceRecordDetails_ReturnsStatusCode403_WhenUserIsNotRecordOwner()
+    {
+        //Assert 
+        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<Claim> claims = jwtService.GenerateUserAuthClaims(users[0], userRoles);
+        ServiceRecord serviceRecordData = ServiceRecords.Where(sr => sr.OwnerId != users[0].Id).First();
+
+        var rawToken = jwtService.GenerateJwtToken(claims);
+        string token = new JwtSecurityTokenHandler().WriteToken(rawToken);
+
+        //Act
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/ServiceRecords/Details/{serviceRecordData.Id.ToString()}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        //Act
+        var response = await client.SendAsync(request);
+
+
+        //Assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+    }
+
     [TearDown]
     public void TearDown()
     {
