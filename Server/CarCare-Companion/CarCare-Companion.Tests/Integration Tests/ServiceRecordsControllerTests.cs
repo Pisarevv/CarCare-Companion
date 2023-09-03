@@ -20,9 +20,12 @@ using CarCare_Companion.Tests.Integration_Tests.Seeding;
 
 using static Seeding.Data.ApplicationUserData;
 using static Seeding.Data.ServiceRecordsData;
+using static Seeding.Data.VehiclesData;
 
 using System.Net;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
+using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
+using System.Text;
 
 [TestFixture]
 public class ServiceRecordsControllerTests
@@ -236,6 +239,55 @@ public class ServiceRecordsControllerTests
         //Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
     }
+
+    //Test the POST end point for creating a service record with valid data
+    [Test]
+    public async Task POST_Create_ReturnsStatusCode201_AndRecordData_WhenCreating_IsSuccessful()
+    {
+        //Assert 
+        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<Claim> claims = jwtService.GenerateUserAuthClaims(users[0], userRoles);
+        Vehicle userVehicle = Vehicles.Where(v => v.OwnerId == users[0].Id).First();
+
+        var rawToken = jwtService.GenerateJwtToken(claims);
+        string token = new JwtSecurityTokenHandler().WriteToken(rawToken);
+
+        ServiceRecordFormRequestModel recordToCreate = new ServiceRecordFormRequestModel()
+        {
+            Title = "Title",
+            Cost = 10,
+            Description = "Description",
+            Mileage = 1506,
+            PerformedOn = DateTime.Now,
+            VehicleId = userVehicle.Id.ToString(),
+        };
+
+        var recordJson = JsonConvert.SerializeObject(recordToCreate);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "/ServiceRecords");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        request.Content = new StringContent(recordJson, Encoding.UTF8, "application/json");
+
+        //Act
+        var response = await client.SendAsync(request);
+
+        var data = await response.Content.ReadAsStringAsync();
+        ServiceRecordResponseModel responseData = JsonConvert.DeserializeObject<ServiceRecordResponseModel>(data);
+
+
+        //Assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+
+        Assert.That(responseData.Title, Is.EqualTo(recordToCreate.Title));
+        Assert.That(responseData.Cost, Is.EqualTo(recordToCreate.Cost));
+        Assert.That(responseData.VehicleId, Is.EqualTo(recordToCreate.VehicleId));
+        Assert.That(responseData.Description, Is.EqualTo(recordToCreate.Description));
+        Assert.That(responseData.Mileage, Is.EqualTo(recordToCreate.Mileage));
+        Assert.That(responseData.PerformedOn, Is.EqualTo(recordToCreate.PerformedOn));
+
+    }
+
+
 
     [TearDown]
     public void TearDown()
