@@ -327,6 +327,43 @@ public class ServiceRecordsControllerTests
     }
 
 
+    /// <summary>
+    /// Tests the POST endpoint for creating service record of the ServiceRecords Controller with missing user claims 
+    /// </summary>
+    [Test]
+    public async Task POST_ReturnsStatusCode403_WhenUserClaims_AreMissing()
+    {
+        //Assert
+        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<Claim> claims = new List<Claim>();
+        Vehicle userVehicle = Vehicles.Where(v => v.OwnerId == users[0].Id).First();
+
+        var rawToken = jwtService.GenerateJwtToken(claims);
+        string token = new JwtSecurityTokenHandler().WriteToken(rawToken);
+
+        ServiceRecordFormRequestModel recordToCreate = new ServiceRecordFormRequestModel()
+        {
+            Title = "Title",
+            Cost = 10,
+            Description = "Description",
+            Mileage = 1506,
+            PerformedOn = DateTime.Now,
+            VehicleId = userVehicle.Id.ToString(),
+        };
+
+        var recordJson = JsonConvert.SerializeObject(recordToCreate);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "/ServiceRecords");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        request.Content = new StringContent(recordJson, Encoding.UTF8, "application/json");
+
+        //Act
+        var response = await client.SendAsync(request);
+
+        //Assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+    }
+
 
     [TearDown]
     public void TearDown()
