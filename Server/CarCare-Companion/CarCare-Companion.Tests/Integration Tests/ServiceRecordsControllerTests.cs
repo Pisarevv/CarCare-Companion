@@ -287,6 +287,45 @@ public class ServiceRecordsControllerTests
 
     }
 
+    //Test the POST end point for creating a service record with valid data
+    [Test]
+    public async Task POST_Create_ReturnsStatusCode400_WhenInputData_IsInvalid()
+    {
+        //Assert 
+        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<Claim> claims = jwtService.GenerateUserAuthClaims(users[0], userRoles);
+        Vehicle userVehicle = Vehicles.Where(v => v.OwnerId == users[0].Id).First();
+
+        var rawToken = jwtService.GenerateJwtToken(claims);
+        string token = new JwtSecurityTokenHandler().WriteToken(rawToken);
+
+        ServiceRecordFormRequestModel recordToCreate = new ServiceRecordFormRequestModel()
+        {
+            Title = "",
+            Cost = 10,
+            Description = "Description",
+            Mileage = 1506,
+            PerformedOn = DateTime.Now,
+            VehicleId = userVehicle.Id.ToString(),
+        };
+
+        var recordJson = JsonConvert.SerializeObject(recordToCreate);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "/ServiceRecords");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        request.Content = new StringContent(recordJson, Encoding.UTF8, "application/json");
+
+        //Act
+        var response = await client.SendAsync(request);
+
+        var data = await response.Content.ReadAsStringAsync();
+        ServiceRecordResponseModel responseData = JsonConvert.DeserializeObject<ServiceRecordResponseModel>(data);
+
+
+        //Assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+    }
+
 
 
     [TearDown]
