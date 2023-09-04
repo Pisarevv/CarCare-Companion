@@ -365,6 +365,43 @@ public class ServiceRecordsControllerTests
     }
 
 
+    //Test the POST end point for creating a service record with valid data but non existing vehicle
+    [Test]
+    public async Task POST_Create_ReturnsStatusCode403_WhenVehicle_DoesntExist()
+    {
+        //Assert 
+        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<Claim> claims = jwtService.GenerateUserAuthClaims(users[0], userRoles);
+        string vehicleId = "879335f9-d671-46a0-bbe3-a8e2eb9089f9";
+
+        var rawToken = jwtService.GenerateJwtToken(claims);
+        string token = new JwtSecurityTokenHandler().WriteToken(rawToken);
+
+        ServiceRecordFormRequestModel recordToCreate = new ServiceRecordFormRequestModel()
+        {
+            Title = "Test",
+            Cost = 10,
+            Description = "Description",
+            Mileage = 1506,
+            PerformedOn = DateTime.Now,
+            VehicleId = vehicleId
+        };
+
+        var recordJson = JsonConvert.SerializeObject(recordToCreate);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "/ServiceRecords");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        request.Content = new StringContent(recordJson, Encoding.UTF8, "application/json");
+
+        //Act
+        var response = await client.SendAsync(request);
+
+
+        //Assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+    }
+
+
     [TearDown]
     public void TearDown()
     {
