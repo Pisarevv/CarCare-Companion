@@ -449,7 +449,41 @@ public class ServiceRecordsControllerTests
 
     }
 
-   
+    //Test the PATCH end point for editing a service record with invalid data
+    [Test]
+    public async Task PATCH_Edit_ReturnsStatusCode400_WhenInputData_IsInvalid()
+    {
+        //Assert 
+        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<Claim> claims = jwtService.GenerateUserAuthClaims(users[0], userRoles);
+        Vehicle userVehicle = Vehicles.Where(v => v.OwnerId == users[0].Id).First();
+        string serviceRecordToEditId = ServiceRecords.Where(sr => sr.OwnerId == users[0].Id && sr.VehicleId == userVehicle.Id).First().Id.ToString();
+
+        var rawToken = jwtService.GenerateJwtToken(claims);
+        string token = new JwtSecurityTokenHandler().WriteToken(rawToken);
+
+        ServiceRecordFormRequestModel editedRecord = new ServiceRecordFormRequestModel()
+        {
+            Title = "",
+            Cost = 10,
+            Description = "EditedDescription",
+            Mileage = 1506,
+            PerformedOn = DateTime.Now,
+            VehicleId = userVehicle.Id.ToString(),
+        };
+
+        var recordJson = JsonConvert.SerializeObject(editedRecord);
+
+        var request = new HttpRequestMessage(HttpMethod.Patch, $"/ServiceRecords/Edit/{serviceRecordToEditId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        request.Content = new StringContent(recordJson, Encoding.UTF8, "application/json");
+        //Act
+        var response = await client.SendAsync(request);
+
+        //Assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+    }
+
 
     [TearDown]
     public void TearDown()
