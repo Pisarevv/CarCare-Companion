@@ -531,7 +531,6 @@ public class ServiceRecordsControllerTests
 
         ICollection<string> userRoles = new HashSet<string>();
         ICollection<Claim> claims = new List<Claim>();
-        Vehicle userVehicle = Vehicles.Where(v => v.OwnerId == users[0].Id).First();
         string serviceRecordToEditId = ServiceRecords.Where(sr => sr.OwnerId == users[0].Id).First().Id.ToString();
 
         var rawToken = jwtService.GenerateJwtToken(claims);
@@ -544,7 +543,7 @@ public class ServiceRecordsControllerTests
             Description = "EditedDescription",
             Mileage = 1506,
             PerformedOn = DateTime.Now,
-            VehicleId = userVehicle.Id.ToString(),
+            VehicleId = vehicleId,
         };
 
         var recordJson = JsonConvert.SerializeObject(editedRecord);
