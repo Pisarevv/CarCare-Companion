@@ -401,6 +401,55 @@ public class ServiceRecordsControllerTests
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
     }
 
+    //Test the PATCH end point for editing a service record with valid data
+    [Test]
+    public async Task PATCH_Edit_ReturnsStatusCode200_AndEditedRecordData_WhenEditing_IsSuccessful()
+    {
+        //Assert 
+        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<Claim> claims = jwtService.GenerateUserAuthClaims(users[0], userRoles);
+        Vehicle userVehicle = Vehicles.Where(v => v.OwnerId == users[0].Id).First();
+        string serviceRecordToEditId = ServiceRecords.Where(sr => sr.OwnerId == users[0].Id && sr.VehicleId == userVehicle.Id).First().Id.ToString();
+
+        var rawToken = jwtService.GenerateJwtToken(claims);
+        string token = new JwtSecurityTokenHandler().WriteToken(rawToken);
+
+        ServiceRecordFormRequestModel editedRecord = new ServiceRecordFormRequestModel()
+        {
+            Title = "EditedTitle",
+            Cost = 10,
+            Description = "EditedDescription",
+            Mileage = 1506,
+            PerformedOn = DateTime.Now,
+            VehicleId = userVehicle.Id.ToString(),
+        };
+
+        var recordJson = JsonConvert.SerializeObject(editedRecord);
+
+        var request = new HttpRequestMessage(HttpMethod.Patch, $"/ServiceRecords/Edit/{serviceRecordToEditId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        request.Content = new StringContent(recordJson, Encoding.UTF8, "application/json");
+
+        //Act
+        var response = await client.SendAsync(request);
+
+        var data = await response.Content.ReadAsStringAsync();
+        ServiceRecordResponseModel responseData = JsonConvert.DeserializeObject<ServiceRecordResponseModel>(data);
+
+
+        ////Assert
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+        Assert.That(responseData.Title, Is.EqualTo(editedRecord.Title));
+        Assert.That(responseData.Cost, Is.EqualTo(editedRecord.Cost));
+        Assert.That(responseData.VehicleId, Is.EqualTo(editedRecord.VehicleId));
+        Assert.That(responseData.Description, Is.EqualTo(editedRecord.Description));
+        Assert.That(responseData.Mileage, Is.EqualTo(editedRecord.Mileage));
+        Assert.That(responseData.PerformedOn, Is.EqualTo(editedRecord.PerformedOn));
+
+    }
+
+   
 
     [TearDown]
     public void TearDown()
