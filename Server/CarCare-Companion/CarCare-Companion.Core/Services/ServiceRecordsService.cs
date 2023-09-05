@@ -161,6 +161,19 @@ public class ServiceRecordsService : IServiceRecordsService
     }
 
     /// <summary>
+    /// Retrieves all user service records as queryable
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>A queryable of service records</returns>
+    public async Task<IQueryable<ServiceRecord>> GetAllByUserIdForSearchAsync(string userId)
+    {
+
+        return repository.AllReadonly<ServiceRecord>()
+            .Where(sr => sr.IsDeleted == false && sr.OwnerId == Guid.Parse(userId))
+            .AsQueryable();
+    }
+
+    /// <summary>
     /// Retrieves a user service record with details needed for editing
     /// </summary>
     /// <param name="serviceRecordId">The service record identifier</param>

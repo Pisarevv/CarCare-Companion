@@ -1,6 +1,7 @@
 ﻿namespace CarCare_Companion.Core.Contracts;
 
 using CarCare_Companion.Core.Models.ServiceRecords;
+using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 public interface IServiceRecordsService
 {
@@ -18,6 +19,13 @@ public interface IServiceRecordsService
     /// <param name="userId">The user's ID.</param>
     /// <returns>A collection of ServiceRecordDetailsResponseModels.</returns>
     public Task<ICollection<ServiceRecordDetailsResponseModel>> GetAllByUserIdAsync(string userId);
+
+    /// <summary>
+    /// Retrieves all service records associated with a specific user ID  as Queryable asynchronously.
+    /// </summary>
+    /// <param name="userId">The user's ID</param>
+    /// <returns>A queryable of ServiceRecords</returns>
+    public Task<IQueryable<ServiceRecord>> GetAllByUserIdForSearchAsync(string userId);
 
     /// <summary>
     /// Edits an existing service record for a user asynchronously.
