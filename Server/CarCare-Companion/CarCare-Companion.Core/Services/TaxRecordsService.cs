@@ -66,6 +66,19 @@ public class TaxRecordsService : ITaxRecordsService
     }
 
     /// <summary>
+    /// Retrieves all user tax records as queryable
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>A queryable of tax records</returns>
+    public async Task<IQueryable<TaxRecord>> GetAllByUserIdForSearchAsync(string userId)
+    {
+
+        return repository.AllReadonly<TaxRecord>()
+            .Where(sr => sr.IsDeleted == false && sr.OwnerId == Guid.Parse(userId))
+            .AsQueryable();
+    }
+
+    /// <summary>
     /// Creates a new tax record
     /// </summary>
     /// <param name="model">The input model containing the tax record information</param>

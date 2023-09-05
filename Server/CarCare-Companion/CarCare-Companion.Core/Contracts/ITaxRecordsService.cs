@@ -1,6 +1,7 @@
 ﻿namespace CarCare_Companion.Core.Contracts;
 
 using CarCare_Companion.Core.Models.TaxRecords;
+using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 public interface ITaxRecordsService
 {
@@ -34,6 +35,14 @@ public interface ITaxRecordsService
     /// <param name="userId">The user's ID.</param>
     /// <returns>A collection of TaxRecordDetailsResponseModels.</returns>
     public Task<ICollection<TaxRecordDetailsResponseModel>> GetAllByUserIdAsync(string userId);
+
+    /// <summary>
+    /// Retrieves all user tax records as queryable
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>A queryable of tax records</returns>
+    public Task<IQueryable<TaxRecord>> GetAllByUserIdForSearchAsync(string userId);
+
 
     /// <summary>
     /// Checks if a specific tax record exists based on its ID asynchronously.
