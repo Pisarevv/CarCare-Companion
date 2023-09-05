@@ -2,6 +2,8 @@
 
 using CarCare_Companion.Core.Models.Trip;
 using CarCare_Companion.Core.Models.TripRecords;
+using CarCare_Companion.Infrastructure.Data.Common;
+using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 public interface ITripRecordsService
 {
@@ -57,6 +59,13 @@ public interface ITripRecordsService
     /// <param name="userId">The user's ID.</param>
     /// <returns>A collection of TripDetailsByUserResponseModels.</returns>
     public Task<ICollection<TripDetailsByUserResponseModel>> GetAllTripsByUsedIdAsync(string userId);
+
+    /// <summary>
+    /// Retrieves all user trip records as queryable
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>A queryable of trip records</returns>
+    public Task<IQueryable<TripRecord>> GetAllByUserIdForSearchAsync(string userId);
 
     /// <summary>
     /// Retrieves the most recent trip records for a user based on a specific count asynchronously.

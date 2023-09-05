@@ -180,6 +180,19 @@ public class TripRecordsService : ITripRecordsService
     }
 
     /// <summary>
+    /// Retrieves all user trip records as queryable
+    /// </summary>
+    /// <param name="userId">The user identifier</param>
+    /// <returns>A queryable of trip records</returns>
+    public async Task<IQueryable<TripRecord>> GetAllByUserIdForSearchAsync(string userId)
+    {
+
+        return repository.AllReadonly<TripRecord>()
+            .Where(sr => sr.IsDeleted == false && sr.OwnerId == Guid.Parse(userId))
+            .AsQueryable();
+    }
+
+    /// <summary>
     /// Checks if the user is the creator of the trip record
     /// </summary>
     /// <param name="userId">The user identifier</param>
