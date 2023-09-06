@@ -122,6 +122,7 @@ namespace CarCare_Companion.Api
             services.AddScoped<IMessagingService, MessagingService>();
             services.AddScoped<IJWTService, JWTService>();
             services.AddScoped<IRefreshTokenService,RefreshTokenService>();
+            services.AddScoped<ISearchService, SearchService>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
