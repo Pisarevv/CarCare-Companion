@@ -1,17 +1,18 @@
 ﻿namespace CarCare_Companion.Infrastructure.Data.Models.Records;
 
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
+using Microsoft.EntityFrameworkCore;
 
 using CarCare_Companion.Infrastructure.Data.Models.BaseModels;
 using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
+using CarCare_Companion.Infrastructure.Data.Models.Identity;
+using CarCare_Companion.Infrastructure.Data.Models.Contracts;
 
 using static CarCare_Companion.Common.ValidationConstants.TripRecord;
-using System.ComponentModel.DataAnnotations.Schema;
-using CarCare_Companion.Infrastructure.Data.Models.Identity;
 
-public class TripRecord : BaseDeletableModel<TripRecord>
+public class TripRecord : BaseDeletableModel<TripRecord>, IOptionalCostable
 {
     [Comment("The start destination of the trip")]
     [Required]
