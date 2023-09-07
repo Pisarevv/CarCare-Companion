@@ -9,10 +9,12 @@ using Models.BaseModels;
 using Models.Identity;
 using Models.Vehicle;
 
+using CarCare_Companion.Infrastructure.Data.Models.Contracts;
+
 using static CarCare_Companion.Common.ValidationConstants.TaxRecord;
 
 
-public class TaxRecord : BaseDeletableModel<TaxRecord>
+public class TaxRecord : BaseDeletableModel<TaxRecord> , ICostable
 {
     [Comment("The title of the record")]
     [Required]

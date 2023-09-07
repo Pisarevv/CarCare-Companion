@@ -8,9 +8,12 @@ using CarCare_Companion.Infrastructure.Data.Models.BaseModels;
 using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
 
+using CarCare_Companion.Infrastructure.Data.Models.Contracts;
+
 using static CarCare_Companion.Common.ValidationConstants.ServiceRecord;
 
-public class ServiceRecord : BaseDeletableModel<ServiceRecord>
+
+public class ServiceRecord : BaseDeletableModel<ServiceRecord>, ICostable
 {
     [Comment("The title of the record")]
     [Required]
