@@ -23,6 +23,7 @@ using CarCare_Companion.Infrastructure.Data.Seeding;
 using CarCare_Companion.Api.Extensions.Quartz;
 using CarCare_Companion.Api.Extensions.Mail;
 using CarCare_Companion.Core.Messaging;
+using System.Text.Json.Serialization;
 
 namespace CarCare_Companion.Api
 {
@@ -143,7 +144,10 @@ namespace CarCare_Companion.Api
             });
 
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            }); ;
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
