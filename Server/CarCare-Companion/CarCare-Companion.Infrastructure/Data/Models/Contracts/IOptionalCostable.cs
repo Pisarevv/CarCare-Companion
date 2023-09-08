@@ -1,6 +1,6 @@
 ﻿namespace CarCare_Companion.Infrastructure.Data.Models.Contracts;
 
-public interface IOptionCostable
+public interface IOptionalCostable
 {
     decimal? Cost { get; set; }
 }
