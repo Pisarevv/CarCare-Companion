@@ -68,6 +68,14 @@ public class SearchController : BaseController
                 Title = StatusResponses.GenericError
             });
         }
+        catch (InvalidProgramException ex)
+        {
+            logger.LogError(ex.Message);
+            return StatusCode(400, new ProblemDetails
+            {
+                Title = StatusResponses.GenericError
+            });
+        }
         catch (Exception ex)
         {
             logger.LogInformation(ex.Message);
@@ -76,7 +84,5 @@ public class SearchController : BaseController
                 Title = StatusResponses.BadRequest
             });
         }
-
-
     }
 }
