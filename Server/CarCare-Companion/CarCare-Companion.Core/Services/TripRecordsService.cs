@@ -184,7 +184,7 @@ public class TripRecordsService : ITripRecordsService
     /// </summary>
     /// <param name="userId">The user identifier</param>
     /// <returns>A queryable of trip records</returns>
-    public async Task<IQueryable<TripRecord>> GetAllByUserIdForSearchAsync(string userId)
+    public async Task<IQueryable<TripRecord>> GetAllByUserIdAsQueryableAsync(string userId)
     {
 
         return repository.AllReadonly<TripRecord>()

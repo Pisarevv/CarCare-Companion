@@ -70,7 +70,7 @@ public class TaxRecordsService : ITaxRecordsService
     /// </summary>
     /// <param name="userId">The user identifier</param>
     /// <returns>A queryable of tax records</returns>
-    public async Task<IQueryable<TaxRecord>> GetAllByUserIdForSearchAsync(string userId)
+    public async Task<IQueryable<TaxRecord>> GetAllByUserIdAsQueryableAsync(string userId)
     {
 
         return repository.AllReadonly<TaxRecord>()

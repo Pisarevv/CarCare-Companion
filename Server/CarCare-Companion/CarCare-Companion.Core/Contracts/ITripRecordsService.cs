@@ -65,7 +65,7 @@ public interface ITripRecordsService
     /// </summary>
     /// <param name="userId">The user identifier</param>
     /// <returns>A queryable of trip records</returns>
-    public Task<IQueryable<TripRecord>> GetAllByUserIdForSearchAsync(string userId);
+    public Task<IQueryable<TripRecord>> GetAllByUserIdAsQueryableAsync(string userId);
 
     /// <summary>
     /// Retrieves the most recent trip records for a user based on a specific count asynchronously.

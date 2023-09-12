@@ -25,7 +25,7 @@ public interface IServiceRecordsService
     /// </summary>
     /// <param name="userId">The user's ID</param>
     /// <returns>A queryable of ServiceRecords</returns>
-    public Task<IQueryable<ServiceRecord>> GetAllByUserIdForSearchAsync(string userId);
+    public Task<IQueryable<ServiceRecord>> GetAllByUserIdAsQueryableAsync(string userId);
 
     /// <summary>
     /// Edits an existing service record for a user asynchronously.

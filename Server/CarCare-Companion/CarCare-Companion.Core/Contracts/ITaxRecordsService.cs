@@ -41,7 +41,7 @@ public interface ITaxRecordsService
     /// </summary>
     /// <param name="userId">The user identifier</param>
     /// <returns>A queryable of tax records</returns>
-    public Task<IQueryable<TaxRecord>> GetAllByUserIdForSearchAsync(string userId);
+    public Task<IQueryable<TaxRecord>> GetAllByUserIdAsQueryableAsync(string userId);
 
 
     /// <summary>
