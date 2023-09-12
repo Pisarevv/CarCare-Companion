@@ -11,7 +11,7 @@ using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
-using CarCare_Companion.Core.Contracts;
+
 
 [TestFixture]
 public class ServiceRecordsServiceTests
@@ -708,10 +708,14 @@ public class ServiceRecordsServiceTests
 
     }
 
+    /// <summary>
+    /// Tests the retrieving of user records as queryable
+    /// </summary>
+    /// <returns></returns>
     [Test]
     public async Task GetAllByUserIdForSearchAsync_RetrievesUserRecords_AsQueryable()
     {
-        //Arange
+        //Arrange
         Vehicle vehicle = new Vehicle
         {
             Id = Guid.Parse(vehicleId),
@@ -773,7 +777,10 @@ public class ServiceRecordsServiceTests
         await repository.SaveChangesAsync();
 
         //Act
-        var result = await serviceRecordsService.Get
+        var result = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
 
+        //Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(result.Count(), serviceRecords.Count());
     }
 }
