@@ -2,7 +2,6 @@
 
 using CarCare_Companion.Core.Models.Trip;
 using CarCare_Companion.Core.Models.TripRecords;
-using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 public interface ITripRecordsService
@@ -96,7 +95,7 @@ public interface ITripRecordsService
     /// <param name="currentPage">The page number to retrieve.</param>
     /// <param name="recordPerPage">The number of records per page.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of TripDetailsByUserResponseModel for the specified page.</returns>
-    public Task<List<TripDetailsByUserResponseModel>> RetrieveTripRecordsByPage(IQueryable<TripRecord> tripRecords, int currentPage, int recordPerPage);
+    public Task<List<TripDetailsByUserResponseModel>> RetrieveTripRecordsByPageAsync(IQueryable<TripRecord> tripRecords, int currentPage, int recordPerPage);
 
 
 }

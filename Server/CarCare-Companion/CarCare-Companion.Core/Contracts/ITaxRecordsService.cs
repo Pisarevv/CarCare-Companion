@@ -101,7 +101,7 @@ public interface ITaxRecordsService
     /// <param name="currentPage">The page number to retrieve.</param>
     /// <param name="recordPerPage">The number of records per page.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of TaxRecordDetailsResponseModel for the specified page.</returns>
-    public Task<List<TaxRecordDetailsResponseModel>> RetrieveTaxRecordsByPage(IQueryable<TaxRecord> taxRecords, int currentPage, int recordPerPage);
+    public Task<List<TaxRecordDetailsResponseModel>> RetrieveTaxRecordsByPageAsync(IQueryable<TaxRecord> taxRecords, int currentPage, int recordPerPage);
 
 }
 

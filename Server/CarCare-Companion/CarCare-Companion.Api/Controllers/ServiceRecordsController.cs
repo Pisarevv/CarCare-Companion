@@ -414,7 +414,7 @@ public class ServiceRecordsController : BaseController
                     Title = StatusResponses.NoPermission
                 });
             }
-            ICollection<ServiceRecordBasicInformationResponseModel> recentVehicleServiceRecords = await serviceRecordsService.GetRecentByVehicleId(vehicleId, count);
+            ICollection<ServiceRecordBasicInformationResponseModel> recentVehicleServiceRecords = await serviceRecordsService.GetRecentByVehicleIdAsync(vehicleId, count);
             return StatusCode(200, recentVehicleServiceRecords);
 
         }

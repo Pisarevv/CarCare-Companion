@@ -316,7 +316,7 @@ public class ServiceRecordsService : IServiceRecordsService
     /// <param name="vehicleId">The vehicle identifier</param>
     /// <param name="count">The amount of record to be retrieved</param>
     /// <returns>A collection of service records for a vehicle</returns>
-    public async Task<ICollection<ServiceRecordBasicInformationResponseModel>> GetRecentByVehicleId(string vehicleId, int count)
+    public async Task<ICollection<ServiceRecordBasicInformationResponseModel>> GetRecentByVehicleIdAsync(string vehicleId, int count)
     {
 
          return await repository.AllReadonly<ServiceRecord>()
@@ -344,7 +344,7 @@ public class ServiceRecordsService : IServiceRecordsService
     /// <param name="currentPage">The page number to retrieve.</param>
     /// <param name="recordPerPage">The number of records per page.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of ServiceRecordDetailsResponseModel for the specified page.</returns>
-    public async Task<List<ServiceRecordDetailsResponseModel>> RetrieveServiceRecordsByPage(IQueryable<ServiceRecord> serviceRecords, int currentPage, int recordPerPage)
+    public async Task<List<ServiceRecordDetailsResponseModel>> RetrieveServiceRecordsByPageAsync(IQueryable<ServiceRecord> serviceRecords, int currentPage, int recordPerPage)
     {
         return await serviceRecords
                      .Skip((currentPage - 1) * recordPerPage)
