@@ -93,6 +93,16 @@ public interface ITaxRecordsService
     /// </summary>
     /// <returns>A collection of UpcomingUserTaxResponseModels.</returns>
     public Task<ICollection<UpcomingUserTaxResponseModel>> GetUpcomingUsersTaxesAsync();
+
+    /// <summary>
+    /// Retrieves a list of tax records for a specified page.
+    /// </summary>
+    /// <param name="taxRecords">The complete set of tax records to paginate.</param>
+    /// <param name="currentPage">The page number to retrieve.</param>
+    /// <param name="recordPerPage">The number of records per page.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of TaxRecordDetailsResponseModel for the specified page.</returns>
+    public Task<List<TaxRecordDetailsResponseModel>> RetrieveTaxRecordsByPage(IQueryable<TaxRecord> taxRecords, int currentPage, int recordPerPage);
+
 }
 
 
