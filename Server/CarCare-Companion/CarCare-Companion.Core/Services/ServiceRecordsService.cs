@@ -337,4 +337,30 @@ public class ServiceRecordsService : IServiceRecordsService
                .ToListAsync();
 
     }
+
+    /// <summary>
+    /// Retrieves a list of service records for a specified page.
+    /// </summary>
+    /// <param name="serviceRecords">The complete set of service records to paginate.</param>
+    /// <param name="currentPage">The page number to retrieve.</param>
+    /// <param name="recordPerPage">The number of records per page.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of ServiceRecordDetailsResponseModel for the specified page.</returns>
+    public async Task<List<ServiceRecordDetailsResponseModel>> RetrieveServiceRecordsByPage(IQueryable<ServiceRecord> serviceRecords, int currentPage, int recordPerPage)
+    {
+        return await serviceRecords
+                     .Skip((currentPage - 1) * recordPerPage)
+                     .Take(recordPerPage)
+                     .Select(sr => new ServiceRecordDetailsResponseModel
+                     {
+                         Id = sr.Id.ToString(),
+                         Title = sr.Title,
+                         Description = sr.Description,
+                         Cost = sr.Cost,
+                         Mileage = sr.Mileage,
+                         PerformedOn = sr.PerformedOn,
+                         VehicleMake = sr.Vehicle.Make,
+                         VehicleModel = sr.Vehicle.Model
+                     })
+                     .ToListAsync();
+    }
 }
