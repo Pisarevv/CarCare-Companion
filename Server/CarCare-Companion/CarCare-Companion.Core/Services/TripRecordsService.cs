@@ -312,5 +312,31 @@ public class TripRecordsService : ITripRecordsService
         return fuelPrice * Convert.ToDecimal(usedFuel);
     }
 
-    
+    /// <summary>
+    /// Retrieves a list of trip records for a specified page.
+    /// </summary>
+    /// <param name="tripRecords">The complete set of trip records to paginate.</param>
+    /// <param name="currentPage">The page number to retrieve.</param>
+    /// <param name="recordPerPage">The number of records per page.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of TripDetailsByUserResponseModel for the specified page.</returns>
+    public async Task<List<TripDetailsByUserResponseModel>> RetrieveTripRecordsByPage(IQueryable<TripRecord> tripRecords, int currentPage, int recordPerPage)
+    {
+        return await tripRecords
+                     .Skip((currentPage - 1) * recordPerPage)
+                     .Take(recordPerPage)
+                     .Select(t => new TripDetailsByUserResponseModel
+                     {
+                         Id = t.Id.ToString(),
+                         StartDestination = t.StartDestination,
+                         EndDestination = t.EndDestination,
+                         MileageTravelled = t.MileageTravelled,
+                         FuelPrice = t.FuelPrice,
+                         UsedFuel = t.UsedFuel,
+                         VehicleMake = t.Vehicle.Make,
+                         VehicleModel = t.Vehicle.Model,
+                         DateCreated = t.CreatedOn,
+                         TripCost = t.Cost
+                     })
+                     .ToListAsync();
+    }
 }

@@ -88,5 +88,16 @@ public interface ITripRecordsService
     /// <param name="userId">The user's ID.</param>
     /// <returns>The total cost of all trip records for the user.</returns>
     public Task<decimal?> GetAllUserTripsCostAsync(string userId);
+
+    /// <summary>
+    /// Retrieves a list of trip records for a specified page.
+    /// </summary>
+    /// <param name="tripRecords">The complete set of trip records to paginate.</param>
+    /// <param name="currentPage">The page number to retrieve.</param>
+    /// <param name="recordPerPage">The number of records per page.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of TripDetailsByUserResponseModel for the specified page.</returns>
+    public Task<List<TripDetailsByUserResponseModel>> RetrieveTripRecordsByPage(IQueryable<TripRecord> tripRecords, int currentPage, int recordPerPage);
+
+
 }
 
