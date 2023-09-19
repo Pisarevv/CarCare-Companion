@@ -140,7 +140,7 @@ public class ServiceRecordsServiceTests
             Cost = 1560,
             VehicleId = vehicleId,
             Mileage = 17000,
-            PerformedOn= DateTime.UtcNow.AddDays(1),
+            PerformedOn = DateTime.UtcNow.AddDays(1),
         };
 
         //Act
@@ -535,7 +535,7 @@ public class ServiceRecordsServiceTests
                 Title = "Test345",
                 VehicleMake = "VW",
                 VehicleModel = "Passat TDI",
-                PerformedOn = DateTime.UtcNow,  
+                PerformedOn = DateTime.UtcNow,
             }
         };
 
@@ -695,7 +695,7 @@ public class ServiceRecordsServiceTests
         await repository.SaveChangesAsync();
 
         //Act
-        var result =(List<ServiceRecordBasicInformationResponseModel>) await serviceRecordsService.GetRecentByVehicleIdAsync(vehicleId, expectedCount);
+        var result = (List<ServiceRecordBasicInformationResponseModel>)await serviceRecordsService.GetRecentByVehicleIdAsync(vehicleId, expectedCount);
 
         //Assert
         Assert.AreEqual(expectedCount, result.Count);
@@ -963,4 +963,155 @@ public class ServiceRecordsServiceTests
         Assert.IsEmpty(result);
     }
 
+    /// Tests the retrieving of user service records by page when there are service records but current page is out of bounds.
+    [Test]
+    public async Task RetrieveServiceRecordsByPageAsync_CurrentPageOutOfBounds_ReturnsEmptyList()
+    {
+        //Arrange
+        Vehicle vehicle = new Vehicle
+        {
+            Id = Guid.Parse(vehicleId),
+            Make = "BMW",
+            Model = "M5 CS",
+            Year = 2022,
+            FuelTypeId = 1,
+            VehicleTypeId = 1,
+            Mileage = 12000,
+            OwnerId = Guid.Parse(userId),
+            CreatedOn = DateTime.UtcNow,
+            VehicleImageKey = Guid.NewGuid()
+        };
+
+        await repository.AddAsync(vehicle);
+        await repository.SaveChangesAsync();
+
+        List<ServiceRecord> serviceRecords = new List<ServiceRecord>()
+        {
+             new ServiceRecord
+            {
+               Id = Guid.NewGuid(),
+               Title = "Test1",
+               Description = "Test1",
+               Cost = 150,
+               Mileage = 1500,
+               VehicleId = Guid.Parse(vehicleId),
+               OwnerId = Guid.Parse(userId),
+               PerformedOn = DateTime.UtcNow,
+               CreatedOn = DateTime.UtcNow
+            },
+             new ServiceRecord
+            {
+               Id = Guid.NewGuid(),
+               Title = "Test2",
+               Description = "Test2",
+               Cost = 1530,
+               Mileage = 15005,
+               VehicleId = Guid.Parse(vehicleId),
+               OwnerId = Guid.Parse(userId),
+               PerformedOn = DateTime.UtcNow.AddDays(-1),
+               CreatedOn = DateTime.UtcNow.AddDays(-1)
+            },
+             new ServiceRecord
+            {
+               Id = Guid.NewGuid(),
+               Title = "Test3",
+               Description = "Test3",
+               Cost = 1530,
+               Mileage = 15005,
+               VehicleId = Guid.Parse(vehicleId),
+               OwnerId = Guid.Parse(userId),
+               PerformedOn = DateTime.UtcNow.AddDays(-1),
+               CreatedOn = DateTime.UtcNow.AddDays(-1)
+            },
+             new ServiceRecord
+            {
+               Id = Guid.NewGuid(),
+               Title = "Test4",
+               Description = "Test4",
+               Cost = 1530,
+               Mileage = 15005,
+               VehicleId = Guid.Parse(vehicleId),
+               OwnerId = Guid.Parse(userId),
+               PerformedOn = DateTime.UtcNow.AddDays(-2),
+               CreatedOn = DateTime.UtcNow.AddDays(-2)
+            },
+              new ServiceRecord
+            {
+               Id = Guid.NewGuid(),
+               Title = "Test5",
+               Description = "Test5",
+               Cost = 150,
+               Mileage = 1500,
+               VehicleId = Guid.Parse(vehicleId),
+               OwnerId = Guid.Parse(userId),
+               PerformedOn = DateTime.UtcNow,
+               CreatedOn = DateTime.UtcNow
+            },
+             new ServiceRecord
+            {
+               Id = Guid.NewGuid(),
+               Title = "Test6",
+               Description = "Test6",
+               Cost = 1530,
+               Mileage = 15005,
+               VehicleId = Guid.Parse(vehicleId),
+               OwnerId = Guid.Parse(userId),
+               PerformedOn = DateTime.UtcNow.AddDays(-1),
+               CreatedOn = DateTime.UtcNow.AddDays(-1)
+            },
+             new ServiceRecord
+            {
+               Id = Guid.NewGuid(),
+               Title = "Test7",
+               Description = "Test7",
+               Cost = 1530,
+               Mileage = 15005,
+               VehicleId = Guid.Parse(vehicleId),
+               OwnerId = Guid.Parse(userId),
+               PerformedOn = DateTime.UtcNow.AddDays(-2),
+               CreatedOn = DateTime.UtcNow.AddDays(-2)
+            },
+             new ServiceRecord
+            {
+               Id = Guid.NewGuid(),
+               Title = "Test9",
+               Description = "Test9",
+               Cost = 1530,
+               Mileage = 15005,
+               VehicleId = Guid.Parse(vehicleId),
+               OwnerId = Guid.Parse(userId),
+               PerformedOn = DateTime.UtcNow.AddDays(-1),
+               CreatedOn = DateTime.UtcNow.AddDays(-1)
+            },
+             new ServiceRecord
+            {
+               Id = Guid.NewGuid(),
+               Title = "Test10",
+               Description = "Test10",
+               Cost = 1530,
+               Mileage = 15005,
+               VehicleId = Guid.Parse(vehicleId),
+               OwnerId = Guid.Parse(userId),
+               PerformedOn = DateTime.UtcNow.AddDays(-1),
+               CreatedOn = DateTime.UtcNow.AddDays(-1)
+            },
+
+        };
+
+        await repository.AddRangeAsync(serviceRecords);
+        await repository.SaveChangesAsync();
+
+        var currentPage = 5;
+        var recordPerPage = 3;
+
+
+        // Act
+        var quaryableRecords = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+        var result = await serviceRecordsService.RetrieveServiceRecordsByPageAsync(quaryableRecords, currentPage, recordPerPage);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsEmpty(result);
+
+    }
 }
