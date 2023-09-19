@@ -720,65 +720,7 @@ public class ServiceRecordsServiceTests
     public async Task GetAllByUserIdForSearchAsync_RetrievesUserRecords_AsQueryable()
     {
         //Arrange
-        Vehicle vehicle = new Vehicle
-        {
-            Id = Guid.Parse(vehicleId),
-            Make = "BMW",
-            Model = "M5 CS",
-            Year = 2022,
-            FuelTypeId = 1,
-            VehicleTypeId = 1,
-            Mileage = 12000,
-            OwnerId = Guid.Parse(userId),
-            CreatedOn = DateTime.UtcNow,
-            VehicleImageKey = Guid.NewGuid()
-        };
-
-        await repository.AddAsync(vehicle);
-        await repository.SaveChangesAsync();
-
-        List<ServiceRecord> serviceRecords = new List<ServiceRecord>()
-        {
-             new ServiceRecord
-            {
-               Id = Guid.NewGuid(),
-               Title = "Test1",
-               Description = "Test1",
-               Cost = 150,
-               Mileage = 1500,
-               VehicleId = Guid.Parse(vehicleId),
-               OwnerId = Guid.Parse(userId),
-               PerformedOn = DateTime.UtcNow,
-               CreatedOn = DateTime.UtcNow
-            },
-             new ServiceRecord
-            {
-               Id = Guid.NewGuid(),
-               Title = "Test2",
-               Description = "Test2",
-               Cost = 1530,
-               Mileage = 15005,
-               VehicleId = Guid.Parse(vehicleId),
-               OwnerId = Guid.Parse(userId),
-               PerformedOn = DateTime.UtcNow.AddDays(-1),
-               CreatedOn = DateTime.UtcNow.AddDays(-1)
-            },
-             new ServiceRecord
-            {
-               Id = Guid.NewGuid(),
-               Title = "Test3",
-               Description = "Test3",
-               Cost = 1530,
-               Mileage = 15005,
-               VehicleId = Guid.Parse(vehicleId),
-               OwnerId = Guid.Parse(userId),
-               PerformedOn = DateTime.UtcNow.AddDays(-2),
-               CreatedOn = DateTime.UtcNow.AddDays(-2)
-            }
-        };
-
-        await repository.AddRangeAsync(serviceRecords);
-        await repository.SaveChangesAsync();
+        ICollection<ServiceRecord> serviceRecords = await GenerateServiceRecords();
 
         //Act
         var result = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
@@ -797,138 +739,7 @@ public class ServiceRecordsServiceTests
     public async Task RetrieveServiceRecordsByPageAsync_RetrievesCorrectAmountOfRecords()
     {
         //Arrange
-        Vehicle vehicle = new Vehicle
-        {
-            Id = Guid.Parse(vehicleId),
-            Make = "BMW",
-            Model = "M5 CS",
-            Year = 2022,
-            FuelTypeId = 1,
-            VehicleTypeId = 1,
-            Mileage = 12000,
-            OwnerId = Guid.Parse(userId),
-            CreatedOn = DateTime.UtcNow,
-            VehicleImageKey = Guid.NewGuid()
-        };
-
-        await repository.AddAsync(vehicle);
-        await repository.SaveChangesAsync();
-
-        List<ServiceRecord> serviceRecords = new List<ServiceRecord>()
-        {
-             new ServiceRecord
-            {
-               Id = Guid.NewGuid(),
-               Title = "Test1",
-               Description = "Test1",
-               Cost = 150,
-               Mileage = 1500,
-               VehicleId = Guid.Parse(vehicleId),
-               OwnerId = Guid.Parse(userId),
-               PerformedOn = DateTime.UtcNow,
-               CreatedOn = DateTime.UtcNow
-            },
-             new ServiceRecord
-            {
-               Id = Guid.NewGuid(),
-               Title = "Test2",
-               Description = "Test2",
-               Cost = 1530,
-               Mileage = 15005,
-               VehicleId = Guid.Parse(vehicleId),
-               OwnerId = Guid.Parse(userId),
-               PerformedOn = DateTime.UtcNow.AddDays(-1),
-               CreatedOn = DateTime.UtcNow.AddDays(-1)
-            },
-             new ServiceRecord
-            {
-               Id = Guid.NewGuid(),
-               Title = "Test3",
-               Description = "Test3",
-               Cost = 1530,
-               Mileage = 15005,
-               VehicleId = Guid.Parse(vehicleId),
-               OwnerId = Guid.Parse(userId),
-               PerformedOn = DateTime.UtcNow.AddDays(-1),
-               CreatedOn = DateTime.UtcNow.AddDays(-1)
-            },
-             new ServiceRecord
-            {
-               Id = Guid.NewGuid(),
-               Title = "Test4",
-               Description = "Test4",
-               Cost = 1530,
-               Mileage = 15005,
-               VehicleId = Guid.Parse(vehicleId),
-               OwnerId = Guid.Parse(userId),
-               PerformedOn = DateTime.UtcNow.AddDays(-2),
-               CreatedOn = DateTime.UtcNow.AddDays(-2)
-            },
-              new ServiceRecord
-            {
-               Id = Guid.NewGuid(),
-               Title = "Test5",
-               Description = "Test5",
-               Cost = 150,
-               Mileage = 1500,
-               VehicleId = Guid.Parse(vehicleId),
-               OwnerId = Guid.Parse(userId),
-               PerformedOn = DateTime.UtcNow,
-               CreatedOn = DateTime.UtcNow
-            },
-             new ServiceRecord
-            {
-               Id = Guid.NewGuid(),
-               Title = "Test6",
-               Description = "Test6",
-               Cost = 1530,
-               Mileage = 15005,
-               VehicleId = Guid.Parse(vehicleId),
-               OwnerId = Guid.Parse(userId),
-               PerformedOn = DateTime.UtcNow.AddDays(-1),
-               CreatedOn = DateTime.UtcNow.AddDays(-1)
-            },
-             new ServiceRecord
-            {
-               Id = Guid.NewGuid(),
-               Title = "Test7",
-               Description = "Test7",
-               Cost = 1530,
-               Mileage = 15005,
-               VehicleId = Guid.Parse(vehicleId),
-               OwnerId = Guid.Parse(userId),
-               PerformedOn = DateTime.UtcNow.AddDays(-2),
-               CreatedOn = DateTime.UtcNow.AddDays(-2)
-            },
-             new ServiceRecord
-            {
-               Id = Guid.NewGuid(),
-               Title = "Test9",
-               Description = "Test9",
-               Cost = 1530,
-               Mileage = 15005,
-               VehicleId = Guid.Parse(vehicleId),
-               OwnerId = Guid.Parse(userId),
-               PerformedOn = DateTime.UtcNow.AddDays(-1),
-               CreatedOn = DateTime.UtcNow.AddDays(-1)
-            },
-             new ServiceRecord
-            {
-               Id = Guid.NewGuid(),
-               Title = "Test10",
-               Description = "Test10",
-               Cost = 1530,
-               Mileage = 15005,
-               VehicleId = Guid.Parse(vehicleId),
-               OwnerId = Guid.Parse(userId),
-               PerformedOn = DateTime.UtcNow.AddDays(-1),
-               CreatedOn = DateTime.UtcNow.AddDays(-1)
-            },
-
-        };
-
-        await repository.AddRangeAsync(serviceRecords);
-        await repository.SaveChangesAsync();
+        ICollection<ServiceRecord> serviceRecords = await GenerateServiceRecords();
 
         var currentPage = 2;
         var recordPerPage = 3;
@@ -968,6 +779,29 @@ public class ServiceRecordsServiceTests
     public async Task RetrieveServiceRecordsByPageAsync_CurrentPageOutOfBounds_ReturnsEmptyList()
     {
         //Arrange
+        await GenerateServiceRecords();
+
+        var currentPage = 5;
+        var recordPerPage = 3;
+
+
+        // Act
+        var quaryableRecords = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+        var result = await serviceRecordsService.RetrieveServiceRecordsByPageAsync(quaryableRecords, currentPage, recordPerPage);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsEmpty(result);
+
+    }
+
+
+    /// <summary>
+    /// Generates service records in the database.
+    /// </summary>
+    /// <returns>A collection of service records</returns>
+    private async Task<ICollection<ServiceRecord>> GenerateServiceRecords()
+    {
         Vehicle vehicle = new Vehicle
         {
             Id = Guid.Parse(vehicleId),
@@ -1101,17 +935,6 @@ public class ServiceRecordsServiceTests
         await repository.AddRangeAsync(serviceRecords);
         await repository.SaveChangesAsync();
 
-        var currentPage = 5;
-        var recordPerPage = 3;
-
-
-        // Act
-        var quaryableRecords = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
-        var result = await serviceRecordsService.RetrieveServiceRecordsByPageAsync(quaryableRecords, currentPage, recordPerPage);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.IsEmpty(result);
-
+        return serviceRecords;
     }
 }
