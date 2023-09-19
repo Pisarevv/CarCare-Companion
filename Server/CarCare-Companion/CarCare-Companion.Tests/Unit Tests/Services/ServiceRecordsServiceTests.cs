@@ -1,5 +1,7 @@
 ﻿namespace CarCare_Companion.Tests.Unit_Tests.Services;
 
+using System.Linq;
+using System.Collections.Generic;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -12,11 +14,8 @@ using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
-using CarCare_Companion.Core.Contracts;
-using System.Linq;
-using CarCare_Companion.Tests.Unit_Tests.CustomTestClasses;
-using System.Collections.Generic;
-using System.Runtime.Intrinsics.X86;
+
+
 
 [TestFixture]
 public class ServiceRecordsServiceTests
@@ -24,7 +23,6 @@ public class ServiceRecordsServiceTests
     private IRepository repository;
     private ServiceRecordsService serviceRecordsService;
     private Mock<IMemoryCache> mockMemoryCache;
-    private Mock<IServiceRecordsService> mockServiceRecordsService;
     private CarCareCompanionDbContext applicationDbContext;
 
 
@@ -938,14 +936,31 @@ public class ServiceRecordsServiceTests
 
         //Act
         var quaryableRecords = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
-
         var result = await serviceRecordsService.RetrieveServiceRecordsByPageAsync(quaryableRecords, currentPage, recordPerPage);
 
         //Assert
         Assert.NotNull(result);
-        Assert.AreEqual(3, result.Count);
-        Assert.AreEqual("Test4", result[0].Title);
-        Assert.AreEqual("Test5", result[1].Title);
-        Assert.AreEqual("Test6", result[2].Title);
+        Assert.AreEqual(expectedRecords.Count, result.Count);
+        Assert.AreEqual(expectedRecords[0].Title, result[0].Title);
+        Assert.AreEqual(expectedRecords[1].Title, result[1].Title);
+        Assert.AreEqual(expectedRecords[2].Title, result[2].Title);
     }
+
+    /// Tests the retrieving of user service records by page when there are no service records, currentPage and recordPerPage parameters are valid.
+    [Test]
+    public async Task RetrieveServiceRecordsByPageAsync_EmptyList_ReturnsEmptyList()
+    {
+        // Arrange
+        var currentPage = 2;
+        var recordPerPage = 3;
+
+        // Act
+        var quaryableRecords = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+        var result = await serviceRecordsService.RetrieveServiceRecordsByPageAsync(quaryableRecords, currentPage, recordPerPage);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsEmpty(result);
+    }
+
 }
