@@ -13,7 +13,7 @@ public class AllRecordsQueryModel
         this.TripRecords = new List<TripDetailsByUserResponseModel>();
         this.ServiceRecords = new List<ServiceRecordDetailsResponseModel>();
     }
-    public const int RecordsPerPage = 10;
+    public const int RecordsPerPage = 9;
 
     public int CurrentPage { get; set; } = 1;
 
