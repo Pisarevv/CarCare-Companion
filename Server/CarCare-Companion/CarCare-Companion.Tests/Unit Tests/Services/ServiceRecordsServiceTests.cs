@@ -796,6 +796,13 @@ public class ServiceRecordsServiceTests
     }
 
 
+    [TearDown]
+    public void TearDown()
+    {
+        applicationDbContext.Dispose();
+    }
+
+
     /// <summary>
     /// Generates service records in the database.
     /// </summary>
