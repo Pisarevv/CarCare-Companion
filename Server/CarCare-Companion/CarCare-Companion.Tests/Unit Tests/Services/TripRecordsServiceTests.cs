@@ -25,6 +25,11 @@ public class TripRecordsServiceTests
     private Mock<IMemoryCache> mockMemoryCache;
     private CarCareCompanionDbContext applicationDbContext;
 
+    //Identifiers
+    string tripId = "adc05780-8fa7-4e53-99b5-93c31c26f6ec";
+    string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
+    string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
+
     [SetUp]
     public void Setup()
     {
@@ -55,9 +60,6 @@ public class TripRecordsServiceTests
     public async Task CreateAsync_ShouldAddANewTrip()
     {
         //Arrange
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
-        string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
-
         TripFormRequestModel tripToCreate = new TripFormRequestModel()
         {
             StartDestination = "Test",
@@ -88,10 +90,6 @@ public class TripRecordsServiceTests
     public async Task EditAsync_WhenCalled_EditsAVehicle()
     {
         //Arrange
-        string tripId = "adc05780-8fa7-4e53-99b5-93c31c26f6ec";
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
-        string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
-
         TripRecord trip = new TripRecord()
         {
             Id = Guid.Parse(tripId),
@@ -138,10 +136,6 @@ public class TripRecordsServiceTests
     public async Task DeleteAsync_ShouldDeleteAEntity()
     {
         //Arrange
-        string tripId = "adc05780-8fa7-4e53-99b5-93c31c26f6ec";
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
-        string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
-
         TripRecord trip = new TripRecord()
         {
             Id = Guid.Parse(tripId),
@@ -174,10 +168,6 @@ public class TripRecordsServiceTests
     public async Task DoesTripExistByIdAsync_ShouldReturnTrue_WhenTripExists()
     {
         //Arrange
-        string tripId = "adc05780-8fa7-4e53-99b5-93c31c26f6ec";
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
-        string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
-
         TripRecord trip = new TripRecord()
         {
             Id = Guid.Parse(tripId),
@@ -224,9 +214,6 @@ public class TripRecordsServiceTests
     public async Task GetAllTripsByUsedIdAsync_ReturnsDataFromCache_IfPresent()
     {
         //Arrange
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
-        string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
-
         object testData = new List<TripDetailsByUserResponseModel>()
         {
             new TripDetailsByUserResponseModel() {
@@ -274,9 +261,6 @@ public class TripRecordsServiceTests
     public async Task GetAllTripsByUsedIdAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
         //Arrange
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
-        string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
-
         Vehicle vehicle = new Vehicle()
         {
             Id = Guid.Parse(vehicleId),
@@ -329,10 +313,6 @@ public class TripRecordsServiceTests
     public async Task IsUserCreatorOfTripAsync_ShouldReturnTrue_WhenUserIsCreator()
     {
         //Arrange
-        string tripId = "adc05780-8fa7-4e53-99b5-93c31c26f6ec";
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
-        string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
-
         TripRecord trip = new TripRecord()
         {
             Id = Guid.Parse(tripId),
@@ -363,9 +343,6 @@ public class TripRecordsServiceTests
     public async Task IsUserCreatorOfTripAsync_ShouldReturnFalse_WhenUserIsNotCreator()
     {
         //Arrange
-        string tripId = "adc05780-8fa7-4e53-99b5-93c31c26f6ec";
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
-        string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
         string otherUserId = "aaaa5780-8fa7-4e53-99b5-93c31c26f6ec";
 
         TripRecord trip = new TripRecord()
@@ -398,11 +375,6 @@ public class TripRecordsServiceTests
     public async Task GetTripDetailsByIdAsync_ShouldRetrieveTripDetails()
     {
         //Arrange
-        string tripId = "adc05780-8fa7-4e53-99b5-93c31c26f6ec";
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
-        string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
-
-
         Vehicle vehicle = new Vehicle()
         {
             Id = Guid.Parse(vehicleId),
@@ -457,9 +429,7 @@ public class TripRecordsServiceTests
     public async Task GetAllUserTripsCountAsync_ReturnsDataFromCache_IfPresent()
     {
         //Arrange
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
         int expectedCount = 5;
-
         object testData = 5;
 
         mockMemoryCache
@@ -480,39 +450,7 @@ public class TripRecordsServiceTests
     public async Task GetAllUserTripsCountAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
         //Arrange
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
-        string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
-
-        ICollection<TripRecord> tripRecords = new List<TripRecord>()
-        {
-             new TripRecord()
-        {
-            StartDestination = "Test",
-            EndDestination = "Test2",
-            MileageTravelled = 150,
-            VehicleId = Guid.Parse(vehicleId),
-            OwnerId = Guid.Parse(userId),
-            FuelPrice = 2.5m,
-            UsedFuel = 25,
-            CreatedOn = DateTime.UtcNow,
-            Cost = 500
-        },
-             new TripRecord()
-        {
-            StartDestination = "Test333",
-            EndDestination = "Test2555",
-            MileageTravelled = 1550,
-            VehicleId = Guid.Parse(vehicleId),
-            OwnerId = Guid.Parse(userId),
-            FuelPrice = 2.53m,
-            UsedFuel = 25,
-            CreatedOn = DateTime.UtcNow,
-            Cost = 500
-        }
-        };
-
-        await repository.AddRangeAsync(tripRecords);
-        await repository.SaveChangesAsync();
+        List<TripRecord> tripRecords = await GenerateTripRecords();
 
         //Act
         decimal? result = await tripRecordsService.GetAllUserTripsCountAsync(userId);
@@ -528,7 +466,6 @@ public class TripRecordsServiceTests
     public async Task GetAllUserTripsCostAsync_ReturnsDataFromCache_IfPresent()
     {
         //Arrange
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
         decimal? expectedCost = 500;
 
         object testData = 500m;
@@ -551,39 +488,7 @@ public class TripRecordsServiceTests
     public async Task GetAllUserTripsCostAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
         //Arrange
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
-        string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
-
-        ICollection<TripRecord> tripRecords = new List<TripRecord>()
-        {
-             new TripRecord()
-        {
-            StartDestination = "Test",
-            EndDestination = "Test2",
-            MileageTravelled = 150,
-            VehicleId = Guid.Parse(vehicleId),
-            OwnerId = Guid.Parse(userId),
-            FuelPrice = 2.5m,
-            UsedFuel = 25,
-            CreatedOn = DateTime.UtcNow,
-            Cost = 500
-        },
-             new TripRecord()
-        {
-            StartDestination = "Test333",
-            EndDestination = "Test2555",
-            MileageTravelled = 1550,
-            VehicleId = Guid.Parse(vehicleId),
-            OwnerId = Guid.Parse(userId),
-            FuelPrice = 2.53m,
-            UsedFuel = 25,
-            CreatedOn = DateTime.UtcNow,
-            Cost = 500
-        }
-        };
-
-        await repository.AddRangeAsync(tripRecords);
-        await repository.SaveChangesAsync();
+        List<TripRecord> tripRecords = await GenerateTripRecords();
 
         //Act
         decimal? result = await tripRecordsService.GetAllUserTripsCostAsync(userId);
@@ -599,9 +504,20 @@ public class TripRecordsServiceTests
     public async Task GetLastNCountAsync_ShouldRetrieveNRecords()
     {
         //Arrange
-        string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
-        string vehicleId = "dc0a5780-8fa7-4e53-99b5-93c31c26f6ec";
+        List<TripRecord> tripRecords = await GenerateTripRecords();       
 
+        //Act
+        List<TripBasicInformationByUserResponseModel> result =(List<TripBasicInformationByUserResponseModel>) await tripRecordsService.GetLastNCountAsync(userId, 2);
+
+        //Assert
+        Assert.AreEqual(tripRecords[0].Id.ToString(), result[0].Id);
+        Assert.AreEqual(tripRecords[1].Id.ToString(), result[1].Id);
+
+
+    }
+
+    private async Task<List<TripRecord>> GenerateTripRecords()
+    {
         Vehicle vehicle = new Vehicle()
         {
             Id = Guid.Parse(vehicleId),
@@ -657,20 +573,73 @@ public class TripRecordsServiceTests
             UsedFuel = 25,
             CreatedOn = DateTime.UtcNow,
             Cost = 500
+        },
+             new TripRecord()
+        {
+            StartDestination = "Test444",
+            EndDestination = "Test3666",
+            MileageTravelled = 1650,
+            VehicleId = Guid.Parse(vehicleId),
+            OwnerId = Guid.Parse(userId),
+            FuelPrice = 2.60m,
+            UsedFuel = 27,
+            CreatedOn = DateTime.UtcNow,
+            Cost = 520
+        },    
+             new TripRecord()
+        {
+            StartDestination = "Test555",
+            EndDestination = "Test4777",
+            MileageTravelled = 1800,
+            VehicleId = Guid.Parse(vehicleId),
+            OwnerId = Guid.Parse(userId),
+            FuelPrice = 2.70m,
+            UsedFuel = 30,
+            CreatedOn = DateTime.UtcNow,
+            Cost = 550
+        },
+             new TripRecord()
+        {
+            StartDestination = "Test666",
+            EndDestination = "Test5888",
+            MileageTravelled = 1900,
+            VehicleId = Guid.Parse(vehicleId),
+            OwnerId = Guid.Parse(userId),
+            FuelPrice = 2.80m,
+            UsedFuel = 32,
+            CreatedOn = DateTime.UtcNow,
+            Cost = 580
+        },       
+             new TripRecord()
+        {
+            StartDestination = "Test777",
+            EndDestination = "Test6999",
+            MileageTravelled = 2100,
+            VehicleId = Guid.Parse(vehicleId),
+            OwnerId = Guid.Parse(userId),
+            FuelPrice = 2.90m,
+            UsedFuel = 35,
+            CreatedOn = DateTime.UtcNow,
+            Cost = 610
+        },        
+             new TripRecord()
+        {
+            StartDestination = "Test888",
+            EndDestination = "Test7111",
+            MileageTravelled = 2200,
+            VehicleId = Guid.Parse(vehicleId),
+            OwnerId = Guid.Parse(userId),
+            FuelPrice = 3.00m,
+            UsedFuel = 38,
+            CreatedOn = DateTime.UtcNow,
+            Cost = 640
         }
         };
 
         await repository.AddRangeAsync(tripRecords);
         await repository.SaveChangesAsync();
 
-        //Act
-        List<TripBasicInformationByUserResponseModel> result =(List<TripBasicInformationByUserResponseModel>) await tripRecordsService.GetLastNCountAsync(userId, 2);
-
-        //Assert
-        Assert.AreEqual(tripRecords[0].Id.ToString(), result[0].Id);
-        Assert.AreEqual(tripRecords[1].Id.ToString(), result[1].Id);
-
-
+        return tripRecords;
     }
 
     [TearDown]
