@@ -30,6 +30,9 @@ public class TaxRecordsServiceTests
     string vehicleId = "adc05780-8fa7-4e53-99b5-93c31c26f6ec";
     string taxRecordId = "77c05780-8fa7-4e53-99b5-93c31c26f6ec";
 
+    string vehicleMake = "BMW";
+    string vehicleModel = "M5 CS";
+
 
     [SetUp]
     public void Setup()
@@ -53,44 +56,6 @@ public class TaxRecordsServiceTests
         applicationDbContext.Database.EnsureCreated();
     }
 
- 
-    private async Task<TaxRecord> SeedTaxRecord()
-    {
-        Vehicle vehicle = new Vehicle
-        {
-            Id = Guid.Parse(vehicleId),
-            Make = "BMW",
-            Model = "M5 CS",
-            Year = 2022,
-            FuelTypeId = 1,
-            VehicleTypeId = 1,
-            Mileage = 12000,
-            OwnerId = Guid.Parse(userId),
-            CreatedOn = DateTime.UtcNow,
-            VehicleImageKey = Guid.NewGuid()
-        };
-
-        await repository.AddAsync(vehicle);
-        await repository.SaveChangesAsync();
-
-        TaxRecord taxRecord = new TaxRecord
-        {
-            Id = Guid.Parse(taxRecordId),
-            Title = "Test",
-            ValidFrom = DateTime.UtcNow,
-            ValidTo = DateTime.UtcNow,
-            Cost = 25,
-            Description = "TestTest",
-            VehicleId = Guid.Parse(vehicleId),
-            OwnerId = Guid.Parse(userId),
-            CreatedOn = DateTime.UtcNow.AddMinutes(1)
-        };
-
-        await repository.AddAsync(taxRecord);
-        await repository.SaveChangesAsync();
-
-        return taxRecord;
-    }
 
     /// <summary>
     /// Tests if retrieving all user tax records from cache works
@@ -98,7 +63,7 @@ public class TaxRecordsServiceTests
     [Test]
     public async Task GetAllByUserIdAsync_ReturnsDataFromCache_IfPresent()
     {
-        //Assign   
+        //Arrange   
         object testData = new List<TaxRecordDetailsResponseModel>()
         {
             new TaxRecordDetailsResponseModel 
@@ -142,52 +107,8 @@ public class TaxRecordsServiceTests
     [Test]
     public async Task GetAllByUserIdAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
-        //Assign          
-        Vehicle vehicle = new Vehicle
-        {
-            Id = Guid.Parse(vehicleId),
-            Make = "BMW",
-            Model = "M5 CS",
-            Year = 2022,
-            FuelTypeId = 1,
-            VehicleTypeId = 1,
-            Mileage = 12000,
-            OwnerId = Guid.Parse(userId),
-            CreatedOn = DateTime.UtcNow,
-            VehicleImageKey = Guid.NewGuid()
-        };
-
-        await repository.AddAsync(vehicle);
-        await repository.SaveChangesAsync();
-
-        List<TaxRecord> taxRecords = new List<TaxRecord>()
-        {
-            new TaxRecord
-            {
-                Title = "Test",
-                ValidFrom = DateTime.UtcNow,
-                ValidTo = DateTime.UtcNow,
-                Cost = 25,
-                Description = "TestTest",
-                VehicleId = Guid.Parse(vehicleId),
-                OwnerId = Guid.Parse(userId),
-                CreatedOn = DateTime.UtcNow.AddMinutes(1)
-            },
-             new TaxRecord
-            {
-                Title = "Tes2t",
-                ValidFrom = DateTime.UtcNow,
-                ValidTo = DateTime.UtcNow,
-                Cost = 25,
-                Description = "TestTest2",
-                VehicleId = Guid.Parse(vehicleId),
-                OwnerId = Guid.Parse(userId),
-                CreatedOn = DateTime.UtcNow
-            }
-        };
-
-        await repository.AddRangeAsync(taxRecords);
-        await repository.SaveChangesAsync();
+        //Arrange          
+        List<TaxRecord> taxRecords = await GenerateTaxRecords();
 
         //Act 
         var result =(List<TaxRecordDetailsResponseModel>) await taxRecordsService.GetAllByUserIdAsync(userId);
@@ -199,8 +120,8 @@ public class TaxRecordsServiceTests
         Assert.AreEqual(taxRecords[0].ValidFrom, result[0].ValidFrom);
         Assert.AreEqual(taxRecords[0].Cost, result[0].Cost);
         Assert.AreEqual(taxRecords[0].Description, result[0].Description);
-        Assert.AreEqual(vehicle.Make, result[0].VehicleMake);
-        Assert.AreEqual(vehicle.Model, result[0].VehicleModel);
+        Assert.AreEqual(vehicleMake, result[0].VehicleMake);
+        Assert.AreEqual(vehicleModel, result[0].VehicleModel);
     }
 
     /// <summary>
@@ -209,7 +130,7 @@ public class TaxRecordsServiceTests
     [Test]
     public async Task CreateAsync_ShouldAddATaxRecord()
     {
-        //Assign          
+        //Arrange          
         Vehicle vehicle = new Vehicle
         {
             Id = Guid.Parse(vehicleId),
@@ -254,8 +175,8 @@ public class TaxRecordsServiceTests
     [Test]
     public async Task EditAsync_WhenCalled_EditsAVehicle()
     {
-        //Assign   
-        await SeedTaxRecord();
+        //Arrange 
+        await GenerateTaxRecord();
 
         TaxRecordFormRequestModel taxRecordToEdit = new TaxRecordFormRequestModel
         {
@@ -285,8 +206,8 @@ public class TaxRecordsServiceTests
     [Test]
     public async Task DeleteAsync_ShouldDeleteAEntity()
     {
-        //Assign   
-        await SeedTaxRecord();
+        //Arrange  
+        await GenerateTaxRecord();
 
         //Act 
         await taxRecordsService.DeleteAsync(taxRecordId, userId);
@@ -303,8 +224,8 @@ public class TaxRecordsServiceTests
     [Test]
     public async Task DoesRecordExistByIdAsync_ReturnTrue_WhenRecordExists()
     {
-        //Assign   
-        await SeedTaxRecord();
+        //Arrange   
+        await GenerateTaxRecord();
 
         //Act
         bool doesTaxRecordExists = await taxRecordsService.DoesRecordExistByIdAsync(taxRecordId);
@@ -319,7 +240,7 @@ public class TaxRecordsServiceTests
     [Test]
     public async Task DoesRecordExistByIdAsync_ReturnFalse_WhenRecordDoesntExists()
     {
-        //Assign   
+        //Arrange   
         string nonExistingTaxRecordId = "000a5780-8fa7-4e53-99b5-93c31c26f6ec";
 
         //Act
@@ -335,8 +256,8 @@ public class TaxRecordsServiceTests
     [Test]
     public async Task IsUserRecordCreatorAsync_ShouldReturnTrue_WhenUserIsTaxRecordCreator()
     {
-        //Assing
-        TaxRecord taxRecord = await SeedTaxRecord();
+        //Arrange
+        TaxRecord taxRecord = await GenerateTaxRecord();
 
         //Act
         bool isUserTaxRecordCreator = await taxRecordsService.IsUserRecordCreatorAsync(userId, taxRecordId);
@@ -351,7 +272,7 @@ public class TaxRecordsServiceTests
     [Test]
     public async Task IsUserRecordCreatorAsync_ShouldReturnFalse_WhenUserIsNotTaxRecordCreator()
     {
-        //Assing
+        //Arrange
         string differentUserId = "000a5780-8fa7-4e53-99b5-93c31c26f6ec";
 
         //Act
@@ -368,8 +289,8 @@ public class TaxRecordsServiceTests
     [Test]
     public async Task GetEditDetailsByIdAsync_ShouldReturnTaxRecordDetails()
     {
-        //Assign
-        TaxRecord taxRecord = await SeedTaxRecord();
+        //Arrange
+        TaxRecord taxRecord = await GenerateTaxRecord();
 
         //Act
         TaxRecordEditDetailsResponseModel result = await taxRecordsService.GetEditDetailsByIdAsync(taxRecordId);
@@ -414,35 +335,8 @@ public class TaxRecordsServiceTests
     [Test]
     public async Task GetAllUserTripsCountAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
-        //Arrange
-        List<TaxRecord> taxRecords = new List<TaxRecord>()
-        {
-            new TaxRecord
-            {
-                Title = "Test",
-                ValidFrom = DateTime.UtcNow,
-                ValidTo = DateTime.UtcNow,
-                Cost = 25,
-                Description = "TestTest",
-                VehicleId = Guid.Parse(vehicleId),
-                OwnerId = Guid.Parse(userId),
-                CreatedOn = DateTime.UtcNow.AddMinutes(1)
-            },
-             new TaxRecord
-            {
-                Title = "Tes2t",
-                ValidFrom = DateTime.UtcNow,
-                ValidTo = DateTime.UtcNow,
-                Cost = 25,
-                Description = "TestTest2",
-                VehicleId = Guid.Parse(vehicleId),
-                OwnerId = Guid.Parse(userId),
-                CreatedOn = DateTime.UtcNow
-            }
-        };
-
-        await repository.AddRangeAsync(taxRecords);
-        await repository.SaveChangesAsync();
+        //Arrange      
+        List<TaxRecord> taxRecords = await GenerateTaxRecords();
 
         //Act
         int result = await taxRecordsService.GetAllUserTaxRecordsCountAsync(userId);
@@ -482,35 +376,8 @@ public class TaxRecordsServiceTests
     [Test]
     public async Task GetAllUserTripsCostAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
-        //Arrange
-        List<TaxRecord> taxRecords = new List<TaxRecord>()
-        {
-            new TaxRecord
-            {
-                Title = "Test",
-                ValidFrom = DateTime.UtcNow,
-                ValidTo = DateTime.UtcNow,
-                Cost = 25,
-                Description = "TestTest",
-                VehicleId = Guid.Parse(vehicleId),
-                OwnerId = Guid.Parse(userId),
-                CreatedOn = DateTime.UtcNow.AddMinutes(1)
-            },
-             new TaxRecord
-            {
-                Title = "Tes2t",
-                ValidFrom = DateTime.UtcNow,
-                ValidTo = DateTime.UtcNow,
-                Cost = 25,
-                Description = "TestTest2",
-                VehicleId = Guid.Parse(vehicleId),
-                OwnerId = Guid.Parse(userId),
-                CreatedOn = DateTime.UtcNow
-            }
-        };
-
-        await repository.AddRangeAsync(taxRecords);
-        await repository.SaveChangesAsync();
+        //Arrange      
+        List<TaxRecord> taxRecords = await GenerateTaxRecords();
 
         //Act
         decimal result = await taxRecordsService.GetAllUserTaxRecordsCostAsync(userId);
@@ -769,5 +636,169 @@ public class TaxRecordsServiceTests
     public void TearDown()
     {
         applicationDbContext.Dispose();
+    }
+
+    /// <summary>
+    /// Generates tax records in the database.
+    /// </summary>
+    /// <returns>A collection of tax records</returns>
+    private async Task<List<TaxRecord>> GenerateTaxRecords()
+    {
+        Vehicle vehicle = new Vehicle
+        {
+            Id = Guid.Parse(vehicleId),
+            Make = vehicleMake,
+            Model = vehicleModel,
+            Year = 2022,
+            FuelTypeId = 1,
+            VehicleTypeId = 1,
+            Mileage = 12000,
+            OwnerId = Guid.Parse(userId),
+            CreatedOn = DateTime.UtcNow,
+            VehicleImageKey = Guid.NewGuid()
+        };
+
+        await repository.AddAsync(vehicle);
+        await repository.SaveChangesAsync();
+
+        List<TaxRecord> taxRecords = new List<TaxRecord>
+        {
+            new TaxRecord
+            {
+                Title = "Test",
+                ValidFrom = DateTime.UtcNow,
+                ValidTo = DateTime.UtcNow,
+                Cost = 25,
+                Description = "TestTest",
+                VehicleId = Guid.Parse(vehicleId),
+                OwnerId = Guid.Parse(userId),
+                CreatedOn = DateTime.UtcNow.AddMinutes(15)
+            },
+            new TaxRecord
+            {
+                Title = "Maintenance",
+                ValidFrom = DateTime.UtcNow.AddMonths(-1),
+                ValidTo = DateTime.UtcNow.AddMonths(1),
+                Cost = 75,
+                Description = "Quarterly Maintenance",
+                VehicleId = Guid.Parse(vehicleId),
+                OwnerId = Guid.Parse(userId),
+                CreatedOn = DateTime.UtcNow.AddMinutes(2)
+            },
+            new TaxRecord
+            {
+                Title = "Annual Check",
+                ValidFrom = DateTime.UtcNow.AddMonths(-6),
+                ValidTo = DateTime.UtcNow.AddMonths(6),
+                Cost = 150,
+                Description = "Annual Vehicle Check",
+                VehicleId = Guid.Parse(vehicleId),
+                OwnerId = Guid.Parse(userId),
+                CreatedOn = DateTime.UtcNow.AddMinutes(3)
+            },
+            new TaxRecord
+            {
+                Title = "Insurance",
+                ValidFrom = DateTime.UtcNow,
+                ValidTo = DateTime.UtcNow.AddYears(1),
+                Cost = 500,
+                Description = "Annual Vehicle Insurance",
+                VehicleId = Guid.Parse(vehicleId),
+                OwnerId = Guid.Parse(userId),
+                CreatedOn = DateTime.UtcNow.AddMinutes(4)
+            },
+            new TaxRecord
+            {
+                Title = "Environmental Tax",
+                ValidFrom = DateTime.UtcNow,
+                ValidTo = DateTime.UtcNow.AddYears(1),
+                Cost = 100,
+                Description = "For environmental impact",
+                VehicleId = Guid.Parse(vehicleId),
+                OwnerId = Guid.Parse(userId),
+                CreatedOn = DateTime.UtcNow.AddMinutes(5)
+            },
+            new TaxRecord
+            {
+                Title = "Winter Check",
+                ValidFrom = DateTime.UtcNow.AddMonths(-9),
+                ValidTo = DateTime.UtcNow.AddMonths(3),
+                Cost = 65,
+                Description = "Winter vehicle preparation",
+                VehicleId = Guid.Parse(vehicleId),
+                OwnerId = Guid.Parse(userId),
+                CreatedOn = DateTime.UtcNow.AddMinutes(6)
+            },
+            new TaxRecord
+            {
+                Title = "Road Tax",
+                ValidFrom = DateTime.UtcNow,
+                ValidTo = DateTime.UtcNow.AddMonths(12),
+                Cost = 120,
+                Description = "Annual road tax fee",
+                VehicleId = Guid.Parse(vehicleId),
+                OwnerId = Guid.Parse(userId),
+                CreatedOn = DateTime.UtcNow.AddMinutes(7)
+            },
+            new TaxRecord
+             {
+                 Title = "Parking Fee",
+                 ValidFrom = DateTime.UtcNow,
+                 ValidTo = DateTime.UtcNow.AddDays(30),
+                 Cost = 30,
+                 Description = "Monthly parking fee",
+                 VehicleId = Guid.Parse(vehicleId),
+                 OwnerId = Guid.Parse(userId),
+                 CreatedOn = DateTime.UtcNow.AddMinutes(8)
+             }
+
+       };
+
+        await repository.AddRangeAsync(taxRecords);
+        await repository.SaveChangesAsync();
+
+        return taxRecords;
+    }
+
+    /// <summary>
+    /// Generates a tax record in the database.
+    /// </summary>
+    /// <returns>A tax record</returns>
+    private async Task<TaxRecord> GenerateTaxRecord()
+    {
+        Vehicle vehicle = new Vehicle
+        {
+            Id = Guid.Parse(vehicleId),
+            Make = "BMW",
+            Model = "M5 CS",
+            Year = 2022,
+            FuelTypeId = 1,
+            VehicleTypeId = 1,
+            Mileage = 12000,
+            OwnerId = Guid.Parse(userId),
+            CreatedOn = DateTime.UtcNow,
+            VehicleImageKey = Guid.NewGuid()
+        };
+
+        await repository.AddAsync(vehicle);
+        await repository.SaveChangesAsync();
+
+        TaxRecord taxRecord = new TaxRecord
+        {
+            Id = Guid.Parse(taxRecordId),
+            Title = "Test",
+            ValidFrom = DateTime.UtcNow,
+            ValidTo = DateTime.UtcNow,
+            Cost = 25,
+            Description = "TestTest",
+            VehicleId = Guid.Parse(vehicleId),
+            OwnerId = Guid.Parse(userId),
+            CreatedOn = DateTime.UtcNow.AddMinutes(1)
+        };
+
+        await repository.AddAsync(taxRecord);
+        await repository.SaveChangesAsync();
+
+        return taxRecord;
     }
 }
