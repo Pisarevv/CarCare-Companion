@@ -47,7 +47,7 @@ public class AdServiceTests
     [Test]
     public async Task GetAllAsync_ReturnsDataFromCache_IfPresent()
     {
-        //Assign
+        //Arrange
         object testData = new List<CarouselAdResponseModel>
         {
             new CarouselAdResponseModel { Id = "1", UserFirstName = "John", Description = "Desc1", StarsRating = 5 },
@@ -70,7 +70,7 @@ public class AdServiceTests
     {
         int expectedCount = 5;
 
-        //Assign
+        //Arrange
         ICollection<CarouselAdModel> repoData = new List<CarouselAdModel>
         {
             new CarouselAdModel { Id = Guid.NewGuid(), UserFirstName = "John", Description = "Desc1", StarsRating = 5 },
@@ -94,7 +94,7 @@ public class AdServiceTests
     [Test]
     public async Task GetFiveAsync_ReturnsDataFromCache_IfPresent()
     {
-        //Assign
+        //Arrange
 
         object testData = new List<CarouselAdResponseModel>
         {
@@ -119,7 +119,7 @@ public class AdServiceTests
     [Test]
     public async Task GetFiveAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
-        //Assign
+        //Arrange
         ICollection<CarouselAdModel> repoData = new List<CarouselAdModel>
         {
             new CarouselAdModel { Id = Guid.NewGuid(), UserFirstName = "John", Description = "Desc1", StarsRating = 5 },
@@ -141,7 +141,7 @@ public class AdServiceTests
     {
         string testId = "7a3dcce3-1a68-49d2-84cc-f6636cd9c0ea";
 
-        //Assign
+        //Arrange
         ICollection<CarouselAdModel> repoData = new List<CarouselAdModel>
         {
             new CarouselAdModel { Id = Guid.Parse(testId), UserFirstName = "John", Description = "Desc1", StarsRating = 5 },
@@ -163,7 +163,7 @@ public class AdServiceTests
         string addId = "333dcce3-1a68-49d2-84cc-f6636cd9c0ea";
         string testId = "7a3dcce3-1a68-49d2-84cc-f6636cd9c0ea";
 
-        //Assign
+        //Arrange
         ICollection<CarouselAdModel> repoData = new List<CarouselAdModel>
         {
             new CarouselAdModel { Id = Guid.Parse(addId), UserFirstName = "John", Description = "Desc1", StarsRating = 5 },

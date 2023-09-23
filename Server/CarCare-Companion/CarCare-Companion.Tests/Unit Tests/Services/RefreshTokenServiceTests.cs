@@ -157,7 +157,7 @@ public class RefreshTokenServiceTests
     [Test]
     public async Task IsUserRefreshTokenExpiredAsync_ShouldReturnTrue_WhenTokenIsExpired()
     {
-        //Assign
+        //Arrange
         UserRefreshToken token = new UserRefreshToken
         {
             Id = Guid.NewGuid(),
@@ -182,7 +182,7 @@ public class RefreshTokenServiceTests
     [Test]
     public async Task IsUserRefreshTokenExpiredAsync_ShouldReturnFalse_WhenTokenIsNotExpired()
     {
-        //Assign
+        //Arrange
         UserRefreshToken token = new UserRefreshToken
         {
             Id = Guid.NewGuid(),

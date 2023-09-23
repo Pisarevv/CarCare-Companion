@@ -56,7 +56,7 @@ public class UserServiceTests
     [Test]
     public async Task GetAllByUserIdAsync_ReturnsDataFromCache_IfPresent()
     {
-        //Assign   
+        //Arrange   
         object testData = new List<UserInformationResponseModel>()
         {
             new UserInformationResponseModel

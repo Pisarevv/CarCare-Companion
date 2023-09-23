@@ -163,7 +163,7 @@ public class ServiceRecordsServiceTests
     [Test]
     public async Task DeleteAsync_ShouldDeleteAEntity()
     {
-        //Assign   
+        //Arrange   
         await SeedServiceRecord();
 
         //Act 
@@ -181,7 +181,7 @@ public class ServiceRecordsServiceTests
     [Test]
     public async Task GetAllByUserIdAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
-        //Assign          
+        //Arrange          
         Vehicle vehicle = new Vehicle
         {
             Id = Guid.Parse(vehicleId),
@@ -249,7 +249,7 @@ public class ServiceRecordsServiceTests
     [Test]
     public async Task GetAllByUserIdAsync_ReturnsDataFromCache_IfPresent()
     {
-        //Assign   
+        //Arrange   
         object testData = new List<ServiceRecordDetailsResponseModel>()
         {
             new ServiceRecordDetailsResponseModel
@@ -293,7 +293,7 @@ public class ServiceRecordsServiceTests
     [Test]
     public async Task GetEditDetailsByIdAsync_ShouldReturnServiceRecordDetails()
     {
-        //Assign
+        //Arrange
         ServiceRecord serviceRecord = await SeedServiceRecord();
 
         //Act
@@ -316,7 +316,7 @@ public class ServiceRecordsServiceTests
     [Test]
     public async Task DoesRecordExistByIdAsync_ReturnTrue_WhenRecordExists()
     {
-        //Assign   
+        //Arrange   
         await SeedServiceRecord();
 
         //Act
@@ -332,7 +332,7 @@ public class ServiceRecordsServiceTests
     [Test]
     public async Task DoesRecordExistByIdAsync_ReturnFalse_WhenRecordDoesntExists()
     {
-        //Assign   
+        //Arrange   
         string nonExistingServiceRecordId = "000a5780-8fa7-4e53-99b5-93c31c26f6ec";
 
         //Act
@@ -348,7 +348,7 @@ public class ServiceRecordsServiceTests
     [Test]
     public async Task IsUserRecordCreatorAsync_ShouldReturnTrue_WhenUserIsServiceRecordCreator()
     {
-        //Assing
+        //Arrange
         ServiceRecord serviceRecord = await SeedServiceRecord();
 
         //Act
@@ -364,7 +364,7 @@ public class ServiceRecordsServiceTests
     [Test]
     public async Task IsUserRecordCreatorAsync_ShouldReturnFalse_WhenUserIsNotServiceRecordCreator()
     {
-        //Assing
+        //Arrange
         string differentUserId = "000a5780-8fa7-4e53-99b5-93c31c26f6ec";
 
         //Act

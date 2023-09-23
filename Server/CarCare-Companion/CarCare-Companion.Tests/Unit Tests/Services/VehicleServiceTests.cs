@@ -190,7 +190,7 @@ public class VehicleServiceTests
     [Test]
     public async Task DoesFuelTypeExistAsync_ShouldReturnTrue_WhenFuelTypeExists()
     {
-        //Assign
+        //Arrange
         int fuelTypeId = 10;
 
         FuelType fuelType = new FuelType()
@@ -215,7 +215,7 @@ public class VehicleServiceTests
     [Test]
     public async Task DoesFuelTypeExistAsync_ShouldReturnFalse_WhenFuelTypeDoesNotExists()
     {
-        //Assign
+        //Arrange
         int fuelTypeId = 10;
         int nonExistingFuelTypeId = 160;
 
@@ -241,7 +241,7 @@ public class VehicleServiceTests
     [Test]
     public async Task DoesVehicleTypeExistAsync_ShouldReturnTrue_WhenVehicleTypeExists()
     {
-        //Assign
+        //Arrange
         int vehicleTypeId = 150;
 
         VehicleType vehicleType = new VehicleType()
@@ -266,7 +266,7 @@ public class VehicleServiceTests
     [Test]
     public async Task DoesVehicleTypeExistAsync_ShouldReturnFalse_WhenVehicleTypeDoesNotExists()
     {
-        //Assign
+        //Arrange
         int vehicleTypeId = 150;
         int nonExistingvehicleTypeId = 160;
 
@@ -292,7 +292,7 @@ public class VehicleServiceTests
     [Test]
     public async Task AllFuelTypesAsync_ReturnsDataFromCache_IfPresent()
     {
-        //Assign
+        //Arrange
         object testData = new List<FuelTypeResponseModel>
         {
             new FuelTypeResponseModel { Id = 1, Name = "Test",},
@@ -316,7 +316,7 @@ public class VehicleServiceTests
     [Test]
     public async Task AllFuelTypesAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
-        //Assign
+        //Arrange
         int expectedCount = 5;
         //Act
         // Fuel types are seeded on database creation and they are always 5
@@ -333,7 +333,7 @@ public class VehicleServiceTests
     [Test]
     public async Task AllVehicleTypesAsync_ReturnsDataFromCache_IfPresent()
     {
-        //Assign
+        //Arrange
         object testData = new List<VehicleTypeResponseModel>
         {
             new VehicleTypeResponseModel { Id = 1, Name = "Test",},
@@ -357,7 +357,7 @@ public class VehicleServiceTests
     [Test]
     public async Task AllVehicleTypesAsync_RetrievesFromRepo_WhenCacheIsEmpty()
     {
-        //Assign
+        //Arrange
         int expectedCount = 10;
         //Act
         // Vehicle types are seeded on database creation and they are always 10
@@ -374,7 +374,7 @@ public class VehicleServiceTests
     [Test]
     public async Task AllUserVehiclesByIdAsync_ReturnsDataFromCache_IfPresent()
     {
-        //Assign
+        //Arrange
         string userId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
 
         object testData = new List<VehicleBasicInfoResponseModel>
@@ -442,7 +442,7 @@ public class VehicleServiceTests
     [Test]
     public async Task GetVehicleDetailsByIdAsync_ReturnsDataFromCache_IfPresent()
     {
-        //Assign
+        //Arrange
         string vehicleId = "0cda5780-8fa7-4e53-99b5-93c31c26f6ec";
         string imageUrl = "a5555780-8fa7-4e53-99b5-93c31c26f6ec";
 
