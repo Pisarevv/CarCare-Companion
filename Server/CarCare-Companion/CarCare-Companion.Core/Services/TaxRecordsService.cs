@@ -12,7 +12,7 @@ using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 using static Common.CacheKeysAndDurations.TaxRecords;
-
+using CarCare_Companion.Core.Models.Search;
 
 public class TaxRecordsService : ITaxRecordsService
 {
@@ -354,12 +354,12 @@ public class TaxRecordsService : ITaxRecordsService
     /// <param name="currentPage">The page number to retrieve.</param>
     /// <param name="recordPerPage">The number of records per page.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of TaxRecordDetailsResponseModel for the specified page.</returns>
-    public async Task<List<TaxRecordDetailsResponseModel>> RetrieveTaxRecordsByPageAsync(IQueryable<TaxRecord> taxRecords, int currentPage, int recordPerPage)
+    public async Task<List<TaxRecordDetailsQueryResponseModel>> RetrieveTaxRecordsByPageAsync(IQueryable<TaxRecord> taxRecords, int currentPage, int recordPerPage)
     {
         return await taxRecords
                      .Skip((currentPage - 1) * recordPerPage)
                      .Take(recordPerPage)
-                     .Select(tr => new TaxRecordDetailsResponseModel
+                     .Select(tr => new TaxRecordDetailsQueryResponseModel
                      {
                          Id = tr.Id.ToString(),
                          Title = tr.Title,

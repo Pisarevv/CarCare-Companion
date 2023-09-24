@@ -12,6 +12,7 @@ using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 using static Common.CacheKeysAndDurations.ServiceRecords;
+using CarCare_Companion.Core.Models.Search;
 
 
 
@@ -343,13 +344,13 @@ public class ServiceRecordsService : IServiceRecordsService
     /// <param name="serviceRecords">The complete set of service records to paginate.</param>
     /// <param name="currentPage">The page number to retrieve.</param>
     /// <param name="recordPerPage">The number of records per page.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a list of ServiceRecordDetailsResponseModel for the specified page.</returns>
-    public async Task<List<ServiceRecordDetailsResponseModel>> RetrieveServiceRecordsByPageAsync(IQueryable<ServiceRecord> serviceRecords, int currentPage, int recordPerPage)
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of ServiceRecordDetailsQueryResponseModel for the specified page.</returns>
+    public async Task<List<ServiceRecordDetailsQueryResponseModel>> RetrieveServiceRecordsByPageAsync(IQueryable<ServiceRecord> serviceRecords, int currentPage, int recordPerPage)
     {
         return await serviceRecords
                      .Skip((currentPage - 1) * recordPerPage)
                      .Take(recordPerPage)
-                     .Select(sr => new ServiceRecordDetailsResponseModel
+                     .Select(sr => new ServiceRecordDetailsQueryResponseModel
                      {
                          Id = sr.Id.ToString(),
                          Title = sr.Title,

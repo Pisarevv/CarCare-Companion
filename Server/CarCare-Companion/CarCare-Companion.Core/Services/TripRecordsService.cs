@@ -14,6 +14,7 @@ using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 using static Common.CacheKeysAndDurations.Trips;
 using CarCare_Companion.Core.Models.TripRecords;
+using CarCare_Companion.Core.Models.Search;
 
 
 
@@ -319,12 +320,12 @@ public class TripRecordsService : ITripRecordsService
     /// <param name="currentPage">The page number to retrieve.</param>
     /// <param name="recordPerPage">The number of records per page.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of TripDetailsByUserResponseModel for the specified page.</returns>
-    public async Task<List<TripDetailsByUserResponseModel>> RetrieveTripRecordsByPageAsync(IQueryable<TripRecord> tripRecords, int currentPage, int recordPerPage)
+    public async Task<List<TripDetailsByUserQueryResponseModel>> RetrieveTripRecordsByPageAsync(IQueryable<TripRecord> tripRecords, int currentPage, int recordPerPage)
     {
         return await tripRecords
                      .Skip((currentPage - 1) * recordPerPage)
                      .Take(recordPerPage)
-                     .Select(t => new TripDetailsByUserResponseModel
+                     .Select(t => new TripDetailsByUserQueryResponseModel
                      {
                          Id = t.Id.ToString(),
                          StartDestination = t.StartDestination,

@@ -1,5 +1,6 @@
 ﻿namespace CarCare_Companion.Core.Contracts;
 
+using CarCare_Companion.Core.Models.Search;
 using CarCare_Companion.Core.Models.TaxRecords;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 
@@ -100,8 +101,8 @@ public interface ITaxRecordsService
     /// <param name="taxRecords">The complete set of tax records to paginate.</param>
     /// <param name="currentPage">The page number to retrieve.</param>
     /// <param name="recordPerPage">The number of records per page.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a list of TaxRecordDetailsResponseModel for the specified page.</returns>
-    public Task<List<TaxRecordDetailsResponseModel>> RetrieveTaxRecordsByPageAsync(IQueryable<TaxRecord> taxRecords, int currentPage, int recordPerPage);
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of TaxRecordDetailsQueryResponseModel for the specified page.</returns>
+    public Task<List<TaxRecordDetailsQueryResponseModel>> RetrieveTaxRecordsByPageAsync(IQueryable<TaxRecord> taxRecords, int currentPage, int recordPerPage);
 
 }
 
