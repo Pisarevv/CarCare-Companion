@@ -99,5 +99,18 @@ public interface ITripRecordsService
     public Task<List<TripDetailsByUserQueryResponseModel>> RetrieveTripRecordsByPageAsync(IQueryable<TripRecord> tripRecords, int currentPage, int recordPerPage);
 
 
+    /// <summary>
+    /// Asynchronously retrieves a specified number of additional trip records from a given page.
+    /// </summary>
+    /// <param name="tripRecords">An IQueryable of TripRecord from which to retrieve the records.</param>
+    /// <param name="currentPage">The current page number.</param>
+    /// <param name="recordsPerType">The number of records per type on a page.</param>
+    /// <param name="additionalRecordsNeeded">The number of additional records to retrieve.</param>
+    /// <returns>
+    /// A list of TripDetailsByUserQueryResponseModel, representing the additional trip records retrieved.
+    /// </returns>
+    public Task<IList<TripDetailsByUserQueryResponseModel>> RetrieveAdditionalTripRecords(IQueryable<TripRecord> tripRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded);
+
+
 }
 

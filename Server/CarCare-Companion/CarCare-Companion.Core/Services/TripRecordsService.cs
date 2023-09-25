@@ -340,4 +340,35 @@ public class TripRecordsService : ITripRecordsService
                      })
                      .ToListAsync();
     }
+
+    /// <summary>
+    /// Asynchronously retrieves a specified number of additional trip records from a given page.
+    /// </summary>
+    /// <param name="tripRecords">An IQueryable of TripRecord from which to retrieve the records.</param>
+    /// <param name="currentPage">The current page number.</param>
+    /// <param name="recordsPerType">The number of records per type on a page.</param>
+    /// <param name="additionalRecordsNeeded">The number of additional records to retrieve.</param>
+    /// <returns>
+    /// A list of TripDetailsByUserQueryResponseModel, representing the additional trip records retrieved.
+    /// </returns>
+    public async Task<IList<TripDetailsByUserQueryResponseModel>> RetrieveAdditionalTripRecords(IQueryable<TripRecord> tripRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded)
+    {
+        return await tripRecords
+                     .Skip(((currentPage - 1) * recordsPerType) + recordsPerType)
+                     .Take(additionalRecordsNeeded)
+                     .Select(t => new TripDetailsByUserQueryResponseModel
+                     {
+                         Id = t.Id.ToString(),
+                         StartDestination = t.StartDestination,
+                         EndDestination = t.EndDestination,
+                         MileageTravelled = t.MileageTravelled,
+                         FuelPrice = t.FuelPrice,
+                         UsedFuel = t.UsedFuel,
+                         VehicleMake = t.Vehicle.Make,
+                         VehicleModel = t.Vehicle.Model,
+                         DateCreated = t.CreatedOn,
+                         TripCost = t.Cost
+                     })
+                     .ToListAsync();
+    }
 }
