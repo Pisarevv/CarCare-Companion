@@ -104,6 +104,18 @@ public interface ITaxRecordsService
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of TaxRecordDetailsQueryResponseModel for the specified page.</returns>
     public Task<List<TaxRecordDetailsQueryResponseModel>> RetrieveTaxRecordsByPageAsync(IQueryable<TaxRecord> taxRecords, int currentPage, int recordPerPage);
 
+    /// <summary>
+    /// Asynchronously retrieves a specified number of additional tax records from a given page.
+    /// </summary>
+    /// <param name="taxRecords">An IQueryable of TaxRecord from which to retrieve the records.</param>
+    /// <param name="currentPage">The current page number.</param>
+    /// <param name="recordsPerType">The number of records per type on a page.</param>
+    /// <param name="additionalRecordsNeeded">The number of additional records to retrieve.</param>
+    /// <returns>
+    /// A list of TaxRecordDetailsQueryResponseModel, representing the additional tax records retrieved.
+    /// </returns>
+    public Task<IList<TaxRecordDetailsQueryResponseModel>> RetrieveAdditionalTaxRecordsByPage(IQueryable<TaxRecord> taxRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded);
+    
 }
 
 

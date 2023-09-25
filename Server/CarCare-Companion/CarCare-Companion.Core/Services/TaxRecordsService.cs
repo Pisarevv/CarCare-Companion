@@ -372,4 +372,33 @@ public class TaxRecordsService : ITaxRecordsService
                      })
                      .ToListAsync();
     }
+
+    /// <summary>
+    /// Asynchronously retrieves a specified number of additional tax records from a given page.
+    /// </summary>
+    /// <param name="taxRecords">An IQueryable of TaxRecord from which to retrieve the records.</param>
+    /// <param name="currentPage">The current page number.</param>
+    /// <param name="recordsPerType">The number of records per type on a page.</param>
+    /// <param name="additionalRecordsNeeded">The number of additional records to retrieve.</param>
+    /// <returns>
+    /// A list of TaxRecordDetailsQueryResponseModel, representing the additional tax records retrieved.
+    /// </returns>
+    public async Task<IList<TaxRecordDetailsQueryResponseModel>> RetrieveAdditionalTaxRecordsByPage(IQueryable<TaxRecord> taxRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded)
+    {
+        return await taxRecords
+                     .Skip(((currentPage - 1) * recordsPerType) + recordsPerType)
+                     .Take(additionalRecordsNeeded)
+                     .Select(tr => new TaxRecordDetailsQueryResponseModel
+                     {
+                         Id = tr.Id.ToString(),
+                         Title = tr.Title,
+                         Description = tr.Description,
+                         Cost = tr.Cost,
+                         ValidFrom = tr.ValidFrom,
+                         ValidTo = tr.ValidTo,
+                         VehicleMake = tr.Vehicle.Make,
+                         VehicleModel = tr.Vehicle.Model
+                     })
+                     .ToListAsync();
+    }
 }
