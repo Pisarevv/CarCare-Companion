@@ -104,5 +104,19 @@ public interface IServiceRecordsService
     /// <param name="recordPerPage">The number of records per page.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of ServiceRecordDetailsQueryResponseModel for the specified page.</returns>
     public Task<List<ServiceRecordDetailsQueryResponseModel>> RetrieveServiceRecordsByPageAsync(IQueryable<ServiceRecord> serviceRecords, int currentPage, int recordPerPage);
+
+    /// <summary>
+    /// Asynchronously retrieves a specified number of additional service records from a given page.
+    /// </summary>
+    /// <param name="serviceRecords">An IQueryable of ServiceRecord from which to retrieve the records.</param>
+    /// <param name="currentPage">The current page number.</param>
+    /// <param name="recordsPerType">The number of records per type on a page.</param>
+    /// <param name="additionalRecordsNeeded">The number of additional records to retrieve.</param>
+    /// <returns>
+    /// A list of ServiceRecordDetailsQueryResponseModel, representing the additional service records retrieved.
+    /// </returns>
+    public Task<IList<ServiceRecordDetailsQueryResponseModel>> RetrieveAdditionalServiceRecords(IQueryable<ServiceRecord> serviceRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded)
+
+
 }
 

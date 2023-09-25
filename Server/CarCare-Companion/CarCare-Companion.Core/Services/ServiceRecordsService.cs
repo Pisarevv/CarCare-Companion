@@ -363,4 +363,33 @@ public class ServiceRecordsService : IServiceRecordsService
                      })
                      .ToListAsync();
     }
+
+    /// <summary>
+    /// Asynchronously retrieves a specified number of additional service records from a given page.
+    /// </summary>
+    /// <param name="serviceRecords">An IQueryable of ServiceRecord from which to retrieve the records.</param>
+    /// <param name="currentPage">The current page number.</param>
+    /// <param name="recordsPerType">The number of records per type on a page.</param>
+    /// <param name="additionalRecordsNeeded">The number of additional records to retrieve.</param>
+    /// <returns>
+    /// A list of ServiceRecordDetailsQueryResponseModel, representing the additional service records retrieved.
+    /// </returns>
+    public async Task<List<ServiceRecordDetailsQueryResponseModel>> RetrieveAdditionalServiceRecords(IQueryable<ServiceRecord> serviceRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded)
+    {
+        return await serviceRecords
+                     .Skip(((currentPage - 1) * recordsPerType) + recordsPerType)
+                     .Take(additionalRecordsNeeded)
+                     .Select(sr => new ServiceRecordDetailsQueryResponseModel
+                     {
+                         Id = sr.Id.ToString(),
+                         Title = sr.Title,
+                         Description = sr.Description,
+                         Cost = sr.Cost,
+                         Mileage = sr.Mileage,
+                         PerformedOn = sr.PerformedOn,
+                         VehicleMake = sr.Vehicle.Make,
+                         VehicleModel = sr.Vehicle.Model
+                     })
+                     .ToListAsync();
+    }
 }
