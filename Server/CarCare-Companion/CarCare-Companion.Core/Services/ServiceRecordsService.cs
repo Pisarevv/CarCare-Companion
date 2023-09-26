@@ -8,12 +8,11 @@ using Microsoft.Extensions.Caching.Memory;
 
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.ServiceRecords;
+using CarCare_Companion.Core.Models.Search;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 
 using static Common.CacheKeysAndDurations.ServiceRecords;
-using CarCare_Companion.Core.Models.Search;
-
 
 
 /// <summary>
@@ -374,7 +373,7 @@ public class ServiceRecordsService : IServiceRecordsService
     /// <returns>
     /// A list of ServiceRecordDetailsQueryResponseModel, representing the additional service records retrieved.
     /// </returns>
-    public async Task<List<ServiceRecordDetailsQueryResponseModel>> RetrieveAdditionalServiceRecords(IQueryable<ServiceRecord> serviceRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded)
+    public async Task<IList<ServiceRecordDetailsQueryResponseModel>> RetrieveAdditionalServiceRecordsByPageAsync(IQueryable<ServiceRecord> serviceRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded)
     {
         return await serviceRecords
                      .Skip(((currentPage - 1) * recordsPerType) + recordsPerType)

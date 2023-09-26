@@ -115,7 +115,7 @@ public interface IServiceRecordsService
     /// <returns>
     /// A list of ServiceRecordDetailsQueryResponseModel, representing the additional service records retrieved.
     /// </returns>
-    public Task<IList<ServiceRecordDetailsQueryResponseModel>> RetrieveAdditionalServiceRecords(IQueryable<ServiceRecord> serviceRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded)
+    public Task<IList<ServiceRecordDetailsQueryResponseModel>> RetrieveAdditionalServiceRecordsByPageAsync(IQueryable<ServiceRecord> serviceRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded);
 
 
 }

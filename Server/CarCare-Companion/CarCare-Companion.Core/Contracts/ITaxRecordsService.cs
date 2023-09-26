@@ -114,7 +114,7 @@ public interface ITaxRecordsService
     /// <returns>
     /// A list of TaxRecordDetailsQueryResponseModel, representing the additional tax records retrieved.
     /// </returns>
-    public Task<IList<TaxRecordDetailsQueryResponseModel>> RetrieveAdditionalTaxRecordsByPage(IQueryable<TaxRecord> taxRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded);
+    public Task<IList<TaxRecordDetailsQueryResponseModel>> RetrieveAdditionalTaxRecordsByPageAsync(IQueryable<TaxRecord> taxRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded);
     
 }
 

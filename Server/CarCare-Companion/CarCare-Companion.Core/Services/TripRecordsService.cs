@@ -9,13 +9,13 @@ using Microsoft.Extensions.Caching.Memory;
 
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.Trip;
+using CarCare_Companion.Core.Models.TripRecords;
+using CarCare_Companion.Core.Models.Search;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
 
-using static Common.CacheKeysAndDurations.Trips;
-using CarCare_Companion.Core.Models.TripRecords;
-using CarCare_Companion.Core.Models.Search;
 
+using static Common.CacheKeysAndDurations.Trips;
 
 
 
@@ -351,7 +351,7 @@ public class TripRecordsService : ITripRecordsService
     /// <returns>
     /// A list of TripDetailsByUserQueryResponseModel, representing the additional trip records retrieved.
     /// </returns>
-    public async Task<IList<TripDetailsByUserQueryResponseModel>> RetrieveAdditionalTripRecords(IQueryable<TripRecord> tripRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded)
+    public async Task<IList<TripDetailsByUserQueryResponseModel>> RetrieveAdditionalTripRecordsByPageAsync(IQueryable<TripRecord> tripRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded)
     {
         return await tripRecords
                      .Skip(((currentPage - 1) * recordsPerType) + recordsPerType)

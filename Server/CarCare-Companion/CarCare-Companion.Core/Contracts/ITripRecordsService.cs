@@ -109,7 +109,7 @@ public interface ITripRecordsService
     /// <returns>
     /// A list of TripDetailsByUserQueryResponseModel, representing the additional trip records retrieved.
     /// </returns>
-    public Task<IList<TripDetailsByUserQueryResponseModel>> RetrieveAdditionalTripRecords(IQueryable<TripRecord> tripRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded);
+    public Task<IList<TripDetailsByUserQueryResponseModel>> RetrieveAdditionalTripRecordsByPageAsync(IQueryable<TripRecord> tripRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded);
 
 
 }

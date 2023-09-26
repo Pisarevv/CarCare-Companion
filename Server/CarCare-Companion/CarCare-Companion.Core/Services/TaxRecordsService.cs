@@ -10,9 +10,10 @@ using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Models.TaxRecords;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
+using CarCare_Companion.Core.Models.Search;
 
 using static Common.CacheKeysAndDurations.TaxRecords;
-using CarCare_Companion.Core.Models.Search;
+
 
 public class TaxRecordsService : ITaxRecordsService
 {
@@ -383,7 +384,7 @@ public class TaxRecordsService : ITaxRecordsService
     /// <returns>
     /// A list of TaxRecordDetailsQueryResponseModel, representing the additional tax records retrieved.
     /// </returns>
-    public async Task<IList<TaxRecordDetailsQueryResponseModel>> RetrieveAdditionalTaxRecordsByPage(IQueryable<TaxRecord> taxRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded)
+    public async Task<IList<TaxRecordDetailsQueryResponseModel>> RetrieveAdditionalTaxRecordsByPageAsync(IQueryable<TaxRecord> taxRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded)
     {
         return await taxRecords
                      .Skip(((currentPage - 1) * recordsPerType) + recordsPerType)
