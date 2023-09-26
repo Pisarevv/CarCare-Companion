@@ -715,6 +715,73 @@ public class TaxRecordsServiceTests
 
     }
 
+    /// <summary>
+    /// Tests the retrieving of additional user tax records by page when taxRecords contains records, currentPage and recordPerPage parameters are valid.
+    /// </summary>
+    /// Disclaimer:
+    ///The service method "GetAllByUserIdAsQueryableAsync" is used to retrieve the IQueryable collection because the standard IQueryable interface does not implement IAsyncEnumerable which is required for asynchronous operations in Entity Framework Core.
+    [Test]
+    public async Task RetrieveAdditionalTaxRecordsByPageAsync_RetrievesCorrectAmountOfRecords()
+    {
+        //Arrange
+        ICollection<TaxRecord> taxRecords = await GenerateTaxRecords();
+
+        var currentPage = 2;
+        var recordsPerType = 3;
+        var additionalRecordsNeeded = 2;
+        var expectedRecords = taxRecords.Skip(((currentPage - 1) * recordsPerType) + recordsPerType).Take(additionalRecordsNeeded).ToList();
+
+        //Act
+        var quaryableRecords = await taxRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+        var result = await taxRecordsService.RetrieveAdditionalTaxRecordsByPageAsync(quaryableRecords, currentPage, recordsPerType, additionalRecordsNeeded);
+
+        //Assert
+        Assert.NotNull(result);
+        Assert.AreEqual(expectedRecords.Count, result.Count);
+        Assert.AreEqual(expectedRecords[0].Id.ToString(), result[0].Id);
+        Assert.AreEqual(expectedRecords[1].Id.ToString(), result[1].Id);
+    }
+
+    /// Tests the retrieving of additional user tax records by page when there are no tax records, currentPage and recordPerPage parameters are valid.
+    [Test]
+    public async Task RetrieveAdditionalTaxRecordsByPageAsync_EmptyList_ReturnsEmptyList()
+    {
+        // Arrange
+        var currentPage = 2;
+        var recordsPerType = 3;
+        var additionalRecordsNeeded = 2;
+
+        // Act
+        var quaryableRecords = await taxRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+        var result = await taxRecordsService.RetrieveAdditionalTaxRecordsByPageAsync(quaryableRecords, currentPage, recordsPerType, additionalRecordsNeeded);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsEmpty(result);
+    }
+
+    /// Tests the retrieving of additional user tax records by page when there are tax records but current page is out of bounds.
+    [Test]
+    public async Task RetrieveAdditionaTaxRecordsByPageAsync_CurrentPageOutOfBounds_ReturnsEmptyList()
+    {
+        //Arrange
+        await GenerateTaxRecords();
+
+        var currentPage = 7;
+        var recordsPerType = 3;
+        var additionalRecordsNeeded = 2;
+
+
+        // Act
+        var quaryableRecords = await taxRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+        var result = await taxRecordsService.RetrieveAdditionalTaxRecordsByPageAsync(quaryableRecords, currentPage, recordsPerType, additionalRecordsNeeded);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsEmpty(result);
+    }
+
+
     [TearDown]
     public void TearDown()
     {
