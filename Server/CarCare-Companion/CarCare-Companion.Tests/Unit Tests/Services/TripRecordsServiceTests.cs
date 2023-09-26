@@ -600,6 +600,72 @@ public class TripRecordsServiceTests
 
     }
 
+    /// <summary>
+    /// Tests the retrieving of additional user trip records by page when tripRecords contains records, currentPage and recordPerPage parameters are valid.
+    /// </summary>
+    /// Disclaimer:
+    ///The service method "GetAllByUserIdAsQueryableAsync" is used to retrieve the IQueryable collection because the standard IQueryable interface does not implement IAsyncEnumerable which is required for asynchronous operations in Entity Framework Core.
+    [Test]
+    public async Task RetrieveAdditionalTripRecordsByPageAsync_RetrievesCorrectAmountOfRecords()
+    {
+        //Arrange
+        ICollection<TripRecord> tripRecords = await GenerateTripRecords();
+
+        var currentPage = 2;
+        var recordsPerType = 3;
+        var additionalRecordsNeeded = 2;
+        var expectedRecords = tripRecords.Skip(((currentPage - 1) * recordsPerType) + recordsPerType).Take(additionalRecordsNeeded).ToList();
+
+        //Act
+        var quaryableRecords = await tripRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+        var result = await tripRecordsService.RetrieveAdditionalTripRecordsByPageAsync(quaryableRecords, currentPage, recordsPerType, additionalRecordsNeeded);
+
+        //Assert
+        Assert.NotNull(result);
+        Assert.AreEqual(expectedRecords.Count, result.Count);
+        Assert.AreEqual(expectedRecords[0].StartDestination, result[0].StartDestination);
+        Assert.AreEqual(expectedRecords[1].StartDestination, result[1].StartDestination);
+    }
+
+    /// Tests the retrieving of additional user trip records by page when there are no trip records, currentPage and recordPerPage parameters are valid.
+    [Test]
+    public async Task RetrieveAdditionalTripRecordsByPageAsync_EmptyList_ReturnsEmptyList()
+    {
+        // Arrange
+        var currentPage = 2;
+        var recordsPerType = 3;
+        var additionalRecordsNeeded = 2;
+
+        // Act
+        var quaryableRecords = await tripRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+        var result = await tripRecordsService.RetrieveAdditionalTripRecordsByPageAsync(quaryableRecords, currentPage, recordsPerType, additionalRecordsNeeded);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsEmpty(result);
+    }
+
+    /// Tests the retrieving of additional user trip records by page when there are trip records but current page is out of bounds.
+    [Test]
+    public async Task RetrieveAdditionaTripRecordsByPageAsync_CurrentPageOutOfBounds_ReturnsEmptyList()
+    {
+        //Arrange
+        await GenerateTripRecords();
+
+        var currentPage = 7;
+        var recordsPerType = 3;
+        var additionalRecordsNeeded = 2;
+
+
+        // Act
+        var quaryableRecords = await tripRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+        var result = await tripRecordsService.RetrieveAdditionalTripRecordsByPageAsync(quaryableRecords, currentPage, recordsPerType, additionalRecordsNeeded);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsEmpty(result);
+    }
+
 
     [TearDown]
     public void TearDown()
