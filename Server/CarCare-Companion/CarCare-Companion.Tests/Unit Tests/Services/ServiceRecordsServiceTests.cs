@@ -795,6 +795,72 @@ public class ServiceRecordsServiceTests
 
     }
 
+    /// <summary>
+    /// Tests the retrieving of additional user service records by page when serviceRecords contains records, currentPage and recordPerPage parameters are valid.
+    /// </summary>
+    /// Disclaimer:
+    ///The service method "GetAllByUserIdAsQueryableAsync" is used to retrieve the IQueryable collection because the standard IQueryable interface does not implement IAsyncEnumerable which is required for asynchronous operations in Entity Framework Core.
+    [Test]
+    public async Task RetrieveAdditionalServiceRecordsByPageAsync_RetrievesCorrectAmountOfRecords()
+    {
+        //Arrange
+        ICollection<ServiceRecord> serviceRecords = await GenerateServiceRecords();
+
+        var currentPage = 2;
+        var recordsPerType = 3;
+        var additionalRecordsNeeded = 2;
+        var expectedRecords = serviceRecords.Skip(((currentPage - 1) * recordsPerType) + recordsPerType).Take(additionalRecordsNeeded).ToList();
+
+        //Act
+        var quaryableRecords = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+        var result = await serviceRecordsService.RetrieveAdditionalServiceRecordsByPageAsync(quaryableRecords, currentPage, recordsPerType, additionalRecordsNeeded);
+
+        //Assert
+        Assert.NotNull(result);
+        Assert.AreEqual(expectedRecords.Count, result.Count);
+        Assert.AreEqual(expectedRecords[0].Id.ToString(), result[0].Id);
+        Assert.AreEqual(expectedRecords[1].Id.ToString(), result[1].Id);
+    }
+
+    /// Tests the retrieving of additional user service records by page when there are no service records, currentPage and recordPerPage parameters are valid.
+    [Test]
+    public async Task RetrieveAdditionalServiceRecordsByPageAsync_EmptyList_ReturnsEmptyList()
+    {
+        // Arrange
+        var currentPage = 2;
+        var recordsPerType = 3;
+        var additionalRecordsNeeded = 2;
+
+        // Act
+        var quaryableRecords = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+        var result = await serviceRecordsService.RetrieveAdditionalServiceRecordsByPageAsync(quaryableRecords, currentPage, recordsPerType, additionalRecordsNeeded);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsEmpty(result);
+    }
+
+    /// Tests the retrieving of additional user service records by page when there are service records but current page is out of bounds.
+    [Test]
+    public async Task RetrieveAdditionaServiceRecordsByPageAsync_CurrentPageOutOfBounds_ReturnsEmptyList()
+    {
+        //Arrange
+        await GenerateServiceRecords();
+
+        var currentPage = 7;
+        var recordsPerType = 3;
+        var additionalRecordsNeeded = 2;
+
+
+        // Act
+        var quaryableRecords = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+        var result = await serviceRecordsService.RetrieveAdditionalServiceRecordsByPageAsync(quaryableRecords, currentPage, recordsPerType, additionalRecordsNeeded);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsEmpty(result);
+    }
+
 
     [TearDown]
     public void TearDown()
