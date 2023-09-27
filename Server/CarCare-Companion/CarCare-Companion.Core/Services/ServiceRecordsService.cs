@@ -391,4 +391,26 @@ public class ServiceRecordsService : IServiceRecordsService
                      })
                      .ToListAsync();
     }
+
+    /// <summary>
+    /// Filters the provided collection of ServiceRecords based on a search term.
+    /// The method performs a case-insensitive search on the Title, 
+    /// Description, Vehicle Make, and Vehicle Model fields of each ServiceRecord.
+    /// </summary>
+    /// <param name="serviceRecords">The collection of ServiceRecords to filter.</param>
+    /// <param name="inputSearchTerm">The search term to use for filtering the ServiceRecords.</param>
+    /// <returns>A filtered collection of ServiceRecords where any of the specified fields match the search term.</returns>
+    public IQueryable<ServiceRecord> FilterRecordsBySearchTerm(IQueryable<ServiceRecord> serviceRecords, string inputSearchTerm)
+    {
+        string searchTerm = $"%{inputSearchTerm.ToLower()}%";
+
+        return serviceRecords.Where
+               (sr =>
+                     EF.Functions.Like(sr.Title, searchTerm) ||
+                     EF.Functions.Like(sr.Description, searchTerm) ||
+                     EF.Functions.Like(sr.Vehicle.Make, searchTerm) ||
+                     EF.Functions.Like(sr.Vehicle.Model, searchTerm)
+               );
+
+    }
 }
