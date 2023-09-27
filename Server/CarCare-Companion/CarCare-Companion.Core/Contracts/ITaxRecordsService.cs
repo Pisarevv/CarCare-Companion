@@ -115,7 +115,16 @@ public interface ITaxRecordsService
     /// A list of TaxRecordDetailsQueryResponseModel, representing the additional tax records retrieved.
     /// </returns>
     public Task<IList<TaxRecordDetailsQueryResponseModel>> RetrieveAdditionalTaxRecordsByPageAsync(IQueryable<TaxRecord> taxRecords, int currentPage, int recordsPerType, int additionalRecordsNeeded);
-    
+
+    /// <summary>
+    /// Filters the provided collection of TaxRecords based on a search term.
+    /// The method performs a case-insensitive search on the Title, 
+    /// Description, Vehicle Make, and Vehicle Model fields of each TaxRecord.
+    /// </summary>
+    /// <param name="taxRecords">The collection of TaxRecords to filter.</param>
+    /// <param name="inputSearchTerm">The search term to use for filtering the TaxRecords.</param>
+    /// <returns>A filtered collection of TaxRecords where any of the specified fields match the search term.</returns>
+    public IQueryable<TaxRecord> FilterRecordsBySearchTerm(IQueryable<TaxRecord> taxRecords, string inputSearchTerm);
 }
 
 

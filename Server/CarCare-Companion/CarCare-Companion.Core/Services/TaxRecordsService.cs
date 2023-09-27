@@ -402,4 +402,26 @@ public class TaxRecordsService : ITaxRecordsService
                      })
                      .ToListAsync();
     }
+
+    /// <summary>
+    /// Filters the provided collection of TaxRecords based on a search term.
+    /// The method performs a case-insensitive search on the Title, 
+    /// Description, Vehicle Make, and Vehicle Model fields of each TaxRecord.
+    /// </summary>
+    /// <param name="taxRecords">The collection of TaxRecords to filter.</param>
+    /// <param name="inputSearchTerm">The search term to use for filtering the TaxRecords.</param>
+    /// <returns>A filtered collection of TaxRecords where any of the specified fields match the search term.</returns>
+    public IQueryable<TaxRecord> FilterRecordsBySearchTerm(IQueryable<TaxRecord> taxRecords, string inputSearchTerm)
+    {
+        string searchTerm = $"%{inputSearchTerm.ToLower()}%";
+
+        return taxRecords.Where
+               (tr =>
+                     EF.Functions.Like(tr.Title, searchTerm) ||
+                     EF.Functions.Like(tr.Description, searchTerm) ||
+                     EF.Functions.Like(tr.Vehicle.Make, searchTerm) ||
+                     EF.Functions.Like(tr.Vehicle.Model, searchTerm)
+               );
+
+    }
 }
