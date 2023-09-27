@@ -371,4 +371,25 @@ public class TripRecordsService : ITripRecordsService
                      })
                      .ToListAsync();
     }
+
+    /// <summary>
+    /// Filters the provided collection of TripRecords based on a search term.
+    /// The method performs a case-insensitive search on the StartDestination, 
+    /// EndDestination, Vehicle Make, and Vehicle Model fields of each TripRecord.
+    /// </summary>
+    /// <param name="tripRecords">The collection of TripRecords to filter.</param>
+    /// <param name="inputSearchTerm">The search term to use for filtering the TripRecords.</param>
+    /// <returns>A filtered collection of TripRecords where any of the specified fields match the search term.</returns>
+    public IQueryable<TripRecord> FilterRecordsBySearchTerm(IQueryable<TripRecord> tripRecords, string inputSearchTerm)
+    {
+        string searchTerm = $"%{inputSearchTerm.ToLower()}%";
+
+        return tripRecords.Where
+               (tr =>
+                     EF.Functions.Like(tr.StartDestination, searchTerm) ||
+                     EF.Functions.Like(tr.EndDestination, searchTerm) ||
+                     EF.Functions.Like(tr.Vehicle.Make, searchTerm) ||
+                     EF.Functions.Like(tr.Vehicle.Model, searchTerm)
+               );
+    }
 }
