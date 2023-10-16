@@ -39,12 +39,6 @@ CarCare Companion isn't just a tool, it's your all-in-one personal vehicle manag
 
 3. Install the dependencies for the client
 - npm init 
-- npm i --save @fortawesome/free-solid-svg-icons
-- npm i --save @fortawesome/react-fontawesome
-- npm i axios
-- npm i dayjs
-- npm i react-loader-spinner
-- npm i react-notifications-component
 
 4. Create a "credentials" file containing your Amazon S3 profile. <br />
 ##### Option 1 
