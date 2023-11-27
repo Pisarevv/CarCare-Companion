@@ -42,6 +42,14 @@ public class SearchController : BaseController
                 });
             }
 
+            if(query.CurrentPage < 1)
+            {
+                return StatusCode(400, new ProblemDetails
+                {
+                    Title = StatusResponses.BadRequest
+                });
+            }
+
             var result = await searchService
             .Search
             (userId,
@@ -52,9 +60,7 @@ public class SearchController : BaseController
              AllRecordsQueryModel.RecordsPerPage
              );
 
-            query.TaxRecords = result.TaxRecords;
-            query.TripRecords = result.TripRecords;
-            query.ServiceRecords = result.ServiceRecords;
+            query.Records = result.Records;
             query.TotalRecords = result.TotalRecordsCount;
 
             return StatusCode(200, query);
