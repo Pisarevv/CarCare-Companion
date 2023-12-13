@@ -1,0 +1,52 @@
+name: Build, Test and Push
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fetch unshallow
+        run: git fetch --prune --tags --unshallow
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: '5.x'
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.7
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build
+      - name: Run Unit Tests
+        run: dotnet test --filter Category=Unit --no-restore --verbosity normal
+      - name: Copy Unit Test Results
+        run: mkdir TestResults; cp test/**/TestResults/*.Unit.Tests.trx TestResults/
+        shell: bash
+      - name: Start containers
+        run: docker-compose -f "docker-compose.yml" up -d --build
+        env:
+          VERSION: ${{ steps.gitversion.outputs.nuGetVersion }}
+      - name: Wait for docker containers to setup
+        run: sleep 30s
+        shell: bash
+      - name: Run Integration Tests
+        run: dotnet test --filter Category=Integration --no-restore --verbosity normal
+        env:
+          BASE_URL: http://localhost:5200
+      - name: Copy Integration Test Results
+        run: cp test/**/TestResults/*.Integration.Tests.trx TestResults/
+        shell: bash
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Test Results
+          path: TestResults/*.trx
+          reporter: dotnet-trx
