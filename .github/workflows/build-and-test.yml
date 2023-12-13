@@ -21,7 +21,7 @@ jobs:
         with:
           dotnet-version: '6.0.x'
       - name: List directory contents
-        run: ls - la
+        run: ls -la
         working-directory: Server/CarCare-Companion
       - name: Install dependencies
         run: dotnet restore
