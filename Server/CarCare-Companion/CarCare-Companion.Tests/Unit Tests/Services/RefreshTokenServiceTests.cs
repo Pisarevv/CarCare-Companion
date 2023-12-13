@@ -7,7 +7,7 @@ using CarCare_Companion.Infrastructure.Data;
 using CarCare_Companion.Infrastructure.Data.Common;
 using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using Microsoft.EntityFrameworkCore;
-
+using System.Text;
 
 [TestFixture]
 [Category("Unit")]
@@ -163,7 +163,7 @@ public class RefreshTokenServiceTests
         {
             Id = Guid.NewGuid(),
             UserId = Guid.NewGuid(),
-            RefreshToken = "TestTestTestTest",
+            RefreshToken = GenerateRandomString(),
             RefreshTokenExpiration = DateTime.UtcNow.AddDays(-15)
         };
 
@@ -309,5 +309,25 @@ public class RefreshTokenServiceTests
     public void TearDown()
     {
         applicationDbContext.Dispose();
+    }
+
+    private string GenerateRandomString()
+    {
+        Random rand = new Random();
+
+
+        int stringlen = rand.Next(4, 30);
+        int randValue;
+        StringBuilder randomString = new StringBuilder();
+        char letter;
+        for (int i = 0; i < stringlen; i++)
+        {
+            randValue = rand.Next(0, 26);
+
+            letter = Convert.ToChar(randValue + 65);
+            randomString.Append(letter);
+        }
+
+        return randomString.ToString();
     }
 }
