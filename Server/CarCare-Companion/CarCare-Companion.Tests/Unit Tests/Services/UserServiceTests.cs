@@ -18,6 +18,7 @@ using static Common.GlobalConstants;
 
 
 [TestFixture]
+[Category("Unit")]
 public class UserServiceTests
 {
     private IRepository repository;

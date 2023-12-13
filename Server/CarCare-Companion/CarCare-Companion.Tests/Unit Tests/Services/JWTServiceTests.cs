@@ -19,6 +19,7 @@ using CarCare_Companion.Infrastructure.Data.Models.Identity;
 using static Common.GlobalConstants;
 
 [TestFixture]
+[Category("Unit")]
 public class JWTServiceTests
 {
 

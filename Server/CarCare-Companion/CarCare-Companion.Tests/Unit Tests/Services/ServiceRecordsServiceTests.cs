@@ -18,6 +18,7 @@ using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
 
 
 [TestFixture]
+[Category("Unit")]
 public class ServiceRecordsServiceTests
 {
     private IRepository repository;

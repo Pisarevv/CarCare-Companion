@@ -22,6 +22,7 @@ using static Common.GlobalConstants;
 
 
 [TestFixture]
+[Category("Unit")]
 public class IdentityServiceTests
 {
     private IIdentityService identityService;

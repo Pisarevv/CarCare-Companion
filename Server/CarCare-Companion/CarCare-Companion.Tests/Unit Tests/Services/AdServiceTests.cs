@@ -14,6 +14,7 @@ using CarCare_Companion.Infrastructure.Data.Common;
 
 
 [TestFixture]
+[Category("Unit")]
 public class AdServiceTests
 {
     private IRepository repository;

@@ -12,6 +12,7 @@ using CarCare_Companion.Infrastructure.Data.Models.Ads;
 using static Infrastructure.Data.Seeding.EntityGenerator;
 
 [TestFixture]
+[Category("Integration")]
 public class HomeControllerTests
 {
     private TestWebApplicationFactory<Program> factory;

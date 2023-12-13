@@ -17,6 +17,7 @@ using CarCare_Companion.Core.Services;
 
 
 [TestFixture]
+[Category("Unit")]
 public class TaxRecordsServiceTests
 {
     private IRepository repository;

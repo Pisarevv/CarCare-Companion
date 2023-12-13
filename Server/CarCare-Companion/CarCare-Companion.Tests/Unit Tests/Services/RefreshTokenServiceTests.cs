@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 
 [TestFixture]
+[Category("Unit")]
 public class RefreshTokenServiceTests
 {
 
@@ -163,7 +164,7 @@ public class RefreshTokenServiceTests
             Id = Guid.NewGuid(),
             UserId = Guid.NewGuid(),
             RefreshToken = "TestTestTestTest",
-            RefreshTokenExpiration = DateTime.UtcNow.AddDays(-1)
+            RefreshTokenExpiration = DateTime.UtcNow.AddDays(-15)
         };
 
         await repository.AddAsync<UserRefreshToken>(token);
@@ -237,7 +238,7 @@ public class RefreshTokenServiceTests
     public async Task TerminateUserRefreshTokenAsync_ShouldReturnFalse_WhenUserDoesntHaveOne()
     {
         //Arrange
-        string userId = "908953a5-e4dc-4d82-9f0b-b2cbb7504fb0";
+        string userId = "908953a5-e4dc-4d82-9f0b-b2cbb7504fbb";
 
         //Act
         bool result = await refreshTokenService.TerminateUserRefreshTokenAsync(userId);

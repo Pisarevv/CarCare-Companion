@@ -28,6 +28,7 @@ using CarCare_Companion.Infrastructure.Data.Models.Vehicle;
 using System.Text;
 
 [TestFixture]
+[Category("Integration")]
 public class ServiceRecordsControllerTests
 {
     private TestWebApplicationFactory<Program> factory;
