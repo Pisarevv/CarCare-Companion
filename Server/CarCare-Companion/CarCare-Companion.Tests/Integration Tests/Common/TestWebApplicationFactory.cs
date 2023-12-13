@@ -18,6 +18,8 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
 
         builder.ConfigureServices((services) =>
         {
+            //string testDatabaseConnectionString = Environment.GetEnvironmentVariable("API_DbSettings__ConnectionString_Tests");
+
             var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.Test.json")
             .Build();
@@ -33,6 +35,12 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
             {
                 options.UseSqlServer(configuration.GetConnectionString("TestDatabaseConnection"));
             });
+
+            //services.AddDbContext<CarCareCompanionDbContext>(options =>
+            //{
+            //    options.UseSqlServer(testDatabaseConnectionString);
+            //});
+
 
             var sp = services.BuildServiceProvider();
 

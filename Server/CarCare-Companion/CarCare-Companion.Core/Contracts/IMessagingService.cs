@@ -1,4 +1,5 @@
-﻿namespace CarCare_Companion.Core.Contracts;
+﻿
+namespace CarCare_Companion.Core.Contracts;
 
 using System.Threading.Tasks;
 
