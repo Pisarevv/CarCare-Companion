@@ -33,7 +33,7 @@ jobs:
         run: dotnet test --filter Category=Unit --no-restore --verbosity normal
         working-directory: Server/CarCare-Companion
       - name: Copy Unit Test Results
-        run: mkdir TestResults; cp test/**/TestResults/*.Unit.Tests.trx TestResults/
+        run: mkdir TestResults; cp Server/CarCare-Companion/CarCare-Companion.Tests/TestResults/CarCare-Companion.Tests.trx TestResults/
         shell: bash
       - name: Start containers
         run: docker-compose -f "docker-compose.yml" up -d --build
@@ -47,7 +47,7 @@ jobs:
         env:
           BASE_URL: http://localhost:5200
       - name: Copy Integration Test Results
-        run: cp test/**/TestResults/*.Integration.Tests.trx TestResults/
+        run: mkdir TestResults; cp Server/CarCare-Companion/CarCare-Companion.Tests/TestResults/CarCare-Companion.Tests.trx TestResults/
         shell: bash
       - name: Test Report
         uses: dorny/test-reporter@v1
