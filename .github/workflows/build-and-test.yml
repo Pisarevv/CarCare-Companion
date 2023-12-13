@@ -28,8 +28,10 @@ jobs:
         working-directory: Server/CarCare-Companion
       - name: Build
         run: dotnet build
+        working-directory: Server/CarCare-Companion
       - name: Run Unit Tests
         run: dotnet test --filter Category=Unit --no-restore --verbosity normal
+        working-directory: Server/CarCare-Companion
       - name: Copy Unit Test Results
         run: mkdir TestResults; cp test/**/TestResults/*.Unit.Tests.trx TestResults/
         shell: bash
@@ -52,5 +54,5 @@ jobs:
         if: success() || failure()
         with:
           name: Test Results
-          path: TestResults/*.trx
+          path: Server/CarCare-Companion/CarCare-Companion.Tests/TestResults/*.trx
           reporter: dotnet-trx
