@@ -22,7 +22,7 @@ jobs:
           dotnet-version: '6.0.x'
       - name: Install dependencies
         run: dotnet restore
-        working-directory: ./Server/CarCare-Companion
+        working-directory: Server/CarCare-Companion
       - name: Build
         run: dotnet build
       - name: Run Unit Tests
