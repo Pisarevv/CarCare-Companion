@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    cap_add:
+      - SYS_NICE
+    hostname: SqlServer2022
+    restart: no
+    environment:
+      SA_PASSWORD : safePassword123@
+      ACCEPT_EULA : Y
+      
+    ports:
+    - '3305:1433'
+    volumes:
+      - SqlServer2022:/var/lib/mssql
+      - ./SqlServer2022/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  db-tests:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    cap_add:
+      - SYS_NICE
+    hostname: SqlServer2022-Tests
+    restart: always
+    environment:
+      SA_PASSWORD : safePassword123@
+      ACCEPT_EULA : Y
+      
+    ports:
+    - '3306:1433'
+    volumes:
+      - SqlServer2022-Tests:/var/lib/mssql
+      - ./SqlServer2022-Tests/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api:
+    image: pisarev/carcarecompanionapi:${VERSION}
+    build: .
+    restart: always
+    depends_on:
+      - db
+      - db-tests
+    ports:
+      - '5200:5275'
+    environment:
+      - ASPNETCORE_URLS=http://*:5275
+      - API_DbSettings_ConnectionString=Server=db;Database=CarCare-Companion;User=sa;Password=safePassword123@;TrustServerCertificate=True;
+      - API_DbSettings_ConnectionString_Tests=Server=db-tests;Database=CarCare-Companion-Tests;User=sa;Password=safePassword123@;TrustServerCertificate=True;
+
+volumes:
+  SqlServer2022:
+    driver: local
+  SqlServer2022-Tests:
+    driver: local
