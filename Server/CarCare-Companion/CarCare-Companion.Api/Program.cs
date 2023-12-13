@@ -64,6 +64,7 @@ namespace CarCare_Companion.Api
         private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            //var connectionString = Environment.GetEnvironmentVariable("API_DbSettings_ConnectionString");
             services.AddDbContext<CarCareCompanionDbContext>(options =>
                 options.UseSqlServer(connectionString));
             services.AddDatabaseDeveloperPageExceptionFilter();
