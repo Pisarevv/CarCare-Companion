@@ -89,7 +89,7 @@ public class ServiceRecordsControllerTests
     public async Task GET_ReturnsSuccessAndCorrectContentType_WithData_WhenUserIsValid()
     {
         //Assert
-        ICollection<string> userRoles = new HashSet<string>();
+        ICollection<string> userRoles = new HashSet<string>() { "User" };
         ICollection<Claim> claims = jwtService.GenerateUserAuthClaims(users[0], userRoles);
 
         var rawToken = jwtService.GenerateJwtToken(claims);
