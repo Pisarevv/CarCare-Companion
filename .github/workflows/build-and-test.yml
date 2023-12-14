@@ -44,6 +44,7 @@ jobs:
         shell: bash
       - name: Run Integration Tests
         run: dotnet test --filter Category=Integration --no-restore --verbosity normal
+        working-directory: Server/CarCare-Companion
         env:
           BASE_URL: http://localhost:5200
       - name: Copy Integration Test Results
