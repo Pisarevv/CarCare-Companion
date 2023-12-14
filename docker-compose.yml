@@ -32,9 +32,10 @@ services:
       - ./SqlServer2022-Tests/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   api:
-    image: pisarev/carcarecompanionapi
-    build: .
-    # restart: always
+    image: carcarecompanionapi
+    build: 
+      context: ./Server/CarCare-Companion
+      dockerfile: Dockerfile
     depends_on:
       - db
       - db-tests
