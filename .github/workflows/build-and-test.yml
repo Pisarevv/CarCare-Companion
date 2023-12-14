@@ -35,6 +35,11 @@ jobs:
       - name: Copy Unit Test Results
         run: mkdir TestResults; cp Server/CarCare-Companion/CarCare-Companion.Tests/TestResults/CarCare-Companion.Tests.trx TestResults/
         shell: bash
+      - name: Build container
+        run: docker build -t pisarev/carcarecompanionapi .
+        working-directory: Server/CarCare-Companion
+      - name: Wait for docker container to build
+        run: sleep 30s
       - name: Start containers
         run: docker-compose -f "docker-compose.yml" up -d --build
         env:
