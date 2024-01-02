@@ -1,6 +1,6 @@
 // Importing necessary hooks and modules from React and React Router.
 import { useEffect, useReducer, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 // Utilities
 import { NotificationHandler } from "../../../utils/NotificationHandler";
@@ -43,6 +43,8 @@ const AddVehicle = (props) => {
 
   // Provides access to the current location (route).
   const location = useLocation();
+  
+  const navigate = useNavigate();
 
   //Use custom hook to get logUseOut function
   const logUserOut = useDeauthenticate();
@@ -104,12 +106,15 @@ const AddVehicle = (props) => {
             const fuelTypesResult = responses[0].data;
             const vehicleTypesResult = responses[1].data;
 
-            // Dispatch actions to set default selected fuel type and vehicle type.
-            dispatch({ type: `SET_FUELTYPEID`, payload: fuelTypesResult[0].id });
-            dispatch({ type: `SET_VEHICLETYPEID`, payload: vehicleTypesResult[0].id });
+           
 
             // Update state variables with fetched data if the component is still mounted.
             if (isMounted) {
+
+               // Dispatch actions to set default selected fuel type and vehicle type.
+            dispatch({ type: `SET_FUELTYPEID`, payload: fuelTypesResult[0].id });
+            dispatch({ type: `SET_VEHICLETYPEID`, payload: vehicleTypesResult[0].id });
+
               setFuelTypes(fuelTypesResult);
               setVehicleTypes(vehicleTypesResult);
             }
