@@ -1,4 +1,4 @@
-using System.Text;
+    using System.Text;
 
 using System.Reflection;
 
@@ -137,7 +137,8 @@ namespace CarCare_Companion.Api
                                    policy =>
                                   {
                                       policy.WithOrigins("http://localhost:5173",
-                                                         "http://172.22.144.1:5173")
+                                                         "http://172.22.144.1:5173",
+                                                         "http://127.0.0.1:5173")
                                       .AllowAnyMethod()
                                       .AllowAnyHeader()
                                       .AllowCredentials();
