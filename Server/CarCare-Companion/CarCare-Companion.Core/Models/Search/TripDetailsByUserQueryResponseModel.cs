@@ -1,4 +1,6 @@
-﻿namespace CarCare_Companion.Core.Models.Search;
+﻿using CarCare_Companion.Infrastructure.Data.Models.Contracts;
+
+namespace CarCare_Companion.Core.Models.Search;
 
 public class TripDetailsByUserQueryResponseModel
 {
@@ -16,7 +18,7 @@ public class TripDetailsByUserQueryResponseModel
 
     public decimal? FuelPrice { get; set; }
 
-    public decimal? TripCost { get; set; }
+    public decimal? Cost { get; set; }
 
     public string VehicleMake { get; set; } = null!;
 

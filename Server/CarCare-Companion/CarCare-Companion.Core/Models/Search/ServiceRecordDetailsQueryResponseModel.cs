@@ -1,6 +1,8 @@
-﻿namespace CarCare_Companion.Core.Models.Search;
+﻿using CarCare_Companion.Infrastructure.Data.Models.Contracts;
 
-public class ServiceRecordDetailsQueryResponseModel
+namespace CarCare_Companion.Core.Models.Search;
+
+public class ServiceRecordDetailsQueryResponseModel : ICostable
 {
     public string Type { get; } = "ServiceRecord";
 
@@ -19,4 +21,6 @@ public class ServiceRecordDetailsQueryResponseModel
     public string VehicleMake { get; set; } = null!;
 
     public string VehicleModel { get; set; } = null!;
+
+    public DateTime DateCreated { get; set; }
 }

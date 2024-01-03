@@ -336,7 +336,7 @@ public class TripRecordsService : ITripRecordsService
                          VehicleMake = t.Vehicle.Make,
                          VehicleModel = t.Vehicle.Model,
                          DateCreated = t.CreatedOn,
-                         TripCost = t.Cost
+                         Cost = t.Cost
                      })
                      .ToListAsync();
     }
@@ -367,7 +367,7 @@ public class TripRecordsService : ITripRecordsService
                          VehicleMake = t.Vehicle.Make,
                          VehicleModel = t.Vehicle.Model,
                          DateCreated = t.CreatedOn,
-                         TripCost = t.Cost
+                         Cost = t.Cost
                      })
                      .ToListAsync();
     }

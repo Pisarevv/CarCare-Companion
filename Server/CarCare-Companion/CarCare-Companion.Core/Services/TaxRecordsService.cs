@@ -369,7 +369,8 @@ public class TaxRecordsService : ITaxRecordsService
                          ValidFrom = tr.ValidFrom,
                          ValidTo = tr.ValidTo,
                          VehicleMake = tr.Vehicle.Make,
-                         VehicleModel = tr.Vehicle.Model
+                         VehicleModel = tr.Vehicle.Model,
+                         DateCreated = tr.CreatedOn
                      })
                      .ToListAsync();
     }
@@ -398,7 +399,8 @@ public class TaxRecordsService : ITaxRecordsService
                          ValidFrom = tr.ValidFrom,
                          ValidTo = tr.ValidTo,
                          VehicleMake = tr.Vehicle.Make,
-                         VehicleModel = tr.Vehicle.Model
+                         VehicleModel = tr.Vehicle.Model,
+                         DateCreated = tr.CreatedOn
                      })
                      .ToListAsync();
     }

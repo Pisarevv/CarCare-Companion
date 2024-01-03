@@ -358,7 +358,8 @@ public class ServiceRecordsService : IServiceRecordsService
                          Mileage = sr.Mileage,
                          PerformedOn = sr.PerformedOn,
                          VehicleMake = sr.Vehicle.Make,
-                         VehicleModel = sr.Vehicle.Model
+                         VehicleModel = sr.Vehicle.Model,
+                         DateCreated = sr.CreatedOn
                      })
                      .ToListAsync();
     }
@@ -387,7 +388,8 @@ public class ServiceRecordsService : IServiceRecordsService
                          Mileage = sr.Mileage,
                          PerformedOn = sr.PerformedOn,
                          VehicleMake = sr.Vehicle.Make,
-                         VehicleModel = sr.Vehicle.Model
+                         VehicleModel = sr.Vehicle.Model,
+                         DateCreated = sr.CreatedOn
                      })
                      .ToListAsync();
     }
