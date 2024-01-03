@@ -1,13 +1,11 @@
 ﻿namespace CarCare_Companion.Core.Services;
 
-using Microsoft.EntityFrameworkCore;
 
 using CarCare_Companion.Core.Contracts;
 using CarCare_Companion.Core.Enums;
 using CarCare_Companion.Core.Models.Search;
-using CarCare_Companion.Infrastructure.Data.Models.BaseModels;
-using CarCare_Companion.Infrastructure.Data.Models.Contracts;
 using CarCare_Companion.Infrastructure.Data.Models.Records;
+using System;
 
 
 
@@ -19,12 +17,26 @@ public class SearchService : ISearchService
     private readonly ITaxRecordsService taxRecordsService;
     private readonly IServiceRecordsService serviceRecordsService;
     private readonly ITripRecordsService tripRecordsService;
+    private readonly ISortService sortService;
 
-    public SearchService(ITaxRecordsService taxRecordsService, IServiceRecordsService serviceRecordsService, ITripRecordsService tripRecordsService)
+    private IQueryable<TripRecord> tripRecords;
+    private IQueryable<TaxRecord> taxRecords;
+    private IQueryable<ServiceRecord> serviceRecords;
+
+    RecordsQueryModel result;
+
+    public SearchService(ITaxRecordsService taxRecordsService, IServiceRecordsService serviceRecordsService, ITripRecordsService tripRecordsService, ISortService sortService)
     {
         this.taxRecordsService = taxRecordsService;
         this.serviceRecordsService = serviceRecordsService;
         this.tripRecordsService = tripRecordsService;
+        this.sortService = sortService;
+
+        this.tripRecords = Enumerable.Empty<TripRecord>().AsQueryable();
+        this.taxRecords =  Enumerable.Empty<TaxRecord>().AsQueryable();
+        this.serviceRecords = Enumerable.Empty<ServiceRecord>().AsQueryable();
+
+        this.result = new RecordsQueryModel();
     }
 
     /// <summary>
@@ -41,98 +53,55 @@ public class SearchService : ISearchService
                                                string? searchTerm = null, RecordsSorting sorting = RecordsSorting.Newest, 
                                                int currentPage = 1, int recordsPerPage = 1)
     {
-        RecordsQueryModel result = new RecordsQueryModel();
-
-        IQueryable<TripRecord> tripRecords = Enumerable.Empty<TripRecord>().AsQueryable();
-        IQueryable<TaxRecord> taxRecords = Enumerable.Empty<TaxRecord>().AsQueryable();
-        IQueryable<ServiceRecord> serviceRecords = Enumerable.Empty<ServiceRecord>().AsQueryable();
-
 
         switch (category)
         {
             case RecordCategories.TaxRecords:
                 {
-                    taxRecords = await taxRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+                    var taxRecordsResult = await RetrieveAndSortUserTaxRecords(userId, searchTerm, sorting, currentPage, recordsPerPage);
 
-                    if (string.IsNullOrEmpty(searchTerm) == false)
-                    {
-                        taxRecords = taxRecordsService.FilterRecordsBySearchTerm(taxRecords, searchTerm);
-                    }
-                    taxRecords = SortCostableRecords(taxRecords, sorting);
+                    result.Records = CastRecordsToObject(taxRecordsResult);
+                    result.TotalRecordsCount = await GetTotalUserTaxRecordsCount(userId);
 
-                    var taxRecordsResult = await taxRecordsService.RetrieveTaxRecordsByPageAsync(taxRecords, currentPage, recordsPerPage);
-
-                    result.Records = taxRecordsResult.Cast<object>().ToList();
-
-                    result.TotalRecordsCount = await taxRecordsService.GetAllUserTaxRecordsCountAsync(userId);
-                    break;
-                }
-            case RecordCategories.ServiceRecords:
-                {
-                    serviceRecords = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
-                    if (string.IsNullOrEmpty(searchTerm) == false)
-                    {
-                        serviceRecords = serviceRecordsService.FilterRecordsBySearchTerm(serviceRecords, searchTerm);
-                    }
-                    serviceRecords = SortCostableRecords(serviceRecords, sorting);
-
-                    var serviceRecordsResult = await serviceRecordsService.RetrieveServiceRecordsByPageAsync(serviceRecords, currentPage, recordsPerPage);
-
-                    result.Records = serviceRecordsResult.Cast<object>().ToList();
-
-                    result.TotalRecordsCount = await serviceRecordsService.GetAllUserServiceRecordsCountAsync(userId);
                     break;
                 }
             case RecordCategories.TripRecords:
                 {
-                    tripRecords = await tripRecordsService.GetAllByUserIdAsQueryableAsync(userId);
-                    if (string.IsNullOrEmpty(searchTerm) == false)
-                    {
-                        tripRecords = tripRecordsService.FilterRecordsBySearchTerm(tripRecords, searchTerm);
-                    }
-                    tripRecords = SortOptionalCostableRecords(tripRecords, sorting);
+                    var tripRecordsResult = await RetrieveAndSortUserTripRecords(userId, searchTerm, sorting, currentPage, recordsPerPage);
 
-                    var tripRecordsResult = await tripRecordsService.RetrieveTripRecordsByPageAsync(tripRecords, currentPage, recordsPerPage);
+                    result.Records = CastRecordsToObject(tripRecordsResult);
+                    result.TotalRecordsCount = await GetTotalUserTripRecordsCount(userId);
 
-                    result.Records = tripRecordsResult.Cast<object>().ToList();
+                    break;
+                }
+            case RecordCategories.ServiceRecords:
+                {
+                    var serviceRecordsResult = await RetrieveAndSortUserServiceRecords(userId, searchTerm, sorting, currentPage, recordsPerPage);
 
-                    result.TotalRecordsCount = await tripRecordsService.GetAllUserTripsCountAsync(userId);
+                    result.Records = CastRecordsToObject(serviceRecordsResult);
+                    result.TotalRecordsCount = await GetTotalUserServiceRecordsCount(userId);
+
                     break;
                 }
             case RecordCategories.All:
                 {
-                    taxRecords = await taxRecordsService.GetAllByUserIdAsQueryableAsync(userId);
-                    serviceRecords = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
-                    tripRecords = await tripRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+                    var taxRecordsResult = await RetrieveAndSortUserTaxRecords(userId, searchTerm, sorting, currentPage, recordsPerPage);
+                    var tripRecordsResult = await RetrieveAndSortUserTripRecords(userId, searchTerm, sorting, currentPage, recordsPerPage);
+                    var serviceRecordsResult = await RetrieveAndSortUserServiceRecords(userId, searchTerm, sorting, currentPage, recordsPerPage);
 
-                    if (string.IsNullOrEmpty(searchTerm) == false)
-                    {
-                        taxRecords = taxRecordsService.FilterRecordsBySearchTerm(taxRecords, searchTerm);
-                        serviceRecords = serviceRecordsService.FilterRecordsBySearchTerm(serviceRecords, searchTerm);
-                        tripRecords = tripRecordsService.FilterRecordsBySearchTerm(tripRecords, searchTerm);
-                    }
-
-                    taxRecords = SortCostableRecords(taxRecords, sorting);
-                    serviceRecords = SortCostableRecords(serviceRecords, sorting);
-                    tripRecords = SortOptionalCostableRecords(tripRecords, sorting);
-
-                    int recordsPerType = recordsPerPage / 3;
-                 
-                    var taxRecordsResult = await taxRecordsService.RetrieveTaxRecordsByPageAsync(taxRecords, currentPage, recordsPerPage);
-                    var tripRecordsResult = await tripRecordsService.RetrieveTripRecordsByPageAsync(tripRecords, currentPage, recordsPerType);
-                    var serviceRecordsResult = await serviceRecordsService.RetrieveServiceRecordsByPageAsync(serviceRecords, currentPage, recordsPerType);
+                    int recordsPerType = recordsPerPage / 3; 
 
                     int additionalRecordsNeeded = recordsPerPage - (taxRecordsResult.Count + tripRecordsResult.Count + serviceRecordsResult.Count);
 
-                    if(additionalRecordsNeeded > 0)
+                    if (additionalRecordsNeeded > 0)
                     {
-                        var additionalTaxRecords = await taxRecordsService.RetrieveAdditionalTaxRecordsByPageAsync(taxRecords,currentPage,recordsPerType, additionalRecordsNeeded);
+                        var additionalTaxRecords = await taxRecordsService.RetrieveAdditionalTaxRecordsByPageAsync(taxRecords, currentPage, recordsPerType, additionalRecordsNeeded);
                         taxRecordsResult.AddRange(additionalTaxRecords);
 
                         var additionalTripRecords = await tripRecordsService.RetrieveAdditionalTripRecordsByPageAsync(tripRecords, currentPage, recordsPerType, additionalRecordsNeeded);
                         tripRecordsResult.AddRange(additionalTripRecords);
 
-                        var additionalServiceRecords = await serviceRecordsService.RetrieveAdditionalServiceRecordsByPageAsync(serviceRecords,currentPage, recordsPerType, additionalRecordsNeeded);
+                        var additionalServiceRecords = await serviceRecordsService.RetrieveAdditionalServiceRecordsByPageAsync(serviceRecords, currentPage, recordsPerType, additionalRecordsNeeded);
                         serviceRecordsResult.AddRange(additionalServiceRecords);
                     }
 
@@ -142,7 +111,9 @@ public class SearchService : ISearchService
                                      .Take(recordsPerPage)
                                      .ToList();
 
-                    result.Records = allRecords; 
+                    var sortedRecords = sortService.AdditionalSortOfAllResults<object>(allRecords, sorting);
+
+                    result.Records = sortedRecords;
 
                     result.TotalRecordsCount = await RetrieveAllUserRecordsCount(userId);
 
@@ -159,50 +130,109 @@ public class SearchService : ISearchService
         return result;
     }
 
-    // Method to retrieve the total count of all user records (tax, service, trip).
+  
+    private async Task<List<TaxRecordDetailsQueryResponseModel>> RetrieveAndSortUserTaxRecords(string userId, string searchTerm, RecordsSorting sorting, int currentPage, int recordsPerPage)
+    {
+        await GetUserTaxRecords(userId);
+
+        if (string.IsNullOrEmpty(searchTerm) == false)
+        {
+            FilterTaxRecords(searchTerm);
+        }
+
+        taxRecords = sortService.SortCostableRecords(taxRecords, sorting);
+
+        return await taxRecordsService.RetrieveTaxRecordsByPageAsync(taxRecords, currentPage, recordsPerPage);
+
+    }
+    private async Task GetUserTaxRecords(string userId)
+    {
+        taxRecords = await taxRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+    }
+
+    private void FilterTaxRecords(string searchTerm)
+    {
+        taxRecords = taxRecordsService.FilterRecordsBySearchTerm(taxRecords, searchTerm);
+    }
+
+    private async Task<int> GetTotalUserTaxRecordsCount(string userId)
+    {
+        return await taxRecordsService.GetAllUserTaxRecordsCountAsync(userId);
+    }
+
+    private async Task<List<TripDetailsByUserQueryResponseModel>> RetrieveAndSortUserTripRecords(string userId, string searchTerm, RecordsSorting sorting, int currentPage, int recordsPerPage)
+    {
+        await GetUserTripRecords(userId);
+
+        if (string.IsNullOrEmpty(searchTerm) == false)
+        {
+            FilterTripRecords(searchTerm);
+        }
+
+        tripRecords = sortService.SortOptionalCostableRecords(tripRecords, sorting);
+
+        return await tripRecordsService.RetrieveTripRecordsByPageAsync(tripRecords, currentPage, recordsPerPage);
+
+    }
+
+    private async Task GetUserTripRecords(string userId)
+    {
+        tripRecords = await tripRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+    }
+
+    private void FilterTripRecords(string searchTerm)
+    {
+        tripRecords = tripRecordsService.FilterRecordsBySearchTerm(tripRecords, searchTerm);
+    }
+    
+    private async Task<int> GetTotalUserTripRecordsCount(string userId)
+    {
+        return await tripRecordsService.GetAllUserTripsCountAsync(userId);
+    }
+
+    private async Task<List<ServiceRecordDetailsQueryResponseModel>> RetrieveAndSortUserServiceRecords(string userId, string searchTerm, RecordsSorting sorting, int currentPage, int recordsPerPage)
+    {
+        await GetUserServiceRecords(userId);
+
+        if (string.IsNullOrEmpty(searchTerm) == false)
+        {
+            FilterServiceRecords(searchTerm);
+        }
+
+        serviceRecords = sortService.SortCostableRecords(serviceRecords, sorting);
+
+        return await serviceRecordsService.RetrieveServiceRecordsByPageAsync(serviceRecords, currentPage, recordsPerPage);
+    }
+
+    private async Task GetUserServiceRecords(string userId)
+    {
+        serviceRecords = await serviceRecordsService.GetAllByUserIdAsQueryableAsync(userId);
+    }
+
+    private void FilterServiceRecords(string searchTerm)
+    {
+        serviceRecords = serviceRecordsService.FilterRecordsBySearchTerm(serviceRecords, searchTerm);
+    }
+
+
+    private async Task<int> GetTotalUserServiceRecordsCount(string userId)
+    {
+        return await serviceRecordsService.GetAllUserServiceRecordsCountAsync(userId);
+    }
+
+    private IList<object> CastRecordsToObject<T>(IEnumerable<T> records)
+    {
+        return records.Cast<object>().ToList();
+    }
+
     private async Task<int> RetrieveAllUserRecordsCount(string userId)
     {
-        var taxRecordsCount = await taxRecordsService.GetAllUserTaxRecordsCountAsync(userId);
-        var serviceRecordsCount = await serviceRecordsService.GetAllUserServiceRecordsCountAsync(userId);
-        var tripRecordsCount = await tripRecordsService.GetAllUserTripsCountAsync(userId);
+        var taxRecordsCount = await GetTotalUserTaxRecordsCount(userId);
+        var serviceRecordsCount = await GetTotalUserServiceRecordsCount(userId);
+        var tripRecordsCount = await GetTotalUserTripRecordsCount(userId);
 
         return taxRecordsCount + tripRecordsCount + serviceRecordsCount;
     }
 
-    // Method to sort the costable records based on the sorting option selected by the user.
-    private IQueryable<T> SortCostableRecords<T>(IQueryable<T> records, RecordsSorting sorting) where T : BaseDeletableModel<T>, ICostable
-    {
-        return sorting switch
-        {
-            RecordsSorting.Newest => records
-                                     .OrderByDescending(r => r.CreatedOn),
-            RecordsSorting.Oldest => records
-                                     .OrderBy(r => r.CreatedOn),
-            RecordsSorting.MostExpensive => records
-                                            .OrderByDescending(r => r.Cost),
-            RecordsSorting.LeastExpensive => records
-                                            .OrderBy(r => r.Cost),
-            _ => records
-                 .OrderByDescending(r => r.Id)
-        };
-    }
-
-    // Method to sort the optionally costable records based on the sorting option selected by the user.
-    private IQueryable<T> SortOptionalCostableRecords<T>(IQueryable<T> records, RecordsSorting sorting) where T : BaseDeletableModel<T>, IOptionalCostable
-    {
-        return sorting switch
-        {
-            RecordsSorting.Newest => records
-                                     .OrderByDescending(r => r.CreatedOn),
-            RecordsSorting.Oldest => records
-                                     .OrderBy(r => r.CreatedOn),
-            RecordsSorting.MostExpensive => records
-                                            .OrderByDescending(r => r.Cost),
-            RecordsSorting.LeastExpensive => records
-                                            .OrderBy(r => r.Cost),
-            _ => records
-                 .OrderByDescending(r => r.Id)
-        };
-    }
 
 }
