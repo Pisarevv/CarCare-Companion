@@ -95,7 +95,7 @@ const UpcomingTaxes = (props) => {
                         ?
                         upcomingTaxes.map(ut => <UpcomingTaxCard key = {ut.id} details = {ut}/> )
                         :
-                        <div>You haven't added any trip records yet.</div>
+                        <div>You don't have upcoming taxes in the next two weeks.</div>
                 }
             </div>
         </div>
